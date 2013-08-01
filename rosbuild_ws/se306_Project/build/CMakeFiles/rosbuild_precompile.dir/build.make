@@ -32,10 +32,10 @@ CMAKE_COMMAND = /usr/bin/cmake
 RM = /usr/bin/cmake -E remove -f
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/john/GitRepo/306-Swarm-Robotics-Project/rosbuild_ws/se306_Project
+CMAKE_SOURCE_DIR = /home/john/GitRepo/rosbuild_ws/se306_Project
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/john/GitRepo/306-Swarm-Robotics-Project/rosbuild_ws/se306_Project/build
+CMAKE_BINARY_DIR = /home/john/GitRepo/rosbuild_ws/se306_Project/build
 
 # Utility rule file for rosbuild_precompile.
 
@@ -57,6 +57,6 @@ CMakeFiles/rosbuild_precompile.dir/clean:
 .PHONY : CMakeFiles/rosbuild_precompile.dir/clean
 
 CMakeFiles/rosbuild_precompile.dir/depend:
-	cd /home/john/GitRepo/306-Swarm-Robotics-Project/rosbuild_ws/se306_Project/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/john/GitRepo/306-Swarm-Robotics-Project/rosbuild_ws/se306_Project /home/john/GitRepo/306-Swarm-Robotics-Project/rosbuild_ws/se306_Project /home/john/GitRepo/306-Swarm-Robotics-Project/rosbuild_ws/se306_Project/build /home/john/GitRepo/306-Swarm-Robotics-Project/rosbuild_ws/se306_Project/build /home/john/GitRepo/306-Swarm-Robotics-Project/rosbuild_ws/se306_Project/build/CMakeFiles/rosbuild_precompile.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/john/GitRepo/rosbuild_ws/se306_Project/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/john/GitRepo/rosbuild_ws/se306_Project /home/john/GitRepo/rosbuild_ws/se306_Project /home/john/GitRepo/rosbuild_ws/se306_Project/build /home/john/GitRepo/rosbuild_ws/se306_Project/build /home/john/GitRepo/rosbuild_ws/se306_Project/build/CMakeFiles/rosbuild_precompile.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/rosbuild_precompile.dir/depend
 

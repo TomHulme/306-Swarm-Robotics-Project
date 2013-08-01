@@ -43,7 +43,7 @@ import sys
 
 # environment at generation time
 CMAKE_PREFIX_PATH = '/opt/ros/groovy'.split(';')
-setup_dir = '/home/john/GitRepo/306-Swarm-Robotics-Project/rosbuild_ws/se306_Project/build/devel'
+setup_dir = '/home/john/GitRepo/rosbuild_ws/se306_Project/build/devel'
 if setup_dir and setup_dir not in CMAKE_PREFIX_PATH:
     CMAKE_PREFIX_PATH.insert(0, setup_dir)
 CMAKE_PREFIX_PATH = os.pathsep.join(CMAKE_PREFIX_PATH)
