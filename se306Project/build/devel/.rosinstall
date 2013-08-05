@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/john/rosbuild_ws/se306Project/build/devel/setup.sh
