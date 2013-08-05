@@ -35,6 +35,10 @@ for root, dirs, files in os.walk('/home', topdown=True):
         print worldfile
 
 
+# This would need to be changed if your project is named something different
+rosmakePro= Popen('rosmake se306Project',shell=True)
+rosmakePro.communicate() # Waits until rosmake has finished
+
 core = Popen('roscore',shell=True) 
 stagePro = Popen('rosrun stage stageros %s' %worldfile,shell=True)
 
