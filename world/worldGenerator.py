@@ -42,14 +42,14 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
 """
     grass_def = """define grass position
 (
-    size [0.9 0.9 0.125]
+    size [0.9 0.9 0.1]
     mylaser(pose [ 0.050 0.000 0 0.000 ])
 )
 """
 
     floorplan_def = """define floorplan model
 (
-    color "white"
+    color "brown"
 
     boundary 1
 
