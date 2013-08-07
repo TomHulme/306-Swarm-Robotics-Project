@@ -16,7 +16,7 @@ import os
 from subprocess import Popen, PIPE, signal
 from os.path import join
 
-
+# This checks if there is a running roscore process and if there is, it gets killed
 findRoscorePro = Popen("pgrep roscore", stdout=PIPE, shell=True)
 killroscorePro = Popen("kill "+findRoscorePro.communicate()[0], shell=True)
  
