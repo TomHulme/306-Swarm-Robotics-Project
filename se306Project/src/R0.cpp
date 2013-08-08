@@ -15,14 +15,39 @@ double angular_z;
 double px;
 double py;
 double theta;
+double prevpx;
+double prevpy;
 
 void StageOdom_callback(nav_msgs::Odometry msg)
 {
-	//This is the call back function to process odometry messages coming from Stage. 	
+	//This is the call back function to process odometry messages coming from Stage. 		
+	
 	px = 5 + msg.pose.pose.position.x;
 	py =10 + msg.pose.pose.position.y;
+	//printf("%f",px);
+	
+	// If the current position is the same the previous position, then the robot is stuck and needs to move around
+	if ((px == prevpx) && (py == prevpy)) {
+		//msg.pose.pose.position.x = 5;
+		//ROS_INFO("Prevpx: %f",prevpx);
+
+		// Note the negative linear_x		
+		linear_x=-0.2;
+		angular_z=1;
+
+		//theta=10;
+		//px = 5;
+		//py= 5;
+		//printf("Robot stuck");
+	} else {
+		// One the robot becomes unstuck, then it moves around again normally
+		linear_x = 0.2;
+		angular_z = 0.2;
+	}
 	ROS_INFO("Current x position is: %f", px);
 	ROS_INFO("Current y position is: %f", py);
+	prevpx = px;
+	prevpy = py;
 }
 
 
@@ -41,6 +66,8 @@ int main(int argc, char **argv)
 	theta = M_PI/2.0;
 	px = 10;
 	py = 20;
+	prevpx = 0;
+	prevpx= 0;
 	
 	//Initial velocity
 	linear_x = 0.2;
