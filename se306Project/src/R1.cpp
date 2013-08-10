@@ -14,6 +14,8 @@ double angular_z;
 //pose of the robot
 double px;
 double py;
+double prevpx;
+double prevpy;
 double theta;
 
 void StageOdom_callback(nav_msgs::Odometry msg)
