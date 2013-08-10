@@ -1,0 +1,65 @@
+# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+*.out
+
+# Packages #
+############
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+*.odg
+
+# Logs and databases #
+######################
+*.log
+*.sql
+*.sqlite
+
+# OS generated files #
+######################
+.DS_Store*
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# Editor backup files #
+#######################
+*~
+
+# Build folders #
+#################
+bin/
+build/
+*/build/
+*/bin/
+*/msg_gen/
+*/srv_gen/
+*/lib/
+*/CMakeFiles/
+interpreter/src/interpreter/
+swarm_msgs/src/swarm_msgs/
+communication/src/communication/
+ROS_NOBUILD
+
+# Test log files #
+###############################
+*test_log.txt
+
+# Stage files #
+###############
+Stage/stage/include/
+Stage/stage/installed
+Stage/stage/lib/
+Stage/stage/share/
+
