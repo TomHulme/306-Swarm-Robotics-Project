@@ -26,6 +26,9 @@ field_Y=5
 worldGenPro = Popen("python world/worldGenerator.py "+filename + " " + str(num_sheep) + " " + str(num_fields) + " " + str(field_X) + " " + str(field_Y),shell=True)
 worldGenPro.communicate()
 
+cleanupCMakeFile= Popen("sed -i /rosbuild_add_executable/d se306Project/CMakeLists.txt",shell=True)
+
+
 for i in range(0, num_sheep):
 	copyr0Pro = Popen("cp se306Project/src/R0.cpp se306Project/src/R"+str(i)+".cpp", stdout=PIPE, shell=True)
 	copyr0Pro.communicate();
@@ -33,6 +36,7 @@ for i in range(0, num_sheep):
 	modifyRPro.communicate();
 	modifyRPro= Popen("find . -name R"+str(i)+".cpp -exec sed -i \"s/robot_0/robot_"+str(i)+"/g\" {} \;",shell=True)
 	modifyRPro.communicate();
+	addToCMakeFile= Popen("echo \"rosbuild_add_executable(R"+str(i)+" src/R"+str(i)+".cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 	
 	
 # This checks if there is a running roscore process and if there is, it gets killed
