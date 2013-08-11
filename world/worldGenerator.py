@@ -1,5 +1,5 @@
 import sys
-
+from random import randrange
 #worldGenerator v1.0
 #
 #This python file generates a world file based on certain input. It requires a file name,
@@ -108,7 +108,7 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     
         #Construct sheep definition
         ts1 = 'myrobot ('
-        ts2 = 'pose [' + str(row) + ' ' + str(col)  +  ' 0.125 0] '
+        ts2 = 'pose [' + str(row) + ' ' + str(col)  +  ' 0.125 '+str(randrange(-180,180))+'] '
         ts3 = 'name "sheep' + str(i) + '" '
         ts4 = 'color "white")\n'
         
