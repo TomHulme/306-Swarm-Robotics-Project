@@ -63,3 +63,8 @@ Stage/stage/installed
 Stage/stage/lib/
 Stage/stage/share/
 
+# BASH files #
+##############
+setup.bash
+setup.sh
+setup.zsh
