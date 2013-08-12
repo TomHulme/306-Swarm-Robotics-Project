@@ -108,16 +108,17 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     
         #Construct sheep definition
         ts1 = 'myrobot ('
-        ts2 = 'pose [' + str(row) + ' ' + str(col)  +  ' 0.125 '+str(randrange(-180,180))+'] '
+
+        ts2 = 'pose [' + str(col) + ' ' + str(row)  +  ' 0.125 '+str(randrange(-180,180))+'] '
+
         ts3 = 'name "sheep' + str(i) + '" '
         ts4 = 'color "white")\n'
         
         fo.write(JoinString(ts1, ts2, ts3, ts4))
         
-        if not col < int(fieldX):
-            col += 1
-            row = 1
-        else:
+        col += 1
+        print(col)
+        if col == int(fieldX):
             col = 1
             row += 1
     
@@ -129,7 +130,7 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
             ts1 = 'grass ('
             ts2 = 'pose [' + str(i+1) + ' ' + str(j+1) + ' 0 0] '
             ts3 = 'name "grass' + str(count) + '" '
-            ts4 = 'color "green")\n'
+            ts4 = 'color "green" bitmap "grass.pgm")\n'
             
             fo.write(JoinString(ts1, ts2, ts3, ts4)) 
             
@@ -157,3 +158,4 @@ else:
     
     print("Generating world file with "+numSheep+" sheep and "+numFields+" "+field_string)
     WriteFile(fileName, numSheep, numFields, fieldX, fieldY)
+
