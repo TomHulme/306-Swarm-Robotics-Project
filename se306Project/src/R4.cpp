@@ -36,12 +36,12 @@ class RandomWalk {
 		// (the second argument indicates that if multiple command messages are in
 		// the queue to be sent, only the last command will be sent)
 		ros::NodeHandle n;
-		commandPub = nh.advertise<geometry_msgs::Twist>("robot_1/cmd_vel",1000);
+		commandPub = nh.advertise<geometry_msgs::Twist>("robot_4/cmd_vel",1000);
 		// Subscribe to the simulated robot's laser scan topic and tell ROS to call
 		// this->commandCallback() whenever a new message is published on that topic
-		laserSub = nh.subscribe<sensor_msgs::LaserScan>("robot_1/base_scan", 1000, &RandomWalk::commandCallback, this);
-		StageOdo_sub = nh.subscribe<nav_msgs::Odometry>("robot_1/odom",1000, &RandomWalk::StageOdom_callback,this);
-		//ros::Subscriber StageOdo_sub = n.subscribe<nav_msgs::Odometry>("robot_1/odom",1000, StageOdom_callback);
+		laserSub = nh.subscribe<sensor_msgs::LaserScan>("robot_4/base_scan", 1000, &RandomWalk::commandCallback, this);
+		StageOdo_sub = nh.subscribe<nav_msgs::Odometry>("robot_4/odom",1000, &RandomWalk::StageOdom_callback,this);
+		//ros::Subscriber StageOdo_sub = n.subscribe<nav_msgs::Odometry>("robot_4/odom",1000, StageOdom_callback);
 
 	};
 
@@ -192,7 +192,7 @@ class RandomWalk {
 
 };
 int main(int argc, char **argv) {
-	ros::init(argc, argv, "RobotNode1"); // Initiate new ROS node named "random_walk"
+	ros::init(argc, argv, "RobotNode4"); // Initiate new ROS node named "random_walk"
 	ros::NodeHandle n;
 	prevpx = 0;
 	prevpx= 0;

@@ -16,6 +16,29 @@ import os
 from subprocess import Popen, PIPE, signal
 from os.path import join
 
+filename= "world/myworld.world"
+num_sheep= 10
+num_fields = 4
+field_X= 5
+field_Y=5
+
+
+worldGenPro = Popen("python world/worldGenerator.py "+filename + " " + str(num_sheep) + " " + str(num_fields) + " " + str(field_X) + " " + str(field_Y),shell=True)
+worldGenPro.communicate()
+
+cleanupCMakeFile= Popen("sed -i /rosbuild_add_executable/d se306Project/CMakeLists.txt",shell=True)
+
+
+for i in range(0, num_sheep):
+	copyr0Pro = Popen("cp se306Project/src/R0.cpp se306Project/src/R"+str(i)+".cpp", stdout=PIPE, shell=True)
+	copyr0Pro.communicate();
+	modifyRPro= Popen("find . -name R"+str(i)+".cpp -exec sed -i \"s/RobotNode0/RobotNode"+str(i)+"/g\" {} \;",shell=True)
+	modifyRPro.communicate();
+	modifyRPro= Popen("find . -name R"+str(i)+".cpp -exec sed -i \"s/robot_0/robot_"+str(i)+"/g\" {} \;",shell=True)
+	modifyRPro.communicate();
+	addToCMakeFile= Popen("echo \"rosbuild_add_executable(R"+str(i)+" src/R"+str(i)+".cpp)\" >> se306Project/CMakeLists.txt",shell=True)
+	
+	
 # This checks if there is a running roscore process and if there is, it gets killed
 findRoscorePro = Popen("pgrep roscore", stdout=PIPE, shell=True)
 killroscorePro = Popen("kill "+findRoscorePro.communicate()[0], shell=True)
@@ -43,5 +66,8 @@ core = Popen('roscore',shell=True)
 stagePro = Popen('rosrun stage stageros %s' %worldfile,shell=True)
 
 # These below lines would need to be changed to fit what you are wanting to run.
-runNode= Popen('rosrun se306Project R0',shell=True)
-runNode= Popen('rosrun se306Project R1',shell=True)
+for i in range(0, num_sheep):
+
+	runNode= Popen("rosrun se306Project R"+str(i),shell=True)
+#runNode= Popen('rosrun se306Project R1',shell=True)
+#runNode= Popen('rosrun se306Project R2',shell=True)

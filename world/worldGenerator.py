@@ -108,7 +108,9 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     
         #Construct sheep definition
         ts1 = 'myrobot ('
+
         ts2 = 'pose [' + str(col) + ' ' + str(row)  +  ' 0.125 '+str(randrange(-180,180))+'] '
+
         ts3 = 'name "sheep' + str(i) + '" '
         ts4 = 'color "white")\n'
         
