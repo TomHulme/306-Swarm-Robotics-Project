@@ -68,18 +68,21 @@ class RandomWalk {
 			//printf("Robot stuck");
 			if (!isRotate) {	
 				ROS_INFO("Robot stuck");
-				move(-FORWARD_SPEED_MPS, ROTATE_SPEED_RADPS);
+				double r2 = (double)rand()/((double)RAND_MAX/(M_PI/2));
+				double m2 = (double)rand()/((double)RAND_MAX/0.5);
+				//ROS_INFO("r2" << r2);
+				move(-m2, r2);
 				
 			}	
 		} else {
 			// One the robot becomes unstuck, then it moves around again normally
 			//linear_x = 0.2;
 			//angular_z = 0.2;
-			ROS_INFO("Robot unstuck");
+			//ROS_INFO("Robot unstuck");
 			//checkcount=0;
 		}
-		ROS_INFO("Current x position is: %f", px);
-		ROS_INFO("Current y position is: %f", py);
+		//ROS_INFO("Current x position is: %f", px);
+		//ROS_INFO("Current y position is: %f", py);
 		prevpx = px;
 		prevpy = py;
 	};
@@ -121,7 +124,8 @@ class RandomWalk {
 			//	move(-FORWARD_SPEED_MPS, ROTATE_SPEED_RADPS);
 			//	//move(0, ROTATE_SPEED_RADPS);
 			//} else {
-				ROS_INFO_STREAM("Range: " << closestRange);
+				
+				//ROS_INFO_STREAM("Range: " << closestRange);
 				prevclosestRange = closestRange;
 
 				if (closestRange < PROXIMITY_RANGE_M) {
@@ -142,7 +146,7 @@ class RandomWalk {
 		ros::Rate rate(10); // Specify the FSM loop rate in Hz
 		while (ros::ok()) { // Keep spinning loop until user presses Ctrl+C
 			if (fsm == FSM_MOVE_FORWARD) {
-				ROS_INFO_STREAM("Start forward");
+				//ROS_INFO_STREAM("Start forward");
 				move(FORWARD_SPEED_MPS, 0);
 				checkcount++;
 				if (checkcount > 3) {
@@ -150,7 +154,7 @@ class RandomWalk {
 				}
 			}
 			if (fsm == FSM_ROTATE) {
-				ROS_INFO_STREAM("Start rotate");
+				//ROS_INFO_STREAM("Start rotate");
 				move(0, ROTATE_SPEED_RADPS);
 				rotateEndTime=ros::Time::now();
 				isRotate=true;
@@ -158,7 +162,7 @@ class RandomWalk {
 				
 				if ((rotateEndTime - rotateStartTime) > rotateDuration) {
 					fsm=FSM_MOVE_FORWARD;
-					ROS_INFO_STREAM("End rotate");
+					//ROS_INFO_STREAM("End rotate");
 					checkcount=0;
 				}
 			}
@@ -172,7 +176,7 @@ class RandomWalk {
 	// TODO: tune parameters as you see fit
 	const static double MIN_SCAN_ANGLE_RAD = -10.0/180*M_PI;
 	const static double MAX_SCAN_ANGLE_RAD = +10.0/180*M_PI;
-	const static float PROXIMITY_RANGE_M = .5; // Should be smaller than sensor_msgs::LaserScan::range_max
+	const static float PROXIMITY_RANGE_M = 1; // Should be smaller than sensor_msgs::LaserScan::range_max
 	const static double FORWARD_SPEED_MPS = 0.2;
 	const static double ROTATE_SPEED_RADPS = M_PI/2;
 	

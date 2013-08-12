@@ -17,7 +17,7 @@ from subprocess import Popen, PIPE, signal
 from os.path import join
 
 filename= "world/myworld.world"
-num_sheep= 4
+num_sheep= 10
 num_fields = 4
 field_X= 5
 field_Y=5
