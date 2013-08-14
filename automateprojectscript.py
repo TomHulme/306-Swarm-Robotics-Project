@@ -28,7 +28,7 @@ worldGenPro.communicate()
 
 cleanupCMakeFile= Popen("sed -i /rosbuild_add_executable/d se306Project/CMakeLists.txt",shell=True)
 
-
+# Range goes from 2 to sheep+2 because nodes 0,1 are farmer,sheepdog.
 for i in range(2, (num_sheep+2)):
 	copyr0Pro = Popen("cp se306Project/src/R0.cpp se306Project/src/R"+str(i)+".cpp", stdout=PIPE, shell=True)
 	copyr0Pro.communicate();
@@ -66,7 +66,8 @@ core = Popen('roscore',shell=True)
 stagePro = Popen('rosrun stage stageros %s' %worldfile,shell=True)
 
 # These below lines would need to be changed to fit what you are wanting to run.
-for i in range(0, num_sheep):
+# Start from 2 because nodes 0 and 1 are for farmer and sheepdog
+for i in range(2, (num_sheep+2)):
 
 	runNode= Popen("rosrun se306Project R"+str(i),shell=True)
 #runNode= Popen('rosrun se306Project R1',shell=True)
