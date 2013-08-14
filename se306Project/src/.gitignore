@@ -1,0 +1,6 @@
+##########################################
+# Special .gitignore for the src folder. #
+##########################################
+
+# Ignore any Rx.cpp files where 0 < x <= 999999999999
+R[1-9][0-9]*.cpp
