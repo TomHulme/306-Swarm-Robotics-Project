@@ -37,6 +37,7 @@ class RandomWalk {
 		// the queue to be sent, only the last command will be sent)
 		ros::NodeHandle n;
 		commandPub = nh.advertise<geometry_msgs::Twist>("robot_0/cmd_vel",1000);
+		sheepPosPub = nh.advertise<std_msgs::String>("robot_0/sheep_position",1000);
 		// Subscribe to the simulated robot's laser scan topic and tell ROS to call
 		// this->commandCallback() whenever a new message is published on that topic
 		laserSub = nh.subscribe<sensor_msgs::LaserScan>("robot_0/base_scan", 1000, &RandomWalk::commandCallback, this);
@@ -145,6 +146,13 @@ class RandomWalk {
 	void spin() {
 		ros::Rate rate(10); // Specify the FSM loop rate in Hz
 		while (ros::ok()) { // Keep spinning loop until user presses Ctrl+C
+			std_msgs::String msg;
+			std::stringstream ss;
+			ss << "robot_0 -- px:" << px << " py:" << py << " theta:" << theta << " isRotate:" << isRotate;
+    			msg.data = ss.str();
+    			
+    			//ROS_INFO("%s", msg.data.c_str());
+    			
 			if (fsm == FSM_MOVE_FORWARD) {
 				//ROS_INFO_STREAM("Start forward");
 				move(FORWARD_SPEED_MPS, 0);
@@ -166,6 +174,7 @@ class RandomWalk {
 					checkcount=0;
 				}
 			}
+		sheepPosPub.publish(msg);
 
 		ros::spinOnce(); // Need to call this function often to allow ROS to process incoming messages
 		rate.sleep(); // Sleep for the rest of the cycle, to enforce the FSM loop rate
@@ -182,6 +191,7 @@ class RandomWalk {
 	
 	protected:
 	ros::Publisher commandPub; // Publisher to the simulated robot's velocity command topic
+	ros::Publisher sheepPosPub;
 	ros::Subscriber laserSub; // Subscriber to the simulated robot's laser scan topic
 	enum FSM fsm; // Finite state machine for the random walk algorithm
 	ros::Time rotateStartTime; // Start time of the rotation
