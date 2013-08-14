@@ -17,7 +17,7 @@ from subprocess import Popen, PIPE, signal
 from os.path import join
 
 filename= "world/myworld.world"
-num_sheep= 3
+num_sheep= 5
 num_fields = 1
 field_X= 10
 field_Y= 10
@@ -29,7 +29,7 @@ worldGenPro.communicate()
 cleanupCMakeFile= Popen("sed -i /rosbuild_add_executable/d se306Project/CMakeLists.txt",shell=True)
 
 
-for i in range(0, num_sheep):
+for i in range(2, (num_sheep+2)):
 	copyr0Pro = Popen("cp se306Project/src/R0.cpp se306Project/src/R"+str(i)+".cpp", stdout=PIPE, shell=True)
 	copyr0Pro.communicate();
 	modifyRPro= Popen("find . -name R"+str(i)+".cpp -exec sed -i \"s/RobotNode0/RobotNode"+str(i)+"/g\" {} \;",shell=True)
