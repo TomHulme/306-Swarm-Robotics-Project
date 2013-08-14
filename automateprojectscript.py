@@ -17,10 +17,10 @@ from subprocess import Popen, PIPE, signal
 from os.path import join
 
 filename= "world/myworld.world"
-num_sheep= 10
-num_fields = 4
-field_X= 5
-field_Y=5
+num_sheep= 3
+num_fields = 1
+field_X= 10
+field_Y= 10
 
 
 worldGenPro = Popen("python world/worldGenerator.py "+filename + " " + str(num_sheep) + " " + str(num_fields) + " " + str(field_X) + " " + str(field_Y),shell=True)
