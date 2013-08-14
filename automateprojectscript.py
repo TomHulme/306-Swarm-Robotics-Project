@@ -66,7 +66,6 @@ core = Popen('roscore',shell=True)
 stagePro = Popen('rosrun stage stageros %s' %worldfile,shell=True)
 
 # These below lines would need to be changed to fit what you are wanting to run.
-<<<<<<< HEAD
 for i in range(0, num_sheep):
 
 	runNode= Popen("rosrun se306Project R"+str(i),shell=True)
