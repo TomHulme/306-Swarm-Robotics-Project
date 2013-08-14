@@ -45,5 +45,5 @@ stagePro = Popen('rosrun stage stageros %s' %worldfile,shell=True)
 # These below lines would need to be changed to fit what you are wanting to run.
 runNode= Popen('rosrun se306Project R0',shell=True)
 runNode= Popen('rosrun se306Project R1',shell=True)
-runNode= Popen('rosrun se306Project R2',shell=True)
-runNode= Popen('rosrun se306Project R3',shell=True)
+runNode= Popen('rosrun se306Project farmer',shell=True)
+runNode= Popen('rosrun se306Project sheepdog',shell=True)
