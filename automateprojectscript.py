@@ -17,10 +17,10 @@ from subprocess import Popen, PIPE, signal
 from os.path import join
 
 filename= "world/myworld.world"
-num_sheep= 10
-num_fields = 4
-field_X= 5
-field_Y=5
+num_sheep= 3
+num_fields = 1
+field_X= 10
+field_Y= 10
 
 
 worldGenPro = Popen("python world/worldGenerator.py "+filename + " " + str(num_sheep) + " " + str(num_fields) + " " + str(field_X) + " " + str(field_Y),shell=True)
@@ -46,7 +46,7 @@ killroscorePro = Popen("kill "+findRoscorePro.communicate()[0], shell=True)
 # The world file to look for
 lookfor = "myworld.world"
 # I assume that the project on your computer is located within the home directory 
-for root, dirs, files in os.walk('/home', topdown=True):
+for root, dirs, files in os.walk('./', topdown=True):
     #print "searching", root
     if '.local' in dirs:
   	dirs.remove('.local')
@@ -71,3 +71,5 @@ for i in range(0, num_sheep):
 	runNode= Popen("rosrun se306Project R"+str(i),shell=True)
 #runNode= Popen('rosrun se306Project R1',shell=True)
 #runNode= Popen('rosrun se306Project R2',shell=True)
+runNode= Popen('rosrun se306Project farmer',shell=True)
+runNode= Popen('rosrun se306Project sheepdog',shell=True)
