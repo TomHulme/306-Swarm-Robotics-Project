@@ -46,7 +46,7 @@ killroscorePro = Popen("kill "+findRoscorePro.communicate()[0], shell=True)
 # The world file to look for
 lookfor = "myworld.world"
 # I assume that the project on your computer is located within the home directory 
-for root, dirs, files in os.walk('/home', topdown=True):
+for root, dirs, files in os.walk('./', topdown=True):
     #print "searching", root
     if '.local' in dirs:
   	dirs.remove('.local')
