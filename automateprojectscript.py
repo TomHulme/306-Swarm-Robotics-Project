@@ -37,7 +37,12 @@ for i in range(2, (num_sheep+2)):
 	modifyRPro= Popen("find . -name R"+str(i)+".cpp -exec sed -i \"s/robot_0/robot_"+str(i)+"/g\" {} \;",shell=True)
 	modifyRPro.communicate();
 	addToCMakeFile= Popen("echo \"rosbuild_add_executable(R"+str(i)+" src/R"+str(i)+".cpp)\" >> se306Project/CMakeLists.txt",shell=True)
-	
+
+
+addToCMakeFile= Popen("echo \"rosbuild_add_executable(farmer src/farmer.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
+addToCMakeFile= Popen("echo \"rosbuild_add_executable(sheepdog src/sheepdog.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
+
+
 	
 # This checks if there is a running roscore process and if there is, it gets killed
 findRoscorePro = Popen("pgrep roscore", stdout=PIPE, shell=True)
