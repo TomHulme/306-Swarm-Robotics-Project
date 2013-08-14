@@ -40,13 +40,6 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
   mylaser(pose [ 0.050 0.000 0 0.000 ])
 )
 """
-
-    robot_NOSIZE_def = """define farmRobot position
-(
-  drive "diff"
-  mylaser(pose [ 0.050 0.000 0 0.000 ])
-)
-"""
     grass_def = """define grass position
 (
     size [0.9 0.9 0.1]
@@ -81,8 +74,6 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     fo.write(laser_def)
     #Write robot position definition to file
     fo.write(robot_def)
-    #Write robot position WITHOUT SIZE definition to file
-    fo.write(robot_NOSIZE_def)
     #Write grass definition to file
     fo.write(grass_def)
     #Write floorplan definition to file
@@ -112,23 +103,6 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     
     row = 1
     col = 1
-    
-    #Construct farmer definition
-    ts1 = 'farmRobot ('
-    ts2 = 'pose [5 2 0.125 0] size [0.5 2 0.1] '
-    ts3 = 'name "farmer" '
-    ts4 = 'color "black" bitmap "FARMER.bmp")\n'
-        
-    fo.write(JoinString(ts1, ts2, ts3, ts4))
-    
-    #Construct sheepdog definition
-    ts1 = 'farmRobot ('
-    ts2 = 'pose [5 5 0.125 0] size [1 0.5 0.1] '
-    ts3 = 'name "sheepdog" '
-    ts4 = 'color "black" bitmap "SHEEPDOG.bmp")\n'
-        
-    fo.write(JoinString(ts1, ts2, ts3, ts4))
-    
     #Write sheep robots to file
     for i in range(int(numSheep)):
     

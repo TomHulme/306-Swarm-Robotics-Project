@@ -68,7 +68,8 @@ class RandomWalk {
 			//py= 5;
 			//printf("Robot stuck");
 			if (!isRotate) {	
-				ROS_INFO("Robot stuck");
+				//ROS_INFO("Robot stuck");
+				// Makes the sheep move back at differing speeds, this should hopefully reduce chances of sheep being completely stuck when trying to become unstuck
 				double r2 = (double)rand()/((double)RAND_MAX/(M_PI/2));
 				double m2 = (double)rand()/((double)RAND_MAX/0.5);
 				//ROS_INFO("r2" << r2);
@@ -120,11 +121,7 @@ class RandomWalk {
 					closestRange = msg->ranges[currIndex];
 				}
 			}
-			//if (closestRange == prevclosestRange) {
-			//	ROS_INFO_STREAM("STUCK");
-			//	move(-FORWARD_SPEED_MPS, ROTATE_SPEED_RADPS);
-			//	//move(0, ROTATE_SPEED_RADPS);
-			//} else {
+
 				
 				//ROS_INFO_STREAM("Range: " << closestRange);
 				prevclosestRange = closestRange;
@@ -136,7 +133,7 @@ class RandomWalk {
 					rotateDuration=ros::Duration(rand() % 2);
 					//fsm= FSM_MOVE_FORWARD;
 				}
-			//}
+			
 
 		}
 	};
@@ -174,7 +171,6 @@ class RandomWalk {
 					checkcount=0;
 				}
 			}
-			
 		sheepPosPub.publish(msg);
 
 		ros::spinOnce(); // Need to call this function often to allow ROS to process incoming messages

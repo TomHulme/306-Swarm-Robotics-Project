@@ -17,10 +17,10 @@ from subprocess import Popen, PIPE, signal
 from os.path import join
 
 filename= "world/myworld.world"
-num_sheep= 5
-num_fields = 1
-field_X= 10
-field_Y= 10
+num_sheep= 10
+num_fields = 4
+field_X= 5
+field_Y=5
 
 
 worldGenPro = Popen("python world/worldGenerator.py "+filename + " " + str(num_sheep) + " " + str(num_fields) + " " + str(field_X) + " " + str(field_Y),shell=True)
@@ -28,8 +28,8 @@ worldGenPro.communicate()
 
 cleanupCMakeFile= Popen("sed -i /rosbuild_add_executable/d se306Project/CMakeLists.txt",shell=True)
 
-# Range goes from 2 to sheep+2 because nodes 0,1 are farmer,sheepdog.
-for i in range(2, (num_sheep+2)):
+
+for i in range(0, num_sheep):
 	copyr0Pro = Popen("cp se306Project/src/R0.cpp se306Project/src/R"+str(i)+".cpp", stdout=PIPE, shell=True)
 	copyr0Pro.communicate();
 	modifyRPro= Popen("find . -name R"+str(i)+".cpp -exec sed -i \"s/RobotNode0/RobotNode"+str(i)+"/g\" {} \;",shell=True)
@@ -46,7 +46,7 @@ killroscorePro = Popen("kill "+findRoscorePro.communicate()[0], shell=True)
 # The world file to look for
 lookfor = "myworld.world"
 # I assume that the project on your computer is located within the home directory 
-for root, dirs, files in os.walk('./', topdown=True):
+for root, dirs, files in os.walk('/home', topdown=True):
     #print "searching", root
     if '.local' in dirs:
   	dirs.remove('.local')
@@ -66,11 +66,8 @@ core = Popen('roscore',shell=True)
 stagePro = Popen('rosrun stage stageros %s' %worldfile,shell=True)
 
 # These below lines would need to be changed to fit what you are wanting to run.
-# Start from 2 because nodes 0 and 1 are for farmer and sheepdog
-for i in range(2, (num_sheep+2)):
+for i in range(0, num_sheep):
 
 	runNode= Popen("rosrun se306Project R"+str(i),shell=True)
 #runNode= Popen('rosrun se306Project R1',shell=True)
 #runNode= Popen('rosrun se306Project R2',shell=True)
-runNode= Popen('rosrun se306Project farmer',shell=True)
-runNode= Popen('rosrun se306Project sheepdog',shell=True)
