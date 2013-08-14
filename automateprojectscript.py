@@ -23,7 +23,7 @@ killroscorePro = Popen("kill "+findRoscorePro.communicate()[0], shell=True)
 # The world file to look for
 lookfor = "myworld.world"
 # I assume that the project on your computer is located within the home directory 
-for root, dirs, files in os.walk('/home', topdown=True):
+for root, dirs, files in os.walk('./', topdown=True):
     #print "searching", root
     if '.local' in dirs:
   	dirs.remove('.local')
@@ -45,3 +45,5 @@ stagePro = Popen('rosrun stage stageros %s' %worldfile,shell=True)
 # These below lines would need to be changed to fit what you are wanting to run.
 runNode= Popen('rosrun se306Project R0',shell=True)
 runNode= Popen('rosrun se306Project R1',shell=True)
+runNode= Popen('rosrun se306Project R2',shell=True)
+runNode= Popen('rosrun se306Project R3',shell=True)
