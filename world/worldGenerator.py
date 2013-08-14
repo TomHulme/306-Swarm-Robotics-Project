@@ -115,9 +115,9 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     
     #Construct farmer definition
     ts1 = 'farmRobot ('
-    ts2 = 'pose [5 2 0.125 0] size [0.5 2 0.1] '
+    ts2 = 'pose [5 2 0.125 0] size [0.5 1 0.1] '
     ts3 = 'name "farmer" '
-    ts4 = 'color "black" bitmap "FARMER.bmp")\n'
+    ts4 = 'color "black" bitmap "FARMER2.bmp")\n'
         
     fo.write(JoinString(ts1, ts2, ts3, ts4))
     

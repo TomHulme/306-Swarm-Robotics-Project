@@ -17,7 +17,7 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 #uncomment if you have defined messages
-#rosbuild_genmsg()
+rosbuild_genmsg()
 #uncomment if you have defined services
 #rosbuild_gensrv()
 
@@ -29,10 +29,3 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #target_link_libraries(example ${PROJECT_NAME})
 
 
-rosbuild_add_executable(R2 src/R2.cpp)
-rosbuild_add_executable(R3 src/R3.cpp)
-rosbuild_add_executable(R4 src/R4.cpp)
-rosbuild_add_executable(R5 src/R5.cpp)
-rosbuild_add_executable(R6 src/R6.cpp)
-rosbuild_add_executable(farmer src/farmer.cpp)
-rosbuild_add_executable(sheepdog src/sheepdog.cpp)
