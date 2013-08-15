@@ -37,7 +37,7 @@ class RandomWalk {
 		// the queue to be sent, only the last command will be sent)
 		ros::NodeHandle n;
 		commandPub = nh.advertise<geometry_msgs::Twist>("robot_0/cmd_vel",1000);
-		sheepPosPub = nh.advertise<std_msgs::String>("robot_0/sheep_position",1000);
+		sheepPosPub = nh.advertise<std_msgs::String>("sheep_position",1000);
 		// Subscribe to the simulated robot's laser scan topic and tell ROS to call
 		// this->commandCallback() whenever a new message is published on that topic
 		laserSub = nh.subscribe<sensor_msgs::LaserScan>("robot_0/base_scan", 1000, &RandomWalk::commandCallback, this);
@@ -82,8 +82,8 @@ class RandomWalk {
 			//ROS_INFO("Robot unstuck");
 			//checkcount=0;
 		}
-		//ROS_INFO("Current x position is: %f", px);
-		//ROS_INFO("Current y position is: %f", py);
+		ROS_INFO("Robot 0 -- Current x position is: %f", px);
+		ROS_INFO("Robot 0 -- Current y position is: %f", py);
 		prevpx = px;
 		prevpy = py;
 	};

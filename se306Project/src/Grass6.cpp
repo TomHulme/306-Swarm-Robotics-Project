@@ -148,7 +148,7 @@ class Grass {
 		while (ros::ok()) { // Keep spinning loop until user presses Ctrl+C
 			std_msgs::String msg;
 			std::stringstream ss;
-			ss << "Grass0 -- px:" << px << " py:" << py << " theta:" << theta << " isRotate:" << isRotate;
+			ss << "Grass6 -- px:" << px << " py:" << py << " theta:" << theta << " isRotate:" << isRotate;
     			msg.data = ss.str();
 
 			//ROS_INFO("%s", msg.data.c_str());
@@ -202,7 +202,7 @@ class Grass {
 
 };
 int main(int argc, char **argv) {
-	ros::init(argc, argv, "Grass0"); // Initiate new ROS node named "RobotNode<X>" where <X> is the number of the node
+	ros::init(argc, argv, "Grass6"); // Initiate new ROS node named "RobotNode<X>" where <X> is the number of the node
 	ros::NodeHandle n;
 	prevpx = 0;
 	prevpx= 0;

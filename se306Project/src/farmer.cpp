@@ -44,8 +44,8 @@ void StageOdom_callback(nav_msgs::Odometry msg)
 		linear_x = 0.2;
 		angular_z = 0.2;
 	}
-	ROS_INFO("Current x position is: %f", px);
-	ROS_INFO("Current y position is: %f", py);
+	ROS_INFO("Farmer -- Current x position is: %f", px);
+	ROS_INFO("Farmer -- Current y position is: %f", py);
 	prevpx = px;
 	prevpy = py;
 }

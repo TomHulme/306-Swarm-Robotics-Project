@@ -36,8 +36,9 @@ for i in range(2, (num_sheep+2)):
 	modifyRPro.communicate();
 	modifyRPro= Popen("find . -name R"+str(i)+".cpp -exec sed -i \"s/robot_0/robot_"+str(i)+"/g\" {} \;",shell=True)
 	modifyRPro.communicate();
+	modifyRPro= Popen("find . -name R"+str(i)+".cpp -exec sed -i \"s/Robot 0/Robot "+str(i)+"/g\" {} \;",shell=True)
+	modifyRPro.communicate();
 	addToCMakeFile= Popen("echo \"rosbuild_add_executable(R"+str(i)+" src/R"+str(i)+".cpp)\" >> se306Project/CMakeLists.txt",shell=True)
-
 
 # Counting grass
 for i in range(0, num_grass):
@@ -49,6 +50,7 @@ for i in range(0, num_grass):
 	modifyRPro.communicate();
 	addToCMakeFile= Popen("echo \"rosbuild_add_executable(Grass"+str(i)+" src/Grass"+str(i)+".cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 
+#Add farmer, sheepdog, listener
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(farmer src/farmer.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(sheepdog src/sheepdog.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 
@@ -76,6 +78,10 @@ for root, dirs, files in os.walk('./', topdown=True):
 # This would need to be changed if your project is named something different
 rosmakePro= Popen('rosmake se306Project',shell=True)
 rosmakePro.communicate() # Waits until rosmake has finished
+
+# Reset original grass and sheep back to 0
+modifyRPro= Popen("find . -name R0.cpp -exec sed -i \"s/robot_"+str(i)+"/robot_0/g\" {} \;",shell=True)
+modifyRPro= Popen("find . -name Grass0.cpp -exec sed -i \"s/robot_"+str(i+(num_sheep+2))+"/robot_0/g\" {} \;",shell=True)
 
 core = Popen('roscore',shell=True) 
 stagePro = Popen('rosrun stage stageros %s' %worldfile,shell=True)

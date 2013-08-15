@@ -22,11 +22,11 @@ bool isRotate;
 
 int checkcount=0;
 
-class Grass {
+class RandomWalk {
 		public:
-		// Construst a new Grass object and hook up this ROS node
+		// Construst a new RandomWalk object and hook up this ROS node
 		// to the simulated robot's velocity control and laser topics
-		Grass(ros::NodeHandle& nh) :
+		RandomWalk(ros::NodeHandle& nh) :
 		fsm(FSM_MOVE_FORWARD),
 		rotateStartTime(ros::Time::now()),
 		rotateDuration(0.f) {
@@ -36,13 +36,13 @@ class Grass {
 		// (the second argument indicates that if multiple command messages are in
 		// the queue to be sent, only the last command will be sent)
 		ros::NodeHandle n;
-		commandPub = nh.advertise<geometry_msgs::Twist>("robot_7/cmd_vel",1000);
-		grassPosPub = nh.advertise<std_msgs::String>("grass_position",1000);
+		commandPub = nh.advertise<geometry_msgs::Twist>("robot_2/cmd_vel",1000);
+		sheepPosPub = nh.advertise<std_msgs::String>("sheep_position",1000);
 		// Subscribe to the simulated robot's laser scan topic and tell ROS to call
 		// this->commandCallback() whenever a new message is published on that topic
-		laserSub = nh.subscribe<sensor_msgs::LaserScan>("robot_7/base_scan", 1000, &Grass::commandCallback, this);
-		StageOdo_sub = nh.subscribe<nav_msgs::Odometry>("robot_7/odom",1000, &Grass::StageOdom_callback,this);
-		//ros::Subscriber StageOdo_sub = n.subscribe<nav_msgs::Odometry>("robot_7/odom",1000, StageOdom_callback);
+		laserSub = nh.subscribe<sensor_msgs::LaserScan>("robot_2/base_scan", 1000, &RandomWalk::commandCallback, this);
+		StageOdo_sub = nh.subscribe<nav_msgs::Odometry>("robot_2/odom",1000, &RandomWalk::StageOdom_callback,this);
+		//ros::Subscriber StageOdo_sub = n.subscribe<nav_msgs::Odometry>("robot_2/odom",1000, StageOdom_callback);
 
 	};
 
@@ -68,7 +68,7 @@ class Grass {
 			//py= 5;
 			//printf("Robot stuck");
 			if (!isRotate) {	
-				//ROS_INFO("Robot stuck");
+				ROS_INFO("Robot stuck");
 				double r2 = (double)rand()/((double)RAND_MAX/(M_PI/2));
 				double m2 = (double)rand()/((double)RAND_MAX/0.5);
 				//ROS_INFO("r2" << r2);
@@ -82,8 +82,8 @@ class Grass {
 			//ROS_INFO("Robot unstuck");
 			//checkcount=0;
 		}
-		ROS_INFO("Grass - Current x position is: %f", px);
-		ROS_INFO("Grass - Current y position is: %f", py);
+		ROS_INFO("Robot 2 -- Current x position is: %f", px);
+		ROS_INFO("Robot 2 -- Current y position is: %f", py);
 		prevpx = px;
 		prevpy = py;
 	};
@@ -144,15 +144,15 @@ class Grass {
 	// processed in a timely manner, and also for sending
 	// velocity controls to the simulated robot based on the FSM state
 	void spin() {
-		ros::Rate rate(10); // Specify the FSM loop rate in Hz
+		ros::Rate rate(5); // Specify the FSM loop rate in Hz
 		while (ros::ok()) { // Keep spinning loop until user presses Ctrl+C
 			std_msgs::String msg;
 			std::stringstream ss;
-			ss << "Grass0 -- px:" << px << " py:" << py << " theta:" << theta << " isRotate:" << isRotate;
+			ss << "robot_2 -- px:" << px << " py:" << py << " theta:" << theta << " isRotate:" << isRotate;
     			msg.data = ss.str();
-
-			//ROS_INFO("%s", msg.data.c_str());
-
+    			
+    			//ROS_INFO("%s", msg.data.c_str());
+    			
 			if (fsm == FSM_MOVE_FORWARD) {
 				//ROS_INFO_STREAM("Start forward");
 				move(FORWARD_SPEED_MPS, 0);
@@ -174,11 +174,11 @@ class Grass {
 					checkcount=0;
 				}
 			}
+			
+		sheepPosPub.publish(msg);
 
-			grassPosPub.publish(msg);
-
-			ros::spinOnce(); // Need to call this function often to allow ROS to process incoming messages
-			rate.sleep(); // Sleep for the rest of the cycle, to enforce the FSM loop rate
+		ros::spinOnce(); // Need to call this function often to allow ROS to process incoming messages
+		rate.sleep(); // Sleep for the rest of the cycle, to enforce the FSM loop rate
 		}
 	};
 	enum FSM {FSM_MOVE_FORWARD, FSM_ROTATE};
@@ -192,21 +192,23 @@ class Grass {
 	
 	protected:
 	ros::Publisher commandPub; // Publisher to the simulated robot's velocity command topic
-	ros::Publisher grassPosPub;
+	ros::Publisher sheepPosPub;
 	ros::Subscriber laserSub; // Subscriber to the simulated robot's laser scan topic
 	enum FSM fsm; // Finite state machine for the random walk algorithm
 	ros::Time rotateStartTime; // Start time of the rotation
 	ros::Time rotateEndTime;
 	ros::Duration rotateDuration; // Duration of the rotation
 	ros::Subscriber StageOdo_sub;
+	
 
 };
 int main(int argc, char **argv) {
-	ros::init(argc, argv, "Grass0"); // Initiate new ROS node named "RobotNode<X>" where <X> is the number of the node
+	ros::init(argc, argv, "RobotNode2"); // Initiate new ROS node named "random_walk"
 	ros::NodeHandle n;
 	prevpx = 0;
 	prevpx= 0;
-	Grass grass(n); // Create new random walk object
-	grass.spin(); // Execute FSM loop
+	RandomWalk walker(n); // Create new random walk object
+	walker.spin(); // Execute FSM loop
 	return 0;
 };
+
