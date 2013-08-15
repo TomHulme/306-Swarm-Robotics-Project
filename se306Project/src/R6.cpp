@@ -3,9 +3,15 @@
 #include "sensor_msgs/LaserScan.h"
 #include <nav_msgs/Odometry.h>
 #include "std_msgs/String.h"
+#include <stdlib.h>
+
+
 #include <cstdlib> // Needed for rand()
 #include <ctime> // Needed to seed random number generator with a time value
 
+float prevclosestRange = 0;
+double linear_x;
+double angular_z;
 
 //pose of the robot
 double px;
@@ -14,9 +20,7 @@ double theta;
 double prevpx;
 double prevpy;
 bool isRotate;
-float prevclosestRange = 0;
-double linear_x;
-double angular_z;
+
 int checkcount=0;
 
 class RandomWalk {
@@ -34,36 +38,46 @@ class RandomWalk {
 		// the queue to be sent, only the last command will be sent)
 		ros::NodeHandle n;
 		commandPub = nh.advertise<geometry_msgs::Twist>("robot_6/cmd_vel",1000);
-		sheepPosPub = nh.advertise<std_msgs::String>("robot_6/sheep_position",1000);
+		sheepPosPub = nh.advertise<std_msgs::String>("sheep_position",1000);
 		// Subscribe to the simulated robot's laser scan topic and tell ROS to call
 		// this->commandCallback() whenever a new message is published on that topic
 		laserSub = nh.subscribe<sensor_msgs::LaserScan>("robot_6/base_scan", 1000, &RandomWalk::commandCallback, this);
 		StageOdo_sub = nh.subscribe<nav_msgs::Odometry>("robot_6/odom",1000, &RandomWalk::StageOdom_callback,this);
+		//
+		sheepdogPosPub = nh.subsribe<std_msgs::String pos_msg>("sheepdog_position",1000,&RandomWalk::scared,this);
 		//ros::Subscriber StageOdo_sub = n.subscribe<nav_msgs::Odometry>("robot_6/odom",1000, StageOdom_callback);
 
 	};
 
-	void StageOdom_callback(nav_msgs::Odometry msg)
+	void StageOdom_callback(nav_msgs::Odometry msg,std_msgs::String sheepdogMsg)
 	{
-		//This is the call back function to process odometry messages coming from Stage. 
+		//This is the call back function to process odometry messages coming from Stage. 		
+		
 		px = 5 + msg.pose.pose.position.x;
 		py =10 + msg.pose.pose.position.y;
 		//printf("%f",px);
 		
 		// If the current position is the same the previous position, then the robot is stuck and needs to move around
 		if ((px == prevpx) && (py == prevpy)) {
-
+			//msg.pose.pose.position.x = 5;
 			//ROS_INFO("Prevpx: %f",prevpx);
-			// If the robot is rotating, then its position will be the same but it is not actually stuck
+
+			// Note the negative linear_x		
+			//linear_x=-0.2;
+			//angular_z=1;
+
+			//theta=10;
+			//px = 5;
+			//py= 5;
+			//printf("Robot stuck");
 			if (!isRotate) {	
-				//ROS_INFO("Robot stuck");
-				// Makes the sheep move back at differing speeds, this should hopefully reduce chances of sheep being completely stuck when trying to become unstuck
+				ROS_INFO("Robot stuck");
 				double r2 = (double)rand()/((double)RAND_MAX/(M_PI/2));
 				double m2 = (double)rand()/((double)RAND_MAX/0.5);
 				//ROS_INFO("r2" << r2);
-				move(-m2, r2);	
-			}
-	
+				move(-m2, r2);
+				
+			}	
 		} else {
 			// One the robot becomes unstuck, then it moves around again normally
 			//linear_x = 0.2;
@@ -71,12 +85,34 @@ class RandomWalk {
 			//ROS_INFO("Robot unstuck");
 			//checkcount=0;
 		}
-		ROS_INFO("Current x position is: %f", px);
-		ROS_INFO("Current y position is: %f", py);
+
+		//
+		std::string sheepdogPos (sheepdogMsg);
+		std::string::size_type sz;
+		
+		float sdx = std::stof(sheepdogPos,&sz);
+		float sdy = std::stof(sheepdogPos.substr(sz));
+		
+		//Calculate the difference in distance between the sheepdog(sdx)[std_msgs::String msg?] and sheep
+		//closeRange=;
+		xDistanceDiff = abs(sdx - px);
+		yDistanceDiff = abs(sdy - py);
+
+		//if sheepdog is near
+		if (xDistanceDiff<=20||yDistanceDiff<=20){
+			scared(sdx,sdy);
+		}									
+		ROS_INFO("Robot 6 -- Current x position is: %f", px);
+		ROS_INFO("Robot 6 -- Current y position is: %f", py);
 		prevpx = px;
-		prevpy = py;
+		prevpy = py;		
 	};
 
+//
+	void scared(float sdx, float sdy) {
+		//ROS_INFO("I heard: [%s]", msg->data.c_str());
+		ROS_INFO("Robot stuck");
+	};
 
 	// Send a velocity command
 	void move(double linearVelMPS, double angularVelRadPS) {
@@ -85,6 +121,10 @@ class RandomWalk {
 		msg.angular.z = angularVelRadPS;
 		commandPub.publish(msg);
 	};
+
+
+	
+		
 
 	
 
@@ -109,7 +149,11 @@ class RandomWalk {
 					closestRange = msg->ranges[currIndex];
 				}
 			}
-
+			//if (closestRange == prevclosestRange) {
+			//	ROS_INFO_STREAM("STUCK");
+			//	move(-FORWARD_SPEED_MPS, ROTATE_SPEED_RADPS);
+			//	//move(0, ROTATE_SPEED_RADPS);
+			//} else {
 				
 				//ROS_INFO_STREAM("Range: " << closestRange);
 				prevclosestRange = closestRange;
@@ -121,9 +165,10 @@ class RandomWalk {
 					rotateDuration=ros::Duration(rand() % 2);
 					//fsm= FSM_MOVE_FORWARD;
 				}
+			//}
+
 		}
 	};
-
 	// Main FSM loop for ensuring that ROS messages are
 	// processed in a timely manner, and also for sending
 	// velocity controls to the simulated robot based on the FSM state
@@ -158,16 +203,16 @@ class RandomWalk {
 					checkcount=0;
 				}
 			}
+			
 		sheepPosPub.publish(msg);
 
 		ros::spinOnce(); // Need to call this function often to allow ROS to process incoming messages
 		rate.sleep(); // Sleep for the rest of the cycle, to enforce the FSM loop rate
 		}
 	};
-
 	enum FSM {FSM_MOVE_FORWARD, FSM_ROTATE};
 	// Tunable parameters
-	// Change parameters as you see fit
+	// TODO: tune parameters as you see fit
 	const static double MIN_SCAN_ANGLE_RAD = -10.0/180*M_PI;
 	const static double MAX_SCAN_ANGLE_RAD = +10.0/180*M_PI;
 	const static float PROXIMITY_RANGE_M = 1; // Should be smaller than sensor_msgs::LaserScan::range_max
@@ -180,7 +225,7 @@ class RandomWalk {
 	ros::Subscriber laserSub; // Subscriber to the simulated robot's laser scan topic
 	enum FSM fsm; // Finite state machine for the random walk algorithm
 	ros::Time rotateStartTime; // Start time of the rotation
-	ros::Time rotateEndTime; // End time of rotation
+	ros::Time rotateEndTime;
 	ros::Duration rotateDuration; // Duration of the rotation
 	ros::Subscriber StageOdo_sub;
 	
@@ -188,11 +233,12 @@ class RandomWalk {
 };
 int main(int argc, char **argv) {
 	ros::init(argc, argv, "RobotNode6"); // Initiate new ROS node named "RobotNode6"
+	ROS_INFO("This node is: RobotNode6");
 	ros::NodeHandle n;
-	ROS_INFO("RobotNode6");
 	prevpx = 0;
-	prevpy= 0;
+	prevpx= 0;
 	RandomWalk walker(n); // Create new random walk object
 	walker.spin(); // Execute FSM loop
 	return 0;
 };
+
