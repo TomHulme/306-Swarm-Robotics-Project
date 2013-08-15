@@ -31,8 +31,8 @@ worldGenPro.communicate()
 # Removes all lines in the CMakeLists.txt file that were added from previous executions of the script. Clean slate of the file.
 cleanupCMakeFile= Popen("sed -i /rosbuild_add_executable/d se306Project/CMakeLists.txt",shell=True)
 
-# Range goes from 2 to sheep+2 because nodes 0,1 are farmer,sheepdog.
-for i in range(2, (num_sheep+2)):
+# Range goes from 3 to sheep+3 because nodes 0,1,2 are farmer,sheepdog,truck.
+for i in range(3, (num_sheep+3)):
 	copyr0Pro = Popen("cp se306Project/src/R0.cpp se306Project/src/R"+str(i)+".cpp", stdout=PIPE, shell=True)
 	copyr0Pro.communicate();
 	# Updates all references in the .cpp file to the new .cpp file and node it represents
@@ -58,6 +58,8 @@ for i in range(0, num_grass):
 #Add farmer, sheepdog, listener
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(farmer src/farmer.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(sheepdog src/sheepdog.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
+addToCMakeFile= Popen("echo \"rosbuild_add_executable(truck src/truck.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
+
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(listener src/listener.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 	
 # This checks if there is a running roscore process and if there is, it gets killed
@@ -107,3 +109,5 @@ runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Proje
 
 runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project sheepdog"' --title=SheepDog"""),stdout=PIPE)
 #runNode= Popen('rosrun se306Project sheepdog',shell=True)
+
+runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project truck"'"""),stdout=PIPE)
