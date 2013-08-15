@@ -138,7 +138,7 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
         ts2 = 'pose [' + str(col) + ' ' + str(row)  +  ' 0.125 '+str(randrange(-180,180))+'] '
 
         ts3 = 'name "sheep' + str(i) + '" '
-        ts4 = 'color "white")\n'
+        ts4 = 'color "white" bitmap "SHEEP.BMP")\n'
         
         fo.write(JoinString(ts1, ts2, ts3, ts4))
         

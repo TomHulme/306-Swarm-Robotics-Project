@@ -96,14 +96,15 @@ stagePro = Popen('rosrun stage stageros %s' %worldfile,shell=True)
 # Start from 2 because nodes 0 and 1 are for farmer and sheepdog
 for i in range(2, (num_sheep+2)):
 	# Opens up a new terminal and runs the command specified in the new terminal
-	runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project R"'"""+str(i) + " --title=Sheep_"+str(i)),stdout=PIPE)
+	runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project R"'"""+str(i)),stdout=PIPE)
 	#runNode= Popen("rosrun se306Project R"+str(i),shell=True)
 
 #runNode= Popen('rosrun se306Project R1',shell=True)
 #runNode= Popen('rosrun se306Project R2',shell=True)
 
-runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project farmer"' --title=Farmer"""),stdout=PIPE)
+runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project farmer"'"""),stdout=PIPE)
 #runNode= Popen('rosrun se306Project farmer',shell=True)
 
-runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project sheepdog"' --title=SheepDog"""),stdout=PIPE)
+runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project sheepdog"'"""),stdout=PIPE)
 #runNode= Popen('rosrun se306Project sheepdog',shell=True)
+
