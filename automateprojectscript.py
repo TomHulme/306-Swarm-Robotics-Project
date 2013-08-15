@@ -19,9 +19,9 @@ from os.path import join
 filename= "world/myworld.world"
 num_sheep= 5
 num_fields = 1
-field_X= 10
-field_Y= 10
-
+field_X= 4
+field_Y= 4
+num_grass = num_fields*(field_X-1)*(field_Y-1)
 
 worldGenPro = Popen("python world/worldGenerator.py "+filename + " " + str(num_sheep) + " " + str(num_fields) + " " + str(field_X) + " " + str(field_Y),shell=True)
 worldGenPro.communicate()
@@ -39,10 +39,20 @@ for i in range(2, (num_sheep+2)):
 	addToCMakeFile= Popen("echo \"rosbuild_add_executable(R"+str(i)+" src/R"+str(i)+".cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 
 
+# Range goes from 2 to sheep+2 because nodes 0,1 are farmer,sheepdog.
+for i in range(0, num_grass):
+	copyr0Pro = Popen("cp se306Project/src/Grass0.cpp se306Project/src/Grass"+str(i)+".cpp", stdout=PIPE, shell=True)
+	copyr0Pro.communicate();
+	modifyRPro= Popen("find . -name Grass"+str(i)+".cpp -exec sed -i \"s/Grass0/Grass"+str(i)+"/g\" {} \;",shell=True)
+	modifyRPro.communicate();
+	modifyRPro= Popen("find . -name Grass"+str(i)+".cpp -exec sed -i \"s/robot_0/robot_"+str(i+(num_sheep+2))+"/g\" {} \;",shell=True)
+	modifyRPro.communicate();
+	addToCMakeFile= Popen("echo \"rosbuild_add_executable(Grass"+str(i)+" src/Grass"+str(i)+".cpp)\" >> se306Project/CMakeLists.txt",shell=True)
+
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(farmer src/farmer.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(sheepdog src/sheepdog.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 
-
+addToCMakeFile= Popen("echo \"rosbuild_add_executable(listener src/listener.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 	
 # This checks if there is a running roscore process and if there is, it gets killed
 findRoscorePro = Popen("pgrep roscore", stdout=PIPE, shell=True)

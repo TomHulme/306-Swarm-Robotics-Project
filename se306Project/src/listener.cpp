@@ -77,7 +77,7 @@ int main(int argc, char **argv)
    */
 // %Tag(SUBSCRIBER)%
   //ros::Subscriber sub = n.subscribe("chatter", 1000, chatterCallback);
-  ros::Subscriber sub = n.subscribe("sheep_position", 1000, chatterCallback);
+  ros::Subscriber sub = n.subscribe("grass_position", 1000, chatterCallback);
 // %EndTag(SUBSCRIBER)%
 
   /**
