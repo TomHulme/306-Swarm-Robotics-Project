@@ -203,7 +203,8 @@ class RandomWalk {
 
 };
 int main(int argc, char **argv) {
-	ros::init(argc, argv, "RobotNode0"); // Initiate new ROS node named "random_walk"
+	ros::init(argc, argv, "RobotNode0"); // Initiate new ROS node named "RobotNode0"
+	ROS_INFO("This node is: RobotNode0");
 	ros::NodeHandle n;
 	prevpx = 0;
 	prevpx= 0;
