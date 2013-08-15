@@ -120,12 +120,20 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     ts4 = 'color "dark blue" bitmap "FARMER.bmp")\n'
         
     fo.write(JoinString(ts1, ts2, ts3, ts4))
-    
+     
     #Construct sheepdog definition
     ts1 = 'farmRobot ('
     ts2 = 'pose [5 5 0.125 0] size [1 0.5 0.1] '
     ts3 = 'name "sheepdog" '
     ts4 = 'color "brown" bitmap "SHEEPDOG.bmp")\n'
+        
+    fo.write(JoinString(ts1, ts2, ts3, ts4))
+    
+    #Construct truck definition
+    ts1 = 'farmRobot ('
+    ts2 = 'pose [-3 -3 0.125 0] size [3 3 0.1] '
+    ts3 = 'name "truck" '
+    ts4 = 'color "blue" bitmap "TRUCK.bmp")\n'
         
     fo.write(JoinString(ts1, ts2, ts3, ts4))
     
