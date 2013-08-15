@@ -39,7 +39,7 @@ for i in range(2, (num_sheep+2)):
 	addToCMakeFile= Popen("echo \"rosbuild_add_executable(R"+str(i)+" src/R"+str(i)+".cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 
 
-# Range goes from 2 to sheep+2 because nodes 0,1 are farmer,sheepdog.
+# Counting grass
 for i in range(0, num_grass):
 	copyr0Pro = Popen("cp se306Project/src/Grass0.cpp se306Project/src/Grass"+str(i)+".cpp", stdout=PIPE, shell=True)
 	copyr0Pro.communicate();
