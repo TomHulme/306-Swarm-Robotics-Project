@@ -110,4 +110,4 @@ runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Proje
 runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project sheepdog"'"""),stdout=PIPE)
 #runNode= Popen('rosrun se306Project sheepdog',shell=True)
 
-runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project truck"' --title=Truck"""),stdout=PIPE)
+runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project truck"'"""),stdout=PIPE)
