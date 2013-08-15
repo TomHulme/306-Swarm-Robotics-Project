@@ -33,7 +33,7 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
 )
 """
 
-    robot_def = """define myrobot position
+    robot_def = """define sheeprobot position
 (
   size [0.35 0.35 0.25]
   drive "diff"
@@ -115,11 +115,6 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     
     #Construct farmer definition
     ts1 = 'farmRobot ('
-### smaller farmer?
-#    ts2 = 'pose [5 2 0.125 0] size [0.5 1 0.1] '
-#    ts3 = 'name "farmer" '
-#    ts4 = 'color "black" bitmap "FARMER2.bmp")\n'
-###
     ts2 = 'pose [5 2 0.125 0] size [0.5 0.5 0.1] '
     ts3 = 'name "farmer" '
     ts4 = 'color "dark blue" bitmap "FARMER.bmp")\n'
@@ -139,11 +134,9 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     for i in range(int(numSheep)):
     
         #Construct sheep definition
-        ts1 = 'myrobot ('
-
+        ts1 = 'sheeprobot ('
         ts2 = 'pose [' + str(col) + ' ' + str(row)  +  ' 0.125 '+str(randrange(-180,180))+'] '
-
-        ts3 = 'name "sheep' + str(i) + '" '
+        ts3 = 'name "sheepMove' + str(i) + '" '
         ts4 = 'color "white")\n'
         
         fo.write(JoinString(ts1, ts2, ts3, ts4))

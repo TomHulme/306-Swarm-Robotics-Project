@@ -80,4 +80,8 @@ se306Project/src/Grass[1-9][0-9]*.cpp
 
 #.rosinstall#
 #############
-.rosinstall
+.rosinstall*
+
+#other#
+#######
+test.py
