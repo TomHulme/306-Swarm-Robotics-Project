@@ -22,11 +22,11 @@ bool isRotate;
 
 int checkcount=0;
 
-class RandomWalk {
+class Grass {
 		public:
-		// Construst a new RandomWalk object and hook up this ROS node
+		// Construst a new Grass object and hook up this ROS node
 		// to the simulated robot's velocity control and laser topics
-		RandomWalk(ros::NodeHandle& nh) :
+		Grass(ros::NodeHandle& nh) :
 		fsm(FSM_MOVE_FORWARD),
 		rotateStartTime(ros::Time::now()),
 		rotateDuration(0.f) {
@@ -36,13 +36,13 @@ class RandomWalk {
 		// (the second argument indicates that if multiple command messages are in
 		// the queue to be sent, only the last command will be sent)
 		ros::NodeHandle n;
-		commandPub = nh.advertise<geometry_msgs::Twist>("robot_0/cmd_vel",1000);
-		sheepPosPub = nh.advertise<std_msgs::String>("sheep_position",1000);
+		commandPub = nh.advertise<geometry_msgs::Twist>("robot_7/cmd_vel",1000);
+		grassPosPub = nh.advertise<std_msgs::String>("grass_position",1000);
 		// Subscribe to the simulated robot's laser scan topic and tell ROS to call
 		// this->commandCallback() whenever a new message is published on that topic
-		laserSub = nh.subscribe<sensor_msgs::LaserScan>("robot_0/base_scan", 1000, &RandomWalk::commandCallback, this);
-		StageOdo_sub = nh.subscribe<nav_msgs::Odometry>("robot_0/odom",1000, &RandomWalk::StageOdom_callback,this);
-		//ros::Subscriber StageOdo_sub = n.subscribe<nav_msgs::Odometry>("robot_0/odom",1000, StageOdom_callback);
+		laserSub = nh.subscribe<sensor_msgs::LaserScan>("robot_7/base_scan", 1000, &Grass::commandCallback, this);
+		StageOdo_sub = nh.subscribe<nav_msgs::Odometry>("robot_7/odom",1000, &Grass::StageOdom_callback,this);
+		//ros::Subscriber StageOdo_sub = n.subscribe<nav_msgs::Odometry>("robot_7/odom",1000, StageOdom_callback);
 
 	};
 
@@ -68,7 +68,7 @@ class RandomWalk {
 			//py= 5;
 			//printf("Robot stuck");
 			if (!isRotate) {	
-				ROS_INFO("Robot stuck");
+				//ROS_INFO("Robot stuck");
 				double r2 = (double)rand()/((double)RAND_MAX/(M_PI/2));
 				double m2 = (double)rand()/((double)RAND_MAX/0.5);
 				//ROS_INFO("r2" << r2);
@@ -82,8 +82,8 @@ class RandomWalk {
 			//ROS_INFO("Robot unstuck");
 			//checkcount=0;
 		}
-		ROS_INFO("Robot 0 -- Current x position is: %f", px);
-		ROS_INFO("Robot 0 -- Current y position is: %f", py);
+		ROS_INFO("Grass - Current x position is: %f", px);
+		ROS_INFO("Grass - Current y position is: %f", py);
 		prevpx = px;
 		prevpy = py;
 	};
@@ -148,11 +148,11 @@ class RandomWalk {
 		while (ros::ok()) { // Keep spinning loop until user presses Ctrl+C
 			std_msgs::String msg;
 			std::stringstream ss;
-			ss << "robot_0 -- px:" << px << " py:" << py << " theta:" << theta << " isRotate:" << isRotate;
+			ss << "Grass2 -- px:" << px << " py:" << py << " theta:" << theta << " isRotate:" << isRotate;
     			msg.data = ss.str();
-    			
-    			//ROS_INFO("%s", msg.data.c_str());
-    			
+
+			//ROS_INFO("%s", msg.data.c_str());
+
 			if (fsm == FSM_MOVE_FORWARD) {
 				//ROS_INFO_STREAM("Start forward");
 				move(FORWARD_SPEED_MPS, 0);
@@ -174,11 +174,11 @@ class RandomWalk {
 					checkcount=0;
 				}
 			}
-			
-		sheepPosPub.publish(msg);
 
-		ros::spinOnce(); // Need to call this function often to allow ROS to process incoming messages
-		rate.sleep(); // Sleep for the rest of the cycle, to enforce the FSM loop rate
+			grassPosPub.publish(msg);
+
+			ros::spinOnce(); // Need to call this function often to allow ROS to process incoming messages
+			rate.sleep(); // Sleep for the rest of the cycle, to enforce the FSM loop rate
 		}
 	};
 	enum FSM {FSM_MOVE_FORWARD, FSM_ROTATE};
@@ -192,24 +192,21 @@ class RandomWalk {
 	
 	protected:
 	ros::Publisher commandPub; // Publisher to the simulated robot's velocity command topic
-	ros::Publisher sheepPosPub;
+	ros::Publisher grassPosPub;
 	ros::Subscriber laserSub; // Subscriber to the simulated robot's laser scan topic
 	enum FSM fsm; // Finite state machine for the random walk algorithm
 	ros::Time rotateStartTime; // Start time of the rotation
 	ros::Time rotateEndTime;
 	ros::Duration rotateDuration; // Duration of the rotation
 	ros::Subscriber StageOdo_sub;
-	
 
 };
 int main(int argc, char **argv) {
-	ros::init(argc, argv, "RobotNode0"); // Initiate new ROS node named "RobotNode0"
-	ROS_INFO("This node is: RobotNode0");
+	ros::init(argc, argv, "Grass2"); // Initiate new ROS node named "RobotNode<X>" where <X> is the number of the node
 	ros::NodeHandle n;
 	prevpx = 0;
 	prevpx= 0;
-	RandomWalk walker(n); // Create new random walk object
-	walker.spin(); // Execute FSM loop
+	Grass grass(n); // Create new random walk object
+	grass.spin(); // Execute FSM loop
 	return 0;
 };
-

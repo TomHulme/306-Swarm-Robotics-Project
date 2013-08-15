@@ -115,9 +115,15 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     
     #Construct farmer definition
     ts1 = 'farmRobot ('
-    ts2 = 'pose [5 2 0.125 0] size [0.5 1 0.1] '
+### smaller farmer?
+#    ts2 = 'pose [5 2 0.125 0] size [0.5 1 0.1] '
+#    ts3 = 'name "farmer" '
+#    ts4 = 'color "black" bitmap "FARMER2.bmp")\n'
+###
+    ts2 = 'pose [5 2 0.125 0] size [0.5 0.5 0.1] '
     ts3 = 'name "farmer" '
-    ts4 = 'color "black" bitmap "FARMER2.bmp")\n'
+    ts4 = 'color "dark blue" bitmap "FARMER.bmp")\n'
+
         
     fo.write(JoinString(ts1, ts2, ts3, ts4))
     
@@ -125,7 +131,7 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     ts1 = 'farmRobot ('
     ts2 = 'pose [5 5 0.125 0] size [1 0.5 0.1] '
     ts3 = 'name "sheepdog" '
-    ts4 = 'color "black" bitmap "SHEEPDOG.bmp")\n'
+    ts4 = 'color "brown" bitmap "SHEEPDOG.bmp")\n'
         
     fo.write(JoinString(ts1, ts2, ts3, ts4))
     
@@ -150,17 +156,19 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     
     count = 0
     #Write grass robots to file
-    for i in range((int(fieldX))-1):
-        for j in range((int(fieldY))-1):
-            #Construct grass definition
-            ts1 = 'grass ('
-            ts2 = 'pose [' + str(i+1) + ' ' + str(j+1) + ' 0 0] '
-            ts3 = 'name "grass' + str(count) + '" '
-            ts4 = 'color "green" bitmap "grass.pgm")\n'
+    for i in range((int(numFields))):
+        field_offset = i * int(fieldX)
+        for j in range((int(fieldX))-1):
+            for k in range((int(fieldY))-1):
+                #Construct grass definition
+                ts1 = 'grass ('
+                ts2 = 'pose [' + str(j+1+field_offset) + ' ' + str(k+1) + ' 0 0] '
+                ts3 = 'name "grass' + str(count) + '" '
+                ts4 = 'color "green" bitmap "grass.pgm")\n'
+                
+                fo.write(JoinString(ts1, ts2, ts3, ts4)) 
             
-            fo.write(JoinString(ts1, ts2, ts3, ts4)) 
-            
-            count += 1
+                count += 1
     
     #Close opened file
     fo.close()

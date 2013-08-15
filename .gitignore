@@ -72,3 +72,12 @@ setup.zsh
 # myworld.world #
 #################
 world/myworld.world
+
+# R___.cpp #
+############
+se306Project/src/R[1-9][0-9]*.cpp
+se306Project/src/Grass[1-9][0-9]*.cpp
+
+#.rosinstall#
+#############
+.rosinstall
