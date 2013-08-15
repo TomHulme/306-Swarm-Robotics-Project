@@ -33,6 +33,20 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
 )
 """
 
+    truck_laser_def = """define mytrucklaser ranger
+(
+    sensor
+    (
+    range [30.0 30.0]
+    fov 180
+    samples 180
+    )
+    color "black"
+    size [ 0.05 0.05 0.1]
+
+)
+"""
+
     robot_def = """define myrobot position
 (
   size [0.35 0.35 0.25]
@@ -44,7 +58,7 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     robot_NOSIZE_def = """define farmRobot position
 (
   drive "diff"
-  mylaser(pose [ 0.050 0.000 0 0.000 ])
+  mytrucklaser(pose [ 0.050 0.000 0.050 0.000 ])
 )
 """
     grass_def = """define grass position
@@ -79,6 +93,8 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
 """
     #Write laser definition to file
     fo.write(laser_def)
+    #Write truck laser definition to file
+    fo.write(truck_laser_def)
     #Write robot position definition to file
     fo.write(robot_def)
     #Write robot position WITHOUT SIZE definition to file
