@@ -36,13 +36,13 @@ class RandomWalk {
 		// (the second argument indicates that if multiple command messages are in
 		// the queue to be sent, only the last command will be sent)
 		ros::NodeHandle n;
-		commandPub = nh.advertise<geometry_msgs::Twist>("robot_4/cmd_vel",1000);
-		sheepPosPub = nh.advertise<std_msgs::String>("sheep_position",1000);
+		commandPub = nh.advertise<geometry_msgs::Twist>("robot_2/cmd_vel",1000);
+		truckPosPub = nh.advertise<std_msgs::String>("truck_position",1000);
 		// Subscribe to the simulated robot's laser scan topic and tell ROS to call
 		// this->commandCallback() whenever a new message is published on that topic
-		laserSub = nh.subscribe<sensor_msgs::LaserScan>("robot_4/base_scan", 1000, &RandomWalk::commandCallback, this);
-		StageOdo_sub = nh.subscribe<nav_msgs::Odometry>("robot_4/odom",1000, &RandomWalk::StageOdom_callback,this);
-		//ros::Subscriber StageOdo_sub = n.subscribe<nav_msgs::Odometry>("robot_4/odom",1000, StageOdom_callback);
+		laserSub = nh.subscribe<sensor_msgs::LaserScan>("robot_2/base_scan", 1000, &RandomWalk::commandCallback, this);
+		StageOdo_sub = nh.subscribe<nav_msgs::Odometry>("robot_2/odom",1000, &RandomWalk::StageOdom_callback,this);
+		//ros::Subscriber StageOdo_sub = n.subscribe<nav_msgs::Odometry>("robot_0/odom",1000, StageOdom_callback);
 
 	};
 
@@ -82,8 +82,8 @@ class RandomWalk {
 			//ROS_INFO("Robot unstuck");
 			//checkcount=0;
 		}
-		ROS_INFO("Robot 4 -- Current x position is: %f", px);
-		ROS_INFO("Robot 4 -- Current y position is: %f", py);
+		ROS_INFO("Robot 0 -- Current x position is: %f", px);
+		ROS_INFO("Robot 0 -- Current y position is: %f", py);
 		prevpx = px;
 		prevpy = py;
 	};
@@ -148,7 +148,7 @@ class RandomWalk {
 		while (ros::ok()) { // Keep spinning loop until user presses Ctrl+C
 			std_msgs::String msg;
 			std::stringstream ss;
-			ss << "robot_4 -- px:" << px << " py:" << py << " theta:" << theta << " isRotate:" << isRotate;
+			ss << "robot_0 -- px:" << px << " py:" << py << " theta:" << theta << " isRotate:" << isRotate;
     			msg.data = ss.str();
     			
     			//ROS_INFO("%s", msg.data.c_str());
@@ -203,8 +203,8 @@ class RandomWalk {
 
 };
 int main(int argc, char **argv) {
-	ros::init(argc, argv, "RobotNode4"); // Initiate new ROS node named "RobotNode4"
-	ROS_INFO("This node is: RobotNode4");
+	ros::init(argc, argv, "Truck"); // Initiate new ROS node named "RobotNode0"
+	ROS_INFO("This node is: Truck");
 	ros::NodeHandle n;
 	prevpx = 0;
 	prevpx= 0;

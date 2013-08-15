@@ -144,7 +144,7 @@ class RandomWalk {
 	// processed in a timely manner, and also for sending
 	// velocity controls to the simulated robot based on the FSM state
 	void spin() {
-		ros::Rate rate(5); // Specify the FSM loop rate in Hz
+		ros::Rate rate(10); // Specify the FSM loop rate in Hz
 		while (ros::ok()) { // Keep spinning loop until user presses Ctrl+C
 			std_msgs::String msg;
 			std::stringstream ss;
@@ -203,7 +203,8 @@ class RandomWalk {
 
 };
 int main(int argc, char **argv) {
-	ros::init(argc, argv, "RobotNode5"); // Initiate new ROS node named "random_walk"
+	ros::init(argc, argv, "RobotNode5"); // Initiate new ROS node named "RobotNode5"
+	ROS_INFO("This node is: RobotNode5");
 	ros::NodeHandle n;
 	prevpx = 0;
 	prevpx= 0;
