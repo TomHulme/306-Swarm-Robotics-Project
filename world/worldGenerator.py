@@ -150,7 +150,7 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     
     count = 0
     #Write grass robots to file
-     for i in range((int(numFields))):
+    for i in range((int(numFields))):
         field_offset = i * int(fieldX)
         for j in range((int(fieldX))-1):
             for k in range((int(fieldY))-1):
