@@ -5,7 +5,7 @@ This python file just runs all of the terminal commands needed to run the projec
 
 At the moment it only works for the example project, as the project later develops this script might be updated if the other people in the team decide to use this.
 
-This is a first version, next I might work on getting a seperate terminal open to run each robot in order for it to be easy to see the positions of each robot. At the moment, since only 1 terminal is used, all of the output is put in it (which of course makes it messy)
+Currently a new terminal is opened for each node calling rosrun, this makes it easier to see which messages belong to which nodes. 
 
 To run the script, simply open up a terminal and type: python automateprojectscript.py
 
@@ -15,6 +15,7 @@ Author: ttho618
 import os
 from subprocess import Popen, PIPE, signal
 from os.path import join
+import shlex
 
 filename= "world/myworld.world"
 num_sheep= 5
@@ -89,9 +90,13 @@ stagePro = Popen('rosrun stage stageros %s' %worldfile,shell=True)
 # These below lines would need to be changed to fit what you are wanting to run.
 # Start from 2 because nodes 0 and 1 are for farmer and sheepdog
 for i in range(2, (num_sheep+2)):
-
-	runNode= Popen("rosrun se306Project R"+str(i),shell=True)
+	runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project R"'"""+str(i)),stdout=PIPE)
+	#runNode= Popen("rosrun se306Project R"+str(i),shell=True)
 #runNode= Popen('rosrun se306Project R1',shell=True)
 #runNode= Popen('rosrun se306Project R2',shell=True)
-runNode= Popen('rosrun se306Project farmer',shell=True)
-runNode= Popen('rosrun se306Project sheepdog',shell=True)
+
+runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project farmer"'"""),stdout=PIPE)
+#runNode= Popen('rosrun se306Project farmer',shell=True)
+
+runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project sheepdog"'"""),stdout=PIPE)
+#runNode= Popen('rosrun se306Project sheepdog',shell=True)
