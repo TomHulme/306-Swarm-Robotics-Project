@@ -3,14 +3,9 @@
 #include "sensor_msgs/LaserScan.h"
 #include <nav_msgs/Odometry.h>
 #include "std_msgs/String.h"
-
-
 #include <cstdlib> // Needed for rand()
 #include <ctime> // Needed to seed random number generator with a time value
 
-float prevclosestRange = 0;
-double linear_x;
-double angular_z;
 
 //pose of the robot
 double px;
@@ -19,7 +14,9 @@ double theta;
 double prevpx;
 double prevpy;
 bool isRotate;
-
+float prevclosestRange = 0;
+double linear_x;
+double angular_z;
 int checkcount=0;
 
 class RandomWalk {
@@ -37,7 +34,7 @@ class RandomWalk {
 		// the queue to be sent, only the last command will be sent)
 		ros::NodeHandle n;
 		commandPub = nh.advertise<geometry_msgs::Twist>("robot_0/cmd_vel",1000);
-		sheepPosPub = nh.advertise<std_msgs::String>("sheep_position",1000);
+		sheepPosPub = nh.advertise<std_msgs::String>("robot_0/sheep_position",1000);
 		// Subscribe to the simulated robot's laser scan topic and tell ROS to call
 		// this->commandCallback() whenever a new message is published on that topic
 		laserSub = nh.subscribe<sensor_msgs::LaserScan>("robot_0/base_scan", 1000, &RandomWalk::commandCallback, this);
@@ -48,33 +45,25 @@ class RandomWalk {
 
 	void StageOdom_callback(nav_msgs::Odometry msg)
 	{
-		//This is the call back function to process odometry messages coming from Stage. 		
-		
+		//This is the call back function to process odometry messages coming from Stage. 
 		px = 5 + msg.pose.pose.position.x;
 		py =10 + msg.pose.pose.position.y;
 		//printf("%f",px);
 		
 		// If the current position is the same the previous position, then the robot is stuck and needs to move around
 		if ((px == prevpx) && (py == prevpy)) {
-			//msg.pose.pose.position.x = 5;
+
 			//ROS_INFO("Prevpx: %f",prevpx);
-
-			// Note the negative linear_x		
-			//linear_x=-0.2;
-			//angular_z=1;
-
-			//theta=10;
-			//px = 5;
-			//py= 5;
-			//printf("Robot stuck");
+			// If the robot is rotating, then its position will be the same but it is not actually stuck
 			if (!isRotate) {	
-				ROS_INFO("Robot stuck");
+				//ROS_INFO("Robot stuck");
+				// Makes the sheep move back at differing speeds, this should hopefully reduce chances of sheep being completely stuck when trying to become unstuck
 				double r2 = (double)rand()/((double)RAND_MAX/(M_PI/2));
 				double m2 = (double)rand()/((double)RAND_MAX/0.5);
 				//ROS_INFO("r2" << r2);
-				move(-m2, r2);
-				
-			}	
+				move(-m2, r2);	
+			}
+	
 		} else {
 			// One the robot becomes unstuck, then it moves around again normally
 			//linear_x = 0.2;
@@ -82,8 +71,8 @@ class RandomWalk {
 			//ROS_INFO("Robot unstuck");
 			//checkcount=0;
 		}
-		ROS_INFO("Robot 0 -- Current x position is: %f", px);
-		ROS_INFO("Robot 0 -- Current y position is: %f", py);
+		ROS_INFO("Current x position is: %f", px);
+		ROS_INFO("Current y position is: %f", py);
 		prevpx = px;
 		prevpy = py;
 	};
@@ -120,11 +109,7 @@ class RandomWalk {
 					closestRange = msg->ranges[currIndex];
 				}
 			}
-			//if (closestRange == prevclosestRange) {
-			//	ROS_INFO_STREAM("STUCK");
-			//	move(-FORWARD_SPEED_MPS, ROTATE_SPEED_RADPS);
-			//	//move(0, ROTATE_SPEED_RADPS);
-			//} else {
+
 				
 				//ROS_INFO_STREAM("Range: " << closestRange);
 				prevclosestRange = closestRange;
@@ -136,10 +121,9 @@ class RandomWalk {
 					rotateDuration=ros::Duration(rand() % 2);
 					//fsm= FSM_MOVE_FORWARD;
 				}
-			//}
-
 		}
 	};
+
 	// Main FSM loop for ensuring that ROS messages are
 	// processed in a timely manner, and also for sending
 	// velocity controls to the simulated robot based on the FSM state
@@ -174,16 +158,16 @@ class RandomWalk {
 					checkcount=0;
 				}
 			}
-			
 		sheepPosPub.publish(msg);
 
 		ros::spinOnce(); // Need to call this function often to allow ROS to process incoming messages
 		rate.sleep(); // Sleep for the rest of the cycle, to enforce the FSM loop rate
 		}
 	};
+
 	enum FSM {FSM_MOVE_FORWARD, FSM_ROTATE};
 	// Tunable parameters
-	// TODO: tune parameters as you see fit
+	// Change parameters as you see fit
 	const static double MIN_SCAN_ANGLE_RAD = -10.0/180*M_PI;
 	const static double MAX_SCAN_ANGLE_RAD = +10.0/180*M_PI;
 	const static float PROXIMITY_RANGE_M = 1; // Should be smaller than sensor_msgs::LaserScan::range_max
@@ -196,7 +180,7 @@ class RandomWalk {
 	ros::Subscriber laserSub; // Subscriber to the simulated robot's laser scan topic
 	enum FSM fsm; // Finite state machine for the random walk algorithm
 	ros::Time rotateStartTime; // Start time of the rotation
-	ros::Time rotateEndTime;
+	ros::Time rotateEndTime; // End time of rotation
 	ros::Duration rotateDuration; // Duration of the rotation
 	ros::Subscriber StageOdo_sub;
 	
@@ -204,12 +188,11 @@ class RandomWalk {
 };
 int main(int argc, char **argv) {
 	ros::init(argc, argv, "RobotNode0"); // Initiate new ROS node named "RobotNode0"
-	ROS_INFO("This node is: RobotNode0");
 	ros::NodeHandle n;
+	ROS_INFO("RobotNode0");
 	prevpx = 0;
-	prevpx= 0;
+	prevpy= 0;
 	RandomWalk walker(n); // Create new random walk object
 	walker.spin(); // Execute FSM loop
 	return 0;
 };
-
