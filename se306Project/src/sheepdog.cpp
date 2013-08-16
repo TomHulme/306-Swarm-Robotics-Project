@@ -82,6 +82,8 @@ ros::NodeHandle n;
 //advertise() function will tell ROS that you want to publish on a given topic_
 //to stage
 ros::Publisher RobotNode_stage_pub = n.advertise<geometry_msgs::Twist>("robot_1/cmd_vel",1000); 
+//
+ros::Publisher sheepdogPosition_pub = n.advertise<std_msgs::String>("sheepdog_position",1000);
 
 //subscribe to listen to messages coming from stage
 ros::Subscriber StageOdo_sub = n.subscribe<nav_msgs::Odometry>("robot_1/odom",1000, StageOdom_callback);
@@ -104,6 +106,20 @@ while (ros::ok())
         
 	//publish the message
 	RobotNode_stage_pub.publish(RobotNode_cmdvel);
+
+	//
+	//position message
+	std_msgs::String msg;
+	std::stringstream ss;
+	ss << ("%f %f",px,py) <<;
+	msg.data = ss.str();
+	
+	//broadcast the message to anyone who is connected
+	sheepdogPosition_pub.publish(msg);
+	
+	
+	ROS_INFO("%s",msg.data.c_str());
+
 	
 	ros::spinOnce();
 

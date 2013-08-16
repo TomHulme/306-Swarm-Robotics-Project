@@ -3,6 +3,7 @@
 #include "sensor_msgs/LaserScan.h"
 #include <nav_msgs/Odometry.h>
 #include "std_msgs/String.h"
+#include <stdlib.h>
 
 
 #include <cstdlib> // Needed for rand()
@@ -42,11 +43,13 @@ class RandomWalk {
 		// this->commandCallback() whenever a new message is published on that topic
 		laserSub = nh.subscribe<sensor_msgs::LaserScan>("robot_0/base_scan", 1000, &RandomWalk::commandCallback, this);
 		StageOdo_sub = nh.subscribe<nav_msgs::Odometry>("robot_0/odom",1000, &RandomWalk::StageOdom_callback,this);
+		//
+		sheepdogPosPub = nh.subsribe<std_msgs::String pos_msg>("sheepdog_position",1000,&RandomWalk::scared,this);
 		//ros::Subscriber StageOdo_sub = n.subscribe<nav_msgs::Odometry>("robot_0/odom",1000, StageOdom_callback);
 
 	};
 
-	void StageOdom_callback(nav_msgs::Odometry msg)
+	void StageOdom_callback(nav_msgs::Odometry msg,std_msgs::String sheepdogMsg)
 	{
 		//This is the call back function to process odometry messages coming from Stage. 		
 		
@@ -82,12 +85,34 @@ class RandomWalk {
 			//ROS_INFO("Robot unstuck");
 			//checkcount=0;
 		}
+
+		//
+		std::string sheepdogPos (sheepdogMsg);
+		std::string::size_type sz;
+		
+		float sdx = std::stof(sheepdogPos,&sz);
+		float sdy = std::stof(sheepdogPos.substr(sz));
+		
+		//Calculate the difference in distance between the sheepdog(sdx)[std_msgs::String msg?] and sheep
+		//closeRange=;
+		xDistanceDiff = abs(sdx - px);
+		yDistanceDiff = abs(sdy - py);
+
+		//if sheepdog is near
+		if (xDistanceDiff<=20||yDistanceDiff<=20){
+			scared(sdx,sdy);
+		}									
 		ROS_INFO("Robot 0 -- Current x position is: %f", px);
 		ROS_INFO("Robot 0 -- Current y position is: %f", py);
 		prevpx = px;
-		prevpy = py;
+		prevpy = py;		
 	};
 
+//
+	void scared(float sdx, float sdy) {
+		//ROS_INFO("I heard: [%s]", msg->data.c_str());
+		ROS_INFO("Robot stuck");
+	};
 
 	// Send a velocity command
 	void move(double linearVelMPS, double angularVelRadPS) {
@@ -96,6 +121,10 @@ class RandomWalk {
 		msg.angular.z = angularVelRadPS;
 		commandPub.publish(msg);
 	};
+
+
+	
+		
 
 	
 
