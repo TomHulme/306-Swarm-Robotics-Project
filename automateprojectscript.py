@@ -122,7 +122,7 @@ for i in range(num_sheep):
 	#runNode= Popen("rosrun se306Project SheepNode __name:=sheep"+str(i) + " _sheepNum:="+str(i),shell=True)
 	#runNode= Popen("rosrun se306Project SheepMove __name:=sheepMove"+str(i) + " _sheepNum:="+str(i),shell=True)
 	runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project SheepNode __name:=sheep{0} _sheepNum:={0}"'""".format(str(i))),stdout=PIPE)
-	runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project SheepMove __name:=sheepMove{0} _sheepNum:={0}"'""".format(str(i))),stdout=PIPE)
+	runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project SheepMove __name:=sheepMove{0} _sheepNum:={0} _robotNum:={1}"'""".format(str(i), str(i+2))),stdout=PIPE)
 	#runNode= Popen("rosrun se306Project R"+str(i),shell=True)
 #runNode= Popen('rosrun se306Project R1',shell=True)
 #runNode= Popen('rosrun se306Project R2',shell=True)

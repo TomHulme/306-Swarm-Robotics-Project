@@ -35,6 +35,7 @@ class SheepMove {
 
 	int checkcount;
 	int sheepNum;
+	int robotNum;
 	std::string moveStatus;
 	
 	//methods
@@ -201,10 +202,10 @@ void SheepMove::spin() {
 	}
 }
 	
-SheepMove::SheepMove(int number) {// : fsm(FSM_MOVE_FORWARD), rotateStartTime(ros::Time::now()), rotateDuration(0.f) {
+SheepMove::SheepMove(int number) {
 	// Construst a new SheepMove object and hook up this ROS node
 	// to the simulated robot's velocity control and laser topics
-	sheepNum = number;
+	//sheepNum = number;
 	
 	// Initialize random time generator
 	srand(time(NULL));
@@ -213,43 +214,67 @@ SheepMove::SheepMove(int number) {// : fsm(FSM_MOVE_FORWARD), rotateStartTime(ro
 	checkcount = 0;
 	prevpx = 0;
 	prevpx = 0;
+	sheepNum = number;
+	robotNum = 0;
 }	
 
 void SheepMove::rosSetup(int argc, char **argv) {
-	std::string name;
 	std::ostringstream convertS;
-	convertS << sheepNum;
-	name = "sheepMove" + convertS.str();
-	ros::init(argc, argv, name); // Initiate new ROS node named "random_walk"
-	fsm = FSM_MOVE_FORWARD;
+	std::ostringstream convertR;
+	std::string out;
+		
+	ros::init(argc, argv, "sheepMove", ros::init_options::AnonymousName); // Initiate new ROS node named "sheepMoveX"
 	ros::NodeHandle nh;
+	ros::NodeHandle n("~");
+	if(n.getParam("sheepNum", sheepNum))
+	{
+		ROS_INFO_STREAM("Got sheepNum");
+	}else {
+		ROS_INFO_STREAM("Dafuq, ROS?");
+	}
+	if(n.getParam("robotNum", robotNum))
+	{
+
+		ROS_INFO_STREAM("Got robotNum");
+	}else {
+		ROS_INFO_STREAM("Dafuq, ROS?");
+	}
+	
+	
+	fsm = FSM_MOVE_FORWARD;
+	
 	rotateStartTime = ros::Time(ros::Time::now()); 
 	rotateDuration = ros::Duration(0.f);
-
+	
 	//setup talkies
 	
 	// Advertise a new publisher for the simulated robot's velocity command topic
 	// (the second argument indicates that if multiple command messages are in
 	// the queue to be sent, only the last command will be sent)
 	
-	//convertR << robotNumber; //might be needed if all stage robots are called robot_X
-	commandPub = nh.advertise<geometry_msgs::Twist>("sheep_" + convertS.str() + "/cmd_vel",1000);
-	sheepPosPub = nh.advertise<std_msgs::String>("sheep_" + convertS.str() + "/sheep_position",1000);
+	convertR << robotNum; //needed as all stage robots are called robot_X
+	convertS << sheepNum;
+	std::string r = "robot_" + convertR.str();
+	ROS_INFO_STREAM(r);
+	std::string s = "sheep_" + convertS.str();
+	ROS_INFO_STREAM(s);
+	commandPub = nh.advertise<geometry_msgs::Twist>(r + "/cmd_vel",1000);
+	sheepPosPub = nh.advertise<std_msgs::String>("sheep_position",1000);
 	// Subscribe to the simulated robot's laser scan topic and tell ROS to call
 	// this->commandCallback() whenever a new message is published on that topic
-	laserSub = nh.subscribe<sensor_msgs::LaserScan>("sheep_" + convertS.str() + "/base_scan", 1000, &SheepMove::commandCallback, this);
-	sheepStatusSub = nh.subscribe<se306Project::SheepMoveMsg>("sheep_" + convertS.str() + "/move", 1000, &SheepMove::statusCallback, this);
-	StageOdo_sub = nh.subscribe<nav_msgs::Odometry>("sheep_" + convertS.str() + "/odom",1000, &SheepMove::StageOdom_callback,this);
+	laserSub = nh.subscribe<sensor_msgs::LaserScan>(r + "/base_scan", 1000, &SheepMove::commandCallback, this);
+	sheepStatusSub = nh.subscribe<se306Project::SheepMoveMsg>(s + "/move", 1000, &SheepMove::statusCallback, this);
+	StageOdo_sub = nh.subscribe<nav_msgs::Odometry>(r + "/odom",1000, &SheepMove::StageOdom_callback,this);
 	//ros::Subscriber StageOdo_sub = n.subscribe<nav_msgs::Odometry>("robot_0/odom",1000, StageOdom_callback);
 	
 	SheepMove::spin(); // Execute FSM loop
 }
 
 int main(int argc, char **argv) {
-	int number = 0;
-	ros::param::get("sheepNum", number);
+	//int number = 0;
+	//ros::param::get("sheepNum", number);
 	
-	SheepMove walker(number); // Create new random walk object
+	SheepMove walker(0); // Create new random walk object
 	walker.rosSetup(argc, argv);
 	return 0;
 }

@@ -17,7 +17,7 @@ class SheepNode {
 	
 public:
 	//setup methods
-	SheepNode(int);
+	SheepNode();//(int);
 	void rosSetup(int, char**);
 	void spin();	
 	
@@ -87,24 +87,22 @@ void SheepNode::spin() {
 	}
 }
 	
-SheepNode::SheepNode(int number) {
-	sheepNum = number;
+SheepNode::SheepNode() {//(int number) {
+	sheepNum = 0;
 	currentState = WALKING;
 	
 }
 
 void SheepNode::rosSetup(int argc, char **argv) {
-	std::string name;
 	std::ostringstream convert;
+	ros::init(argc, argv, "sheep", ros::init_options::AnonymousName);
+	ros::NodeHandle nh;
+	ros::NodeHandle n("~");
+	n.getParam("sheepNum", sheepNum);
 	convert << sheepNum;
-	name = "sheep" + convert.str();
-	ROS_INFO_STREAM("init ros node: " + name);
-	ros::init(argc, argv, name);
-
-	ros::NodeHandle n;
-	
 	//initialise the talkies
-	sheepMovePub = n.advertise<se306Project::SheepMoveMsg>("sheep_" + convert.str()+ "/move", 1000);
+	
+	sheepMovePub = nh.advertise<se306Project::SheepMoveMsg>("sheep_" + convert.str()+ "/move", 1000);
 	//TODO: talk to the grass, and the field?
 	//TODO: talk to other sheep
 	//TODO: talk to the farmer
@@ -115,12 +113,12 @@ void SheepNode::rosSetup(int argc, char **argv) {
 
 int main(int argc, char **argv) {
 
-	int number = 0;
+	//int number = 0;
 
-	ros::param::get("sheepNum", number);
+	//ros::param::get("sheepNum", number);
 	//ros::param::set("sheep/number", number+1);
 	
-	SheepNode sheep = SheepNode(number);
+	SheepNode sheep = SheepNode();//(number);
 	
 	sheep.rosSetup(argc, argv);
 }
