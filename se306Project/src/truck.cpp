@@ -128,11 +128,11 @@ class RandomWalk {
 				
 				//ROS_INFO_STREAM("Range: " << closestRange);
 				prevclosestRange = closestRange;
-				if (closestRange > 1) {
+				if (closestRange > 20) {
 					fsm=FSM_ROTATE;
 					rotateStartTime=ros::Time::now();
 					float r2 = (float)rand()/((float)RAND_MAX/100);
-					rotateDuration=ros::Duration(rand() % 2);
+					rotateDuration=ros::Duration(0.001);
 					//fsm= FSM_MOVE_FORWARD;
 				}
 			//}
@@ -185,9 +185,9 @@ class RandomWalk {
 	// TODO: tune parameters as you see fit
 	const static double MIN_SCAN_ANGLE_RAD = -10.0/180*M_PI;
 	const static double MAX_SCAN_ANGLE_RAD = +10.0/180*M_PI;
-	const static float PROXIMITY_RANGE_M = 3; // Should be smaller than sensor_msgs::LaserScan::range_max
-	const static double FORWARD_SPEED_MPS = 2;
-	const static double ROTATE_SPEED_RADPS = M_PI/2;
+	const static float PROXIMITY_RANGE_M = 5; // Should be smaller than sensor_msgs::LaserScan::range_max
+	const static double FORWARD_SPEED_MPS = 1;
+	const static double ROTATE_SPEED_RADPS = M_PI;
 	
 	protected:
 	ros::Publisher commandPub; // Publisher to the simulated robot's velocity command topic
@@ -202,7 +202,7 @@ class RandomWalk {
 
 };
 int main(int argc, char **argv) {
-	ros::init(argc, argv, "Trust"); // Initiate new ROS node named "Truck"
+	ros::init(argc, argv, "Truck"); // Initiate new ROS node named "Truck"
 	ROS_INFO("This node is: Truck");
 	ros::NodeHandle n;
 	prevpx = 0;

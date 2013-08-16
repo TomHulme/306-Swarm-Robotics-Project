@@ -37,9 +37,9 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
 (
     sensor
     (
-    range [30.0 30.0]
-    fov 180
-    samples 180
+    range [100.0 100.0]
+    fov 1
+    samples 1
     )
     color "black"
     size [ 0.05 0.05 0.1]
@@ -58,7 +58,14 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     robot_NOSIZE_def = """define farmRobot position
 (
   drive "diff"
-  mytrucklaser(pose [ 0.050 0.000 0.050 0.000 ])
+  mylaser(pose [ 0.050 0.000 0.050 90 ])
+)
+"""
+
+    robot_truck_def = """define truckRobot position
+(
+  drive "diff"
+  mytrucklaser(pose [ 0.050 0.000 0.050 90 ])
 )
 """
     grass_def = """define grass position
@@ -97,6 +104,8 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     fo.write(truck_laser_def)
     #Write robot position definition to file
     fo.write(robot_def)
+    #Write robot_truck position definition to file
+    fo.write(robot_truck_def)
     #Write robot position WITHOUT SIZE definition to file
     fo.write(robot_NOSIZE_def)
     #Write grass definition to file
@@ -146,8 +155,8 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     fo.write(JoinString(ts1, ts2, ts3, ts4))
     
     #Construct truck definition
-    ts1 = 'farmRobot ('
-    ts2 = 'pose [-3 -3 0.125 0] size [3 3 0.1] '
+    ts1 = 'truckRobot ('
+    ts2 = 'pose [2 -3 0.125 0] size [3 3 0.1] '
     ts3 = 'name "truck" '
     ts4 = 'color "blue" bitmap "TRUCK.bmp")\n'
         
