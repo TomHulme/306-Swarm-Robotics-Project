@@ -97,7 +97,7 @@ stagePro = Popen('rosrun stage stageros %s' %worldfile,shell=True)
 # These below lines would need to be changed to fit what you are wanting to run.
 # Start from 2 because nodes 0 and 1 are for farmer and sheepdog
 for i in range(3, (num_sheep+3)):
-	runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project R"'"""+str(i)+" --title=Sheep_"+str(i)),stdout=PIPE)
+	runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project R"'"""+str(i)),stdout=PIPE)
 
 	#runNode= Popen("rosrun se306Project R"+str(i),shell=True)
 
