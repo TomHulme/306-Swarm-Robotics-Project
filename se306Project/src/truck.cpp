@@ -128,7 +128,7 @@ class RandomWalk {
 				
 				//ROS_INFO_STREAM("Range: " << closestRange);
 				prevclosestRange = closestRange;
-				if (closestRange > 4) {
+				if (closestRange > 1) {
 					fsm=FSM_ROTATE;
 					rotateStartTime=ros::Time::now();
 					float r2 = (float)rand()/((float)RAND_MAX/100);
