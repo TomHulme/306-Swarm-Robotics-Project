@@ -82,3 +82,4 @@ for i in range(2, (num_sheep+2)):
 #runNode= Popen('rosrun se306Project R2',shell=True)
 runNode= Popen('rosrun se306Project farmer',shell=True)
 runNode= Popen('rosrun se306Project sheepdog',shell=True)
+runNode= Popen('rosrun se306Project field', shell=True)
