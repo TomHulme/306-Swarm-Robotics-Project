@@ -64,6 +64,9 @@ for i in range(0, num_grass):
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(farmer src/farmer.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(sheepdog src/sheepdog.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 
+#Add the field node into CMakeLists
+addToCMakeFile = Popen("echo \"rosbuild_add_executable(field src/FieldNode.cpp src/Field.cpp)\" >> se306Project/CMakeLists.txt", shell=True)
+
 
 
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(SheepNode src/SheepNode.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
@@ -112,6 +115,7 @@ time.sleep(3)
 stagePro = Popen('rosrun stage stageros %s' %worldfile,shell=True)
 
 # These below lines would need to be changed to fit what you are wanting to run.
+
 # Start from 3 because nodes 0, 1 and 2 are for farmer, sheepdog and truck respectively
 
 #Run Sheep nodes (SheepNode, SheepMove)
@@ -127,4 +131,5 @@ runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Proje
 runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project sheepdog"'"""),stdout=PIPE)
 #Run Truck Node
 runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project truck"'"""),stdout=PIPE)
-
+#Run Field Node
+runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project field"'"""),stdout=PIPE)

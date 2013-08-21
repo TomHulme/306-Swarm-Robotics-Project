@@ -28,6 +28,7 @@ rosbuild_genmsg()
 #rosbuild_link_boost(${PROJECT_NAME} thread)
 #target_link_libraries(example ${PROJECT_NAME})
 
+rosbuild_add_gtest(test/fieldTest test/FieldTest.cpp src/Field.cpp)
 
 
 rosbuild_add_executable(Grass0 src/Grass0.cpp)
@@ -45,3 +46,5 @@ rosbuild_add_executable(SheepNode src/SheepNode.cpp)
 rosbuild_add_executable(SheepMove src/SheepMove.cpp)
 rosbuild_add_executable(truck src/truck.cpp)
 rosbuild_add_executable(listener src/listener.cpp)
+rosbuild_add_executable(field src/FieldNode.cpp src/Field.cpp)
+
