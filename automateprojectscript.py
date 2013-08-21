@@ -32,9 +32,10 @@ worldGenPro.communicate()
 # Removes all lines in the CMakeLists.txt file that were added from previous executions of the script. Clean slate of the file.
 cleanupCMakeFile= Popen("sed -i /rosbuild_add_executable/d se306Project/CMakeLists.txt",shell=True)
 
-# Range goes from 2 to sheep+2 because nodes 0,1 are farmer,sheepdog.
+
+# Range goes from 3 to sheep+3 because nodes 0,1,2 are farmer,sheepdog,truck.
+for i in range(3, (num_sheep+3)):
 '''
-for i in range(2, (num_sheep+2)):
 	copyr0Pro = Popen("cp se306Project/src/R0.cpp se306Project/src/R"+str(i)+".cpp", stdout=PIPE, shell=True)
 	copyr0Pro.communicate();
 	# Updates all references in the .cpp file to the new .cpp file and node it represents
@@ -48,26 +49,29 @@ for i in range(2, (num_sheep+2)):
 	addToCMakeFile= Popen("echo \"rosbuild_add_executable(R"+str(i)+" src/R"+str(i)+".cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 '''
 # Counting grass
+'''
 for i in range(0, num_grass):
-	'''
+	
 	copyr0Pro = Popen("cp se306Project/src/Grass0.cpp se306Project/src/Grass"+str(i)+".cpp", stdout=PIPE, shell=True)
 	copyr0Pro.communicate();
 	modifyRPro= Popen("find . -name Grass"+str(i)+".cpp -exec sed -i \"s/Grass0/Grass"+str(i)+"/g\" {} \;",shell=True)
 	modifyRPro.communicate();
-	modifyRPro= Popen("find . -name Grass"+str(i)+".cpp -exec sed -i \"s/robot_0/robot_"+str(i+(num_sheep+2))+"/g\" {} \;",shell=True)
+	modifyRPro= Popen("find . -name Grass"+str(i)+".cpp -exec sed -i \"s/robot_0/robot_"+str(i+(num_sheep+3))+"/g\" {} \;",shell=True)
 	modifyRPro.communicate();
-	'''
 	addToCMakeFile= Popen("echo \"rosbuild_add_executable(Grass"+str(i)+" src/Grass"+str(i)+".cpp)\" >> se306Project/CMakeLists.txt",shell=True)
-
+'''
 #Add farmer, sheepdog, listener
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(farmer src/farmer.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(sheepdog src/sheepdog.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
+
 
 
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(SheepNode src/SheepNode.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(SheepMove src/SheepMove.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 #addToCMakeFile= Popen("echo \"rosbuild_add_executable(field src/field.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 #addToCMakeFile= Popen("echo \"rosbuild_add_executable(grass src/grass.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
+addToCMakeFile= Popen("echo \"rosbuild_add_executable(truck src/truck.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
+
 
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(listener src/listener.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 
@@ -108,15 +112,19 @@ time.sleep(3)
 stagePro = Popen('rosrun stage stageros %s' %worldfile,shell=True)
 
 # These below lines would need to be changed to fit what you are wanting to run.
-# Start from 2 because nodes 0 and 1 are for farmer and sheepdog
+# Start from 3 because nodes 0, 1 and 2 are for farmer, sheepdog and truck respectively
+
 #Run Sheep nodes (SheepNode, SheepMove)
 for i in range(num_sheep):
 	print "creating sheep",i
 	runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project SheepNode __name:=sheep{0} _sheepNum:={0}"'""".format(str(i))),stdout=PIPE)
-	runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project SheepMove __name:=sheepMove{0} _sheepNum:={0} _robotNum:={1}"'""".format(str(i), str(i+2))),stdout=PIPE)
+	runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project SheepMove __name:=sheepMove{0} _sheepNum:={0} _robotNum:={1}"'""".format(str(i), str(i+3))),stdout=PIPE)
+
 
 #Run Farmer Node
 runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project farmer"'"""),stdout=PIPE)
 #Run Sheepdog Node
 runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project sheepdog"'"""),stdout=PIPE)
+#Run Truck Node
+runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project truck"'"""),stdout=PIPE)
 
