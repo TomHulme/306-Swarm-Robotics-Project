@@ -47,11 +47,36 @@ public:
 	void sheepWalk();
 	
 	//TODO: Sheep Danger sense
+	void sheepDogDangerCallback(std_msgs::String);
+	//TODO: Eating
 	//void eatCallback();
 	
 	protected:
 	ros::Publisher sheepMovePub;
+	ros::Subscriber sheepdogPosSub;
 };
+
+void SheepNode::sheepDogDangerCallback(std_msgs::String sheepdogMsg) {
+	std::string sheepdogPos (sheepdogMsg);
+	std::string::size_type sz;
+		
+	float sdx = std::stof(sheepdogPos,&sz);
+	float sdy = std::stof(sheepdogPos.substr(sz));
+		
+	//Calculate the difference in distance between the sheepdog(sdx)[std_msgs::String msg?] and sheep
+	//closeRange=;
+	xDistanceDiff = abs(sdx - px);
+	yDistanceDiff = abs(sdy - py);
+
+	//if sheepdog is near: level of terror is raised depending on the distance to the sheepdog. 
+	//	eg. if it is 10 units away (or whatever distance seems appropriate), then terror is low, but exists. 
+	//       if it is at 6 units away, terror goes up again, and sheep move away from the dog.
+	//		 if it is at 3 units away or less, sheep runs away from dog.
+	//if (xDistanceDiff<=20||yDistanceDiff<=20){
+	//	scared(sdx,sdy);
+	//}
+}
+
 
 void SheepNode::sheepEat(){
 	//subscribe to current position grass service
@@ -103,6 +128,7 @@ void SheepNode::rosSetup(int argc, char **argv) {
 	//initialise the talkies
 	
 	sheepMovePub = nh.advertise<se306Project::SheepMoveMsg>("sheep_" + convert.str()+ "/move", 1000);
+	sheepdogPosSub = nh.subscribe<std_msgs::String pos_msg>("sheepdog_position",1000,&SheepNode::sheepDogDangerCallback,this);
 	//TODO: talk to the grass, and the field?
 	//TODO: talk to other sheep
 	//TODO: talk to the farmer
