@@ -47,7 +47,7 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
 )
 """
 
-    robot_def = """define myrobot position
+    robot_sheep_def = """define sheepRobot position
 (
   size [0.35 0.35 0.25]
   drive "diff"
@@ -103,7 +103,7 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     #Write truck laser definition to file
     fo.write(truck_laser_def)
     #Write robot position definition to file
-    fo.write(robot_def)
+    fo.write(robot_sheep_def)
     #Write robot_truck position definition to file
     fo.write(robot_truck_def)
     #Write robot position WITHOUT SIZE definition to file
@@ -167,7 +167,7 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     for i in range(int(numSheep)):
     
         #Construct sheep definition
-        ts1 = 'sheeprobot ('
+        ts1 = 'sheepRobot ('
         ts2 = 'pose [' + str(col) + ' ' + str(row)  +  ' 0.125 '+str(randrange(-180,180))+'] '
         ts3 = 'name "sheepMove' + str(i) + '" '
         ts4 = 'color "white" bitmap "SHEEP.BMP")\n'
