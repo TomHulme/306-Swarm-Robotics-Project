@@ -51,7 +51,7 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
 (
   size [0.35 0.35 0.25]
   drive "diff"
-  mylaser(pose [ 0.050 0.000 0 0.000 ])
+  mylaser(pose [ 0.050 0.000 -0.1 0.000 ])
 )
 """
 
