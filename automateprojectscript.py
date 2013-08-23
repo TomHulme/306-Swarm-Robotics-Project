@@ -34,7 +34,7 @@ cleanupCMakeFile= Popen("sed -i /rosbuild_add_executable/d se306Project/CMakeLis
 
 
 # Range goes from 3 to sheep+3 because nodes 0,1,2 are farmer,sheepdog,truck.
-for i in range(3, (num_sheep+3)):
+#for i in range(3, (num_sheep+3)):
 '''
 	copyr0Pro = Popen("cp se306Project/src/R0.cpp se306Project/src/R"+str(i)+".cpp", stdout=PIPE, shell=True)
 	copyr0Pro.communicate();
@@ -64,14 +64,10 @@ for i in range(0, num_grass):
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(farmer src/farmer.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(sheepdog src/sheepdog.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 
-#Add the field node into CMakeLists
-addToCMakeFile = Popen("echo \"rosbuild_add_executable(field src/FieldNode.cpp src/Field.cpp)\" >> se306Project/CMakeLists.txt", shell=True)
-
-
 
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(SheepNode src/SheepNode.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(SheepMove src/SheepMove.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
-#addToCMakeFile= Popen("echo \"rosbuild_add_executable(field src/field.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
+addToCMakeFile= Popen("echo \"rosbuild_add_executable(FieldNode src/FieldNode.cpp src/Field.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 #addToCMakeFile= Popen("echo \"rosbuild_add_executable(grass src/grass.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(truck src/truck.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 
@@ -124,6 +120,9 @@ for i in range(num_sheep):
 	runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project SheepNode __name:=sheep{0} _sheepNum:={0}"'""".format(str(i))),stdout=PIPE)
 	runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project SheepMove __name:=sheepMove{0} _sheepNum:={0} _robotNum:={1}"'""".format(str(i), str(i+3))),stdout=PIPE)
 
+#Run Field nodes
+for i in range(num_fields):
+	runNode = Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project FieldNode {0} {1} {2}"'""".format(str(i), str(field_X), str(field_Y))), stdout=PIPE)
 
 #Run Farmer Node
 runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project farmer"'"""),stdout=PIPE)
@@ -131,5 +130,3 @@ runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Proje
 runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project sheepdog"'"""),stdout=PIPE)
 #Run Truck Node
 runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project truck"'"""),stdout=PIPE)
-#Run Field Node
-runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project field"'"""),stdout=PIPE)

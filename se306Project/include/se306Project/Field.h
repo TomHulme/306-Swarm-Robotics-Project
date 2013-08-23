@@ -12,6 +12,8 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include "nav_msgs/Odometry.h"
+#include <iostream>
+#include <time.h>
 
 enum SoilQuality {
 	NORMAL, FERTILE, ARID
