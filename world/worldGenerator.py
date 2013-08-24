@@ -58,7 +58,7 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     robot_NOSIZE_def = """define farmRobot position
 (
   drive "diff"
-  mylaser(pose [ 0.050 0.000 0.050 90 ])
+  mylaser(pose [ 0.050 0.000 -0.1 90 ])
 )
 """
 
