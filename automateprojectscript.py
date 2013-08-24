@@ -128,8 +128,8 @@ stagePro = Popen('rosrun stage stageros %s' %worldfile,shell=True)
 #Run Sheep nodes (SheepNode, SheepMove)
 for i in range(num_sheep):
 	print "creating sheep",i
-	runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project SheepNode __name:=sheep{0} _sheepNum:={0}"'""".format(str(i))),stdout=PIPE)
-	runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project SheepMove __name:=sheepMove{0} _sheepNum:={0} _robotNum:={1}"'""".format(str(i), str(i+3))),stdout=PIPE)
+	runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project SheepNode __name:=sheep{0} _sheepNum:={0}"' --title='SheepNode{0}'""".format(str(i))),stdout=PIPE)
+	runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project SheepMove __name:=sheepMove{0} _sheepNum:={0} _robotNum:={1}"' --title='SheepMove {0}'""".format(str(i), str(i+3))),stdout=PIPE)
 
 #Run Grass nodes
 ###TODO: something like the following code
@@ -145,12 +145,12 @@ for i in range(num_sheep):
 #	runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project Field __name:=field{0} _fieldNum:={0} _xPos:={1} _yPos:={2}"'""".format(str(i),someX, someY)),stdout=PIPE)
 #Run Field nodes
 for i in range(num_fields):
-	runNode = Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project FieldNode {0} {1} {2}"'""".format(str(i), str(field_X), str(field_Y))), stdout=PIPE)
+	runNode = Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project FieldNode {0} {1} {2}"' --title='Field {0}'""".format(str(i), str(field_X), str(field_Y))), stdout=PIPE)
 
 #Run Farmer Node
-runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project farmer"'"""),stdout=PIPE)
+runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project farmer"' --title='Farmer'"""),stdout=PIPE)
 #Run Sheepdog Node
-runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project sheepdog"'"""),stdout=PIPE)
+runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project sheepdog"' --title='Sheepdog'"""),stdout=PIPE)
 #Run Truck Node
-runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project truck"'"""),stdout=PIPE)
+runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project truck"' --title='Truck'"""),stdout=PIPE)
 
