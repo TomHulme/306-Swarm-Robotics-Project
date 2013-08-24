@@ -30,8 +30,19 @@ rosbuild_genmsg()
 
 rosbuild_add_gtest(test/fieldTest test/FieldTest.cpp src/Field.cpp)
 
-
-
-rosbuild_add_executable(FieldNode src/FieldNode.cpp src/Field.cpp)
+rosbuild_add_executable(Grass0 src/Grass0.cpp)
+rosbuild_add_executable(Grass1 src/Grass1.cpp)
+rosbuild_add_executable(Grass2 src/Grass2.cpp)
+rosbuild_add_executable(Grass3 src/Grass3.cpp)
+rosbuild_add_executable(Grass4 src/Grass4.cpp)
+rosbuild_add_executable(Grass5 src/Grass5.cpp)
+rosbuild_add_executable(Grass6 src/Grass6.cpp)
+rosbuild_add_executable(Grass7 src/Grass7.cpp)
+rosbuild_add_executable(Grass8 src/Grass8.cpp)
+rosbuild_add_executable(farmer src/farmer.cpp)
+rosbuild_add_executable(sheepdog src/sheepdog.cpp)
+rosbuild_add_executable(SheepNode src/SheepNode.cpp)
+rosbuild_add_executable(SheepMove src/SheepMove.cpp)
 rosbuild_add_executable(truck src/truck.cpp)
 rosbuild_add_executable(listener src/listener.cpp)
+rosbuild_add_executable(field src/FieldNode.cpp src/Field.cpp)
