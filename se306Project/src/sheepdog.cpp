@@ -15,6 +15,7 @@ double angular_z;
 //pose of the robot
 double px;
 double py;
+double pz;
 double theta;
 double prevpx;
 double prevpy;
@@ -53,6 +54,7 @@ class Sheepdog {
 		
 		px = 5 + msg.pose.pose.position.x;
 		py = 5 + msg.pose.pose.position.y;
+		pz = pz + msg.twist.twist.angular.z;
 		//printf("%f",px);
 		
 		// If the current position is the same the previous position, then the robot is stuck and needs to move around
@@ -72,7 +74,6 @@ class Sheepdog {
 				ROS_INFO("Sheepdog stuck");
 				double r2 = (double)rand()/((double)RAND_MAX/(M_PI/2));
 				double m2 = (double)rand()/((double)RAND_MAX/0.5);
-				//ROS_INFO("r2" << r2);
 				move(-m2, r2);
 				
 			}	
@@ -85,6 +86,7 @@ class Sheepdog {
 		}
 		ROS_INFO("Sheepdog -- Current x position is: %f", px);
 		ROS_INFO("Sheepdog -- Current y position is: %f", py);
+		ROS_INFO("Sheepdog -- Current z position is: %f", pz);
 		prevpx = px;
 		prevpy = py;
 	};
