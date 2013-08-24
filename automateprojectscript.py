@@ -31,7 +31,7 @@ worldGenPro.communicate()
 
 # Removes all lines in the CMakeLists.txt file that were added from previous executions of the script. Clean slate of the file.
 cleanupCMakeFile= Popen("sed -i /rosbuild_add_executable/d se306Project/CMakeLists.txt",shell=True)
-
+cleanupCMakeFile.wait()
 
 # Range goes from 3 to sheep+3 because nodes 0,1,2 are farmer,sheepdog,truck.
 #for i in range(3, (num_sheep+3)):
@@ -62,17 +62,20 @@ for i in range(0, num_grass):
 '''
 #Add farmer, sheepdog, listener
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(farmer src/farmer.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
+addToCMakeFile.wait()
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(sheepdog src/sheepdog.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
-
-
+addToCMakeFile.wait()
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(SheepNode src/SheepNode.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
+addToCMakeFile.wait()
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(SheepMove src/SheepMove.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
+addToCMakeFile.wait()
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(FieldNode src/FieldNode.cpp src/Field.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
+addToCMakeFile.wait()
 #addToCMakeFile= Popen("echo \"rosbuild_add_executable(grass src/grass.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(truck src/truck.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
-
-
+addToCMakeFile.wait()
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(listener src/listener.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
+addToCMakeFile.wait()
 
 	
 # This checks if there is a running roscore process and if there is, it gets killed
@@ -99,8 +102,8 @@ rosmakePro= Popen('rosmake se306Project',shell=True)
 rosmakePro.communicate() # Waits until rosmake has finished
 
 # Reset original grass and sheep back to 0
-modifyRPro= Popen("find . -name R0.cpp -exec sed -i \"s/robot_"+str(i)+"/robot_0/g\" {} \;",shell=True)
-modifyRPro= Popen("find . -name Grass0.cpp -exec sed -i \"s/robot_"+str(i+(num_sheep+2))+"/robot_0/g\" {} \;",shell=True)
+# modifyRPro= Popen("find . -name R0.cpp -exec sed -i \"s/robot_"+str(i)+"/robot_0/g\" {} \;",shell=True)
+# modifyRPro= Popen("find . -name Grass0.cpp -exec sed -i \"s/robot_"+str(i+(num_sheep+2))+"/robot_0/g\" {} \;",shell=True)
 
 core = Popen('roscore',shell=True) 
 
