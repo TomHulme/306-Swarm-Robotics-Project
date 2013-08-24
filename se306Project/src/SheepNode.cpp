@@ -129,6 +129,7 @@ void SheepNode::rosSetup(int argc, char **argv) {
 	
 	sheepMovePub = nh.advertise<se306Project::SheepMoveMsg>("sheep_" + convert.str()+ "/move", 1000);
 	sheepdogPosSub = nh.subscribe<std_msgs::String>("sheepdog_position",1000, &SheepNode::sheepdogDangerCallback,this);
+
 	//TODO: talk to the grass, and the field?
 	//TODO: talk to other sheep
 	//TODO: talk to the farmer

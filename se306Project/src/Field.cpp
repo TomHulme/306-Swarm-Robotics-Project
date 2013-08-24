@@ -33,6 +33,7 @@ FieldNode::FieldNode(int number, double x, double y) {
 //Changes the rain value
 void FieldNode::setRain() {
 	//set rain to random number out of 100 (0 - 99)
+	srand(time(NULL));
 	rain = rand() % 100;
 }
 

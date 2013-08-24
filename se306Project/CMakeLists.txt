@@ -32,7 +32,10 @@ rosbuild_add_gtest(test/fieldTest test/FieldTest.cpp src/Field.cpp)
 
 
 
-rosbuild_add_executable(field src/FieldNode.cpp src/Field.cpp)
+rosbuild_add_executable(farmer src/farmer.cpp)
+rosbuild_add_executable(sheepdog src/sheepdog.cpp)
+rosbuild_add_executable(SheepNode src/SheepNode.cpp)
 rosbuild_add_executable(SheepMove src/SheepMove.cpp)
+rosbuild_add_executable(FieldNode src/FieldNode.cpp src/Field.cpp)
 rosbuild_add_executable(truck src/truck.cpp)
 rosbuild_add_executable(listener src/listener.cpp)
