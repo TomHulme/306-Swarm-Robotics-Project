@@ -18,8 +18,8 @@
                    width="801"
                    height="509"
                    sizemode="normal"
-                   screenY="24"
-                   screenX="65" />
+                   screenX="65"
+                   screenY="44" />
   <RDF:Description RDF:about="chrome://browser/content/browser.xul">
     <NC:persist RDF:resource="chrome://browser/content/browser.xul#main-window"/>
     <NC:persist RDF:resource="chrome://browser/content/browser.xul#sidebar-box"/>
