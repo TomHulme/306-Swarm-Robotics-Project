@@ -111,7 +111,7 @@ while (ros::ok())
 	//position message
 	std_msgs::String msg;
 	std::stringstream ss;
-	ss << ("%f %f",px,py) <<;
+	ss << ("%f %f",px,py);
 	msg.data = ss.str();
 	
 	//broadcast the message to anyone who is connected

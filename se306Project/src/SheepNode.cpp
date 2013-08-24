@@ -47,7 +47,7 @@ public:
 	void sheepWalk();
 	
 	//TODO: Sheep Danger sense
-	void sheepDogDangerCallback(std_msgs::String);
+	void sheepdogDangerCallback(std_msgs::String);
 	//TODO: Eating
 	//void eatCallback();
 	
@@ -56,17 +56,17 @@ public:
 	ros::Subscriber sheepdogPosSub;
 };
 
-void SheepNode::sheepDogDangerCallback(std_msgs::String sheepdogMsg) {
-	std::string sheepdogPos (sheepdogMsg);
-	std::string::size_type sz;
+void SheepNode::sheepdogDangerCallback(std_msgs::String sheepdogMsg) {
+	std::string sheepdogPos = sheepdogMsg.data;//.c_str();
+	int split = sheepdogPos.find(" ");
 		
-	float sdx = std::stof(sheepdogPos,&sz);
-	float sdy = std::stof(sheepdogPos.substr(sz));
+	double sdx = std::strtod(sheepdogPos.substr(0, split).c_str(),NULL);
+	double sdy = std::strtod(sheepdogPos.substr(split+1).c_str(),NULL);
 		
 	//Calculate the difference in distance between the sheepdog(sdx)[std_msgs::String msg?] and sheep
 	//closeRange=;
-	xDistanceDiff = abs(sdx - px);
-	yDistanceDiff = abs(sdy - py);
+	double xDistanceDiff = abs(sdx - px);
+	double yDistanceDiff = abs(sdy - py);
 
 	//if sheepdog is near: level of terror is raised depending on the distance to the sheepdog. 
 	//	eg. if it is 10 units away (or whatever distance seems appropriate), then terror is low, but exists. 
@@ -128,7 +128,7 @@ void SheepNode::rosSetup(int argc, char **argv) {
 	//initialise the talkies
 	
 	sheepMovePub = nh.advertise<se306Project::SheepMoveMsg>("sheep_" + convert.str()+ "/move", 1000);
-	sheepdogPosSub = nh.subscribe<std_msgs::String pos_msg>("sheepdog_position",1000,&SheepNode::sheepDogDangerCallback,this);
+	sheepdogPosSub = nh.subscribe<std_msgs::String>("sheepdog_position",1000, &SheepNode::sheepdogDangerCallback,this);
 	//TODO: talk to the grass, and the field?
 	//TODO: talk to other sheep
 	//TODO: talk to the farmer

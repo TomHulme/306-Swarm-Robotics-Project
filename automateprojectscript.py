@@ -32,10 +32,10 @@ worldGenPro.communicate()
 # Removes all lines in the CMakeLists.txt file that were added from previous executions of the script. Clean slate of the file.
 cleanupCMakeFile= Popen("sed -i /rosbuild_add_executable/d se306Project/CMakeLists.txt",shell=True)
 
-
+'''
 # Range goes from 3 to sheep+3 because nodes 0,1,2 are farmer,sheepdog,truck.
 for i in range(3, (num_sheep+3)):
-'''
+
 	copyr0Pro = Popen("cp se306Project/src/R0.cpp se306Project/src/R"+str(i)+".cpp", stdout=PIPE, shell=True)
 	copyr0Pro.communicate();
 	# Updates all references in the .cpp file to the new .cpp file and node it represents
@@ -68,7 +68,7 @@ addToCMakeFile= Popen("echo \"rosbuild_add_executable(sheepdog src/sheepdog.cpp)
 addToCMakeFile = Popen("echo \"rosbuild_add_executable(field src/FieldNode.cpp src/Field.cpp)\" >> se306Project/CMakeLists.txt", shell=True)
 
 
-
+#Add the sheep
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(SheepNode src/SheepNode.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(SheepMove src/SheepMove.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 #addToCMakeFile= Popen("echo \"rosbuild_add_executable(field src/field.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
@@ -103,8 +103,8 @@ rosmakePro= Popen('rosmake se306Project',shell=True)
 rosmakePro.communicate() # Waits until rosmake has finished
 
 # Reset original grass and sheep back to 0
-modifyRPro= Popen("find . -name R0.cpp -exec sed -i \"s/robot_"+str(i)+"/robot_0/g\" {} \;",shell=True)
-modifyRPro= Popen("find . -name Grass0.cpp -exec sed -i \"s/robot_"+str(i+(num_sheep+2))+"/robot_0/g\" {} \;",shell=True)
+#modifyRPro= Popen("find . -name R0.cpp -exec sed -i \"s/robot_"+str(i)+"/robot_0/g\" {} \;",shell=True)
+#modifyRPro= Popen("find . -name Grass0.cpp -exec sed -i \"s/robot_"+str(i+(num_sheep+2))+"/robot_0/g\" {} \;",shell=True)
 
 core = Popen('roscore',shell=True) 
 
@@ -124,6 +124,12 @@ for i in range(num_sheep):
 	runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project SheepNode __name:=sheep{0} _sheepNum:={0}"'""".format(str(i))),stdout=PIPE)
 	runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project SheepMove __name:=sheepMove{0} _sheepNum:={0} _robotNum:={1}"'""".format(str(i), str(i+3))),stdout=PIPE)
 
+#Run Grass nodes
+###TODO: something like the following code
+#for i in range(num_grass):
+#	print "creating grass",i
+#	runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project Grass __name:=grass{0} _grassNum:={0}"'""".format(str(i))),stdout=PIPE)
+#Run Field nodes
 
 #Run Farmer Node
 runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project farmer"'"""),stdout=PIPE)
@@ -131,5 +137,9 @@ runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Proje
 runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project sheepdog"'"""),stdout=PIPE)
 #Run Truck Node
 runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project truck"'"""),stdout=PIPE)
-#Run Field Node
+#Run Field Node(s)
 runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project field"'"""),stdout=PIPE)
+###TODO: something like the following code
+#for i in range(num_fields):
+#	print "creating field",i
+#	runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project Field __name:=field{0} _fieldNum:={0} _xPos:={1} _yPos:={2}"'""".format(str(i),someX, someY)),stdout=PIPE)
