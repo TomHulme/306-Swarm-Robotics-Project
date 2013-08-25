@@ -2,6 +2,8 @@
 #include "std_msgs/String.h"
 #include "nav_msgs/Odometry.h"
 #include "se306Project/SheepMoveMsg.h"
+#include "se306Project/GrassInfoMsg.h"
+#include "se306Project/SheepEatMsg.h"
 
 #include <sstream>
 #include <stdlib.h>
@@ -12,12 +14,18 @@
 enum SheepState {
 	WALKING, RUNNING, EATING, WARY
 };
+//currently arbitrary constants:
+const static int HUNGRY_LEVEL = 80;
+const static int RUNNING_LOWER_TERROR_LIMIT = 70;
+const static int WARY_LOWER_TERROR_LIMIT = 50;
+const static int GRASS_MIN_TASTY_HEIGHT = 30;
+const static int SHEEP_EAT_AMOUNT = 7;
 
 class SheepNode {
 	
 public:
 	//setup methods
-	SheepNode();//(int);
+	SheepNode();
 	void rosSetup(int, char**);
 	void spin();	
 	
@@ -27,11 +35,11 @@ public:
 	SheepState prevState;
 	int currX;
 	int currY;
-	//parameters that need to be used eventually
+	
 	int terror;
 	int hunger;
 	
-//===movement related variables
+//===movement related variables TODO: Cleanup
 	float prevclosestRange;
 	double linear_x;
 	double angular_z;
@@ -47,13 +55,14 @@ public:
 
 	void sheepEat();
 	void sheepWalk();
+	void sheepRun();
 	
 	//TODO: Sheep Danger sense
 	void sheepdogDangerCallback(std_msgs::String);
 	//TODO: Eating
     void grassInfoCallback(se306Project::GrassInfoMsg);
-	//void eatCallback();
-	
+    bool isContainedBy(se306Project::GrassInfoMsg);
+		
 	protected:
 	ros::Publisher sheepMovePub;
 	ros::Publisher grassEatPub;
@@ -62,19 +71,38 @@ public:
 };
 
 void SheepNode::grassInfoCallback(se306Project::GrassInfoMsg grassMsg) {
-	if (currentState == WALKING) {
+	if (SheepNode::isContainedBy(grassMsg)) {
+		if (currentState == WALKING) {
+			if (grassMsg.grassHeight >= GRASS_MIN_TASTY_HEIGHT || hunger > HUNGRY_LEVEL) {
+				prevState = WALKING;
+				currentState = EATING;
+				std::ostringstream grassNum;
+				grassNum << grassMsg.grassNum;
+				grassEatPub = nh.advertise<se306Project::SheepEatMsg>("grass" + grassNum.str() + "/eaten", 1000);
+			}		
+		} else if (currentState == EATING) {
+			//check grass height
+			if (grassMsg.grassHeight < GRASS_MIN_TASTY_HEIGHT) {
+				prevState = EATING;
+				currentState = WALKING;
+			}
+		}
+	} else {
 		//	TODO:	compare msg to current position. 
 		//	TODO: 	if grass position is closer than current goal then:
 		//	TODO:		set new goal
-		//	if sheep is in same position as grass (grass is under the sheep) then:
-		if (SheepNode::isContainedBy(grassMsg)) {
-			if (grassMsg.height > 30 || hunger > 80) {
-				prevState = SheepState(WALKING);
-				currentState = SheepState(EATING);
-				grassEatPub = nh.advertise<se306Project::SheepEatMsg>("grass" + convert.str() + "/eaten", 1000);
-			}		
-		}
+		
 	}
+}
+
+bool SheepNode::isContainedBy(se306Project::GrassInfoMsg grassMsg) {
+	//do some positioning comparisions.
+	//if (x <= px && px <= x + 90(?)) {
+	//	if (y <= py && py <= y + 90(?)) {
+	//		return true;
+	//	}
+	//}
+	return false;
 }
 
 void SheepNode::sheepdogDangerCallback(std_msgs::String sheepdogMsg) {
@@ -101,17 +129,36 @@ void SheepNode::sheepdogDangerCallback(std_msgs::String sheepdogMsg) {
 
 
 void SheepNode::sheepEat(){
-	//send eating on grassEatPub
-	//decrease hunger
+	if(prevState == SheepState(WALKING)) {
+		se306Project::SheepMoveMsg msg;
+		msg.moveCommand = "STOP";
+		sheepMovePub.publish(msg);
+	}
+	prevState = EATING;
+	se306Project::SheepEatMsg msg;
+	msg.eatAmount = SHEEP_EAT_AMOUNT;
+	grassEatPub.publish(msg);
+	hunger = hunger - SHEEP_EAT_AMOUNT;
 }
 
 void SheepNode::sheepWalk() {
-	//if prevState != WALKING
-	//	TODO: publish GO and direction to sheep_x/move (sheepMovePub) [goal movement]
-	//else
-	//	publish GO to sheep_x/move (sheepMovePub)
-	//
+	 
+	//publish GO to sheep_x/move (sheepMovePub)
+	se306Project::SheepMoveMsg msg;
+	msg.moveCommand = "GO";
+	//TODO: msg directions
+	sheepMovePub.publish(msg);
+	prevState = WALKING;
 	hunger++;
+}
+
+void SheepNode::sheepRun() {
+	//TODO: Everything
+	//check current sheepdog position
+	//send 'run' command to SheepMove with correct direction
+	//check current terror level. (may need to be a method.)
+	//if terror is less than a certain level, set state WARY
+	//set prevState = RUNNING
 }
 
 void SheepNode::spin() {
@@ -120,29 +167,39 @@ void SheepNode::spin() {
 	while (ros::ok()) {
 		switch (currentState) {
 			case EATING:
-				if (prevState != SheepState(RUNNING)) {
-					if(prevState == SheepState(WALKING)) {
-						//publish STOP to sheep_x/move (sheepMovePub)
-					}
+				if (prevState == SheepState(WALKING) || prevState == SheepState(EATING)) {
 					this->sheepEat();
+				} else {
+					//something went wrong, set to walking?
+					currentState = WALKING;
 				}
 				break;
 			case WALKING:
-				this->sheepWalk();
+				if (prevState == SheepState(RUNNING)) {
+					//something went wrong, set state to WARY
+					currentState = WARY;
+				} else {
+					this->sheepWalk();
+				}
 				break;
 			case RUNNING:
-				//check current sheepdog position
-				//send 'run' command to SheepMove with correct direction
-				//check current terror level. (may need to be a method.)
-				//if terror is less than a certain level, set state WARY
+				this->sheepRun();
 				break;
 			case WARY:
-				//check terror level.
-				//if higher than a certain level, set state RUNNING
-				//
+				//check (update?) terror level.
+				if (terror >= RUNNING_LOWER_TERROR_LIMIT) {
+					currentState = RUNNING;
+				} else if (terror < WARY_LOWER_TERROR_LIMIT) {
+					currentState = WALKING;
+				}
+				prevState = WARY;
+				break;
+			//TODO: case FOLLOWING:
+			//	if prevState != RUNNING
+			//		do follow logic
+			//		set prevState = FOLLOWING
 			
 		}
-		//deal with 
 		ros::spinOnce();
 	}
 }
@@ -158,7 +215,7 @@ SheepNode::SheepNode() {
 void SheepNode::rosSetup(int argc, char **argv) {
 	std::ostringstream convert;
 	ros::init(argc, argv, "sheep", ros::init_options::AnonymousName);
-	nh = NodeHandle();
+	nh = ros::NodeHandle();
 	ros::NodeHandle n("~");
 	n.getParam("sheepNum", sheepNum);
 	convert << sheepNum;
@@ -167,7 +224,6 @@ void SheepNode::rosSetup(int argc, char **argv) {
 	sheepMovePub = nh.advertise<se306Project::SheepMoveMsg>("sheep_" + convert.str()+ "/move", 1000);
 	sheepdogPosSub = nh.subscribe<std_msgs::String>("sheepdog_position",1000, &SheepNode::sheepdogDangerCallback,this);
 	grassInfoSub = nh.subscribe<se306Project::GrassInfoMsg>("grass/info",1000, &SheepNode::grassInfoCallback, this);
-	//TODO: talk to the grass
 	//TODO: talk to the field?
 	//TODO: talk to other sheep
 	//TODO: talk to the farmer

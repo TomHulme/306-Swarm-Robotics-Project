@@ -194,7 +194,7 @@ void SheepMove::spin() {
 				}
 			}	
 		
-		sheepPosPub.publish(msg);
+			sheepPosPub.publish(msg);
 		}//if not move, do anything?
 	
 		ros::spinOnce(); // Need to call this function often to allow ROS to process incoming messages

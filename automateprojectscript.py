@@ -19,7 +19,7 @@ from os.path import join
 import shlex
 
 filename= "world/myworld.world"
-num_sheep= 2
+num_sheep= 1
 num_fields = 1
 field_X= 4
 field_Y= 4
@@ -63,14 +63,14 @@ for i in range(0, num_grass):
 	addToCMakeFile= Popen("echo \"rosbuild_add_executable(Grass"+str(i)+" src/Grass"+str(i)+".cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 '''
 #Add farmer, sheepdog, listener
-addToCMakeFile= Popen("echo \"rosbuild_add_executable(farmer src/farmer.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
-addToCMakeFile.wait()
-addToCMakeFile= Popen("echo \"rosbuild_add_executable(sheepdog src/sheepdog.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
+#addToCMakeFile= Popen("echo \"rosbuild_add_executable(farmer src/farmer.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
+#addToCMakeFile.wait()
+#addToCMakeFile= Popen("echo \"rosbuild_add_executable(sheepdog src/sheepdog.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 
 #Add the field node into CMakeLists
 #addToCMakeFile = Popen("echo \"rosbuild_add_executable(field src/FieldNode.cpp src/Field.cpp)\" >> se306Project/CMakeLists.txt", shell=True)
 
-addToCMakeFile.wait()
+#addToCMakeFile.wait()
 #Add the sheep
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(SheepNode src/SheepNode.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 addToCMakeFile.wait()
@@ -81,10 +81,10 @@ addToCMakeFile.wait()
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(FieldNode src/FieldNode.cpp src/Field.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 addToCMakeFile.wait()
 #addToCMakeFile= Popen("echo \"rosbuild_add_executable(grass src/grass.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
-addToCMakeFile= Popen("echo \"rosbuild_add_executable(truck src/truck.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
-addToCMakeFile.wait()
-addToCMakeFile= Popen("echo \"rosbuild_add_executable(listener src/listener.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
-addToCMakeFile.wait()
+#addToCMakeFile= Popen("echo \"rosbuild_add_executable(truck src/truck.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
+#addToCMakeFile.wait()
+#addToCMakeFile= Popen("echo \"rosbuild_add_executable(listener src/listener.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
+#addToCMakeFile.wait()
 
 	
 # This checks if there is a running roscore process and if there is, it gets killed
@@ -150,9 +150,9 @@ for i in range(num_fields):
 	runNode = Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project FieldNode {0} {1} {2}"' --title='Field {0}'""".format(str(i), str(field_X), str(field_Y))), stdout=PIPE)
 
 #Run Farmer Node
-runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project farmer"' --title='Farmer'"""),stdout=PIPE)
+#runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project farmer"' --title='Farmer'"""),stdout=PIPE)
 #Run Sheepdog Node
-runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project sheepdog"' --title='Sheepdog'"""),stdout=PIPE)
+#runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project sheepdog"' --title='Sheepdog'"""),stdout=PIPE)
 #Run Truck Node
-runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project truck"' --title='Truck'"""),stdout=PIPE)
+#runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project truck"' --title='Truck'"""),stdout=PIPE)
 
