@@ -76,6 +76,8 @@ addToCMakeFile= Popen("echo \"rosbuild_add_executable(SheepNode src/SheepNode.cp
 addToCMakeFile.wait()
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(SheepMove src/SheepMove.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 addToCMakeFile.wait()
+addToCMakeFile= Popen("echo \"rosbuild_add_executable(GrassNode src/GrassNode.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
+addToCMakeFile.wait()
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(FieldNode src/FieldNode.cpp src/Field.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 addToCMakeFile.wait()
 #addToCMakeFile= Popen("echo \"rosbuild_add_executable(grass src/grass.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
@@ -133,9 +135,9 @@ for i in range(num_sheep):
 
 #Run Grass nodes
 ###TODO: something like the following code
-#for i in range(num_grass):
-#	print "creating grass",i
-#	runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project Grass __name:=grass{0} _grassNum:={0}"'""".format(str(i))),stdout=PIPE)
+for i in range(num_grass):
+	print "creating grass",i
+	runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project GrassNode __name:=grass{0} _sheepNum:={0} _robotNum:={1}"' --title='GrassNode{0}'""".format(str(i), str(i+3+num_sheep))),stdout=PIPE)
 
 #Run Field Node(s)
 #runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project field"'"""),stdout=PIPE)
