@@ -49,6 +49,7 @@ class SheepMove {
 	int checkcount;
 	int sheepNum;
 	int robotNum;
+	int callback_Count;
 	std::string moveStatus;
 	
 	//methods
@@ -99,7 +100,7 @@ void SheepMove::StageOdom_callback(nav_msgs::Odometry msg) {
 			//py= 5;
 			//printf("Robot stuck");
 			if (!isRotate) {	
-				//ROS_INFO("Robot stuck");
+				ROS_INFO("Robot stuck");
 				double r2 = (double)rand()/((double)RAND_MAX/(M_PI/2));
 				double m2 = (double)rand()/((double)RAND_MAX/0.5);
 				//ROS_INFO("r2" << r2);
@@ -115,11 +116,21 @@ void SheepMove::StageOdom_callback(nav_msgs::Odometry msg) {
 		}
 	} else {
 		// Goal positions, need to do something like making this a new method that gets passed in the goal positions for where the grass is 
-		goalpx=3;
-		goalpy=2;
+		
 		
 		px = msg.pose.pose.position.x;
 		py = msg.pose.pose.position.y;
+		
+	
+		// Each sheep has their own initial goal. Temporary fix for the sheep not in the first field always heading towards the wall
+		if (callback_Count == 0) {
+			
+			goalpx=1+px;
+			goalpy=1+py;
+			ROS_INFO("goalpx: %f", goalpx);
+			ROS_INFO("goalpy: %f", goalpy);
+		}
+		
 		
 		// This is to currently stop them from wandering around.
 		//fsm = FSM_GOTO_GOAL;
@@ -201,6 +212,7 @@ void SheepMove::StageOdom_callback(nav_msgs::Odometry msg) {
 	//ROS_INFO("Current y position is: %f", py);
 	prevpx = px;
 	prevpy = py;
+	callback_Count++;
 }
 
 
@@ -327,6 +339,7 @@ SheepMove::SheepMove(int number) {
 	prevpx = 0;
 	sheepNum = number;
 	robotNum = 0;
+	callback_Count=0;
 	correctHeading = false;
 }	
 

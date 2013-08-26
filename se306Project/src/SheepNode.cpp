@@ -165,6 +165,7 @@ void SheepNode::sheepWalk() {
 	se306Project::SheepMoveMsg msg;
 	msg.moveCommand = "GO";
 	//TODO: msg directions
+	msg.speed = sheepSpeed;
 	sheepMovePub.publish(msg);
 	prevState = WALKING;
 	hunger++;
@@ -207,6 +208,7 @@ void SheepNode::spin() {
 	//do things depending on SheepState
 	ros::Rate rate(10); 
 	while (ros::ok()) {
+		ROS_INFO_STREAM(currentState);
 		//deal with state of sheep
 		switch (currentState) {
 			case EATING:
@@ -229,7 +231,6 @@ void SheepNode::spin() {
 				this->sheepRun();
 				break;
 			case WARY:
-				//check (update?) terror level.
 				if (terror >= RUNNING_LOWER_TERROR_LIMIT) {
 					currentState = RUNNING;
 				} else if (terror < WARY_LOWER_TERROR_LIMIT) {
@@ -287,3 +288,4 @@ int main(int argc, char **argv) {
 	
 	sheep.rosSetup(argc, argv);
 }
+
