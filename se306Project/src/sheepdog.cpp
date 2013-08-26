@@ -3,6 +3,7 @@
 #include "sensor_msgs/LaserScan.h"
 #include <nav_msgs/Odometry.h>
 #include "std_msgs/String.h"
+#include <ext/laser_geometry.h>
 
 
 #include <cstdlib> // Needed for rand()
