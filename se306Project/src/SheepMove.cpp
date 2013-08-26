@@ -36,7 +36,7 @@ class SheepMove {
 	double goalpy;
 	bool isRotate;
 	
-	double FORWARD_SPEED_MPS;
+	double SheepSpeed;
 	
 	bool isGoal;
 	bool correctHeading;
@@ -196,8 +196,8 @@ void SheepMove::StageOdom_callback(nav_msgs::Odometry msg) {
 						correctHeading=true;
 					}
 				} else {
-					//ROS_INFO("FORWARD_SPEED_MPS: %f", FORWARD_SPEED_MPS);
-					move(FORWARD_SPEED_MPS,0);
+					//ROS_INFO("SheepSpeed: %f", SheepSpeed);
+					move(SheepSpeed,0);
 				}
 			} else {
 					//ROS_INFO("Reached goal");
@@ -227,26 +227,9 @@ void SheepMove::move(double linearVelMPS, double angularVelRadPS) {
 
 void SheepMove::statusCallback(se306Project::SheepMoveMsg msg) {
 	
-	//moveStatus = msg.moveCommand;
-	std::string lifeStage = msg.age;
-	//ROS_INFO("Finally got here: %s", testing.c_str());
-	if (lifeStage.compare("Birth") == 0) {
-		//ROS_INFO("Birth");
-		FORWARD_SPEED_MPS = 0.1;
-	} else if (lifeStage.compare("Adolescence") == 0) {
-		//ROS_INFO("Adolescence");
-		FORWARD_SPEED_MPS = 0.2;
-
-	} else if (lifeStage.compare("Adulthood") == 0) {
-		//ROS_INFO("Adulthood");
-		FORWARD_SPEED_MPS = 0.3;
-
-	} else if (lifeStage.compare("Old age") == 0) {
-		//ROS_INFO("Old age");
-		FORWARD_SPEED_MPS = 0.2;
-
-	}
-	//TODO: set velocity from msg
+	moveStatus = msg.moveCommand;
+	SheepSpeed = msg.speed;
+	//TODO: set directionality from msg
 }
 
 
@@ -272,7 +255,7 @@ void SheepMove::commandCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
 		}
 		//if (closestRange == prevclosestRange) {
 		//	ROS_INFO_STREAM("STUCK");
-		//	move(-FORWARD_SPEED_MPS, ROTATE_SPEED_RADPS);
+		//	move(-SheepSpeed, ROTATE_SPEED_RADPS);
 		//	//move(0, ROTATE_SPEED_RADPS);
 		//} else {
 			
@@ -306,9 +289,9 @@ void SheepMove::spin() {
    			//ROS_INFO("%s", msg.data.c_str());
    			
 			if (fsm == FSM_MOVE_FORWARD) {
-				//ROS_INFO("FORWARD_SPEED_MPS: %f", FORWARD_SPEED_MPS);
+				//ROS_INFO("SheepSpeed: %f", SheepSpeed);
 				//ROS_INFO_STREAM("Start forward");
-				move(FORWARD_SPEED_MPS, 0);
+				move(SheepSpeed, 0);
 				checkcount++;
 				if (checkcount > 3) {
 					isRotate=false;
@@ -333,8 +316,9 @@ void SheepMove::spin() {
 				isGoal=true;
 			}	
 		
-		sheepPosPub.publish(msg);
-		}//if not move, do anything? 
+			sheepPosPub.publish(msg);
+		}//if not move, do anything?
+
 	
 		ros::spinOnce(); // Need to call this function often to allow ROS to process incoming messages
 		rate.sleep(); // Sleep for the rest of the cycle, to enforce the FSM loop rate
