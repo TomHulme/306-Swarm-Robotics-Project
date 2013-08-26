@@ -1,6 +1,7 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include "nav_msgs/Odometry.h"
+#include "geometry_msgs/Pose2D.h"
 #include "se306Project/SheepMoveMsg.h"
 #include "se306Project/GrassInfoMsg.h"
 #include "se306Project/SheepEatMsg.h"
@@ -14,6 +15,11 @@
 enum SheepState {
 	WALKING, RUNNING, EATING, WARY
 };
+
+enum SheepAgeStages {
+	BIRTH, ADOLESCENCE, ADULTHOOD, OLD_AGE
+};
+
 //currently arbitrary constants:
 const static int HUNGRY_LEVEL = 80;
 const static int RUNNING_LOWER_TERROR_LIMIT = 70;
@@ -33,16 +39,19 @@ public:
 	int sheepNum;
 	SheepState currentState;
 	SheepState prevState;
+	SheepAgeStages age; 
 	int currX;
 	int currY;
 	
 	int terror;
 	int hunger;
+	int sheepAge;
 	
 //===movement related variables TODO: Cleanup
 	float prevclosestRange;
 	double linear_x;
 	double angular_z;
+	double sheepSpeed;
 	//pose of the robot
 	double px;
 	double py;
@@ -62,9 +71,12 @@ public:
 	//TODO: Eating
     void grassInfoCallback(se306Project::GrassInfoMsg);
     bool isContainedBy(se306Project::GrassInfoMsg);
+	
+	void SheepLifeCycle();
 		
 	protected:
 	ros::Publisher sheepMovePub;
+	ros::Publisher sheepPosePub;
 	ros::Publisher grassEatPub;
 	ros::Subscriber sheepdogPosSub;
     ros::Subscriber grassInfoSub;
@@ -105,12 +117,10 @@ bool SheepNode::isContainedBy(se306Project::GrassInfoMsg grassMsg) {
 	return false;
 }
 
-void SheepNode::sheepdogDangerCallback(std_msgs::String sheepdogMsg) {
-	std::string sheepdogPos = sheepdogMsg.data;
-	int split = sheepdogPos.find(" ");
+void SheepNode::sheepdogDangerCallback(geometry_msgs::Pose2D sheepdogMsg) {
 		
-	double sdx = std::strtod(sheepdogPos.substr(0, split).c_str(),NULL);
-	double sdy = std::strtod(sheepdogPos.substr(split+1).c_str(),NULL);
+	double sdx = sheepdogMsg.x;
+	double sdy = sheepdogMsg.y;
 		
 	//Calculate the difference in distance between the sheepdog(sdx)[std_msgs::String msg?] and sheep
 	//closeRange=;
@@ -121,15 +131,23 @@ void SheepNode::sheepdogDangerCallback(std_msgs::String sheepdogMsg) {
 	//	eg. if it is 10 units away (or whatever distance seems appropriate), then terror is low, but exists. 
 	//       if it is at 6 units away, terror goes up again, and sheep move away from the dog.
 	//		 if it is at 3 units away or less, sheep runs away from dog.
-	//if (xDistanceDiff<=20||yDistanceDiff<=20){
-	//	scared(sdx,sdy);
-	//}
-	//TODO: Set CurrentState: RUNNING. 
-}
+	if (xDistanceDiff<=5||yDistanceDiff<=5){
+		runaway(sdx,sdy);
+	}									
+	ROS_INFO("Robot 0 -- Current x position is: %f", px);
+	ROS_INFO("Robot 0 -- Current y position is: %f", py);
+			
+	
+};
+
+void runaway(float sdx, float sdy) {
+	ROS_INFO("x Distance between Sheepdog and Sheep: %f",sdx);
+	ROS_INFO("y Distance between Sheepdog and Sheep: %f",sdy);
+};
 
 
 void SheepNode::sheepEat(){
-	if(prevState == SheepState(WALKING)) {
+	if (prevState == SheepState(WALKING)) {
 		se306Project::SheepMoveMsg msg;
 		msg.moveCommand = "STOP";
 		sheepMovePub.publish(msg);
@@ -155,16 +173,41 @@ void SheepNode::sheepWalk() {
 void SheepNode::sheepRun() {
 	//TODO: Everything
 	//check current sheepdog position
-	//send 'run' command to SheepMove with correct direction
+	//send 'run' command to SheepMove with correct direction and double the current speed
 	//check current terror level. (may need to be a method.)
 	//if terror is less than a certain level, set state WARY
 	//set prevState = RUNNING
+}
+
+void SheepNode::SheepLifeCycle() {
+// Handles the different stages of a sheeps life and creates messages to be sent to sheep_move
+
+	switch (sheepAge) {
+		case 300: // 30 secs
+			age = ADOLESCENCE;
+			//ROS_INFO("Adolescence");
+			sheepSpeed = 0.2;
+			break;
+		case 600: // 1 min
+			age = ADULTHOOD;
+			//ROS_INFO("Adulthood");
+			sheepSpeed = 0.3;
+			break;
+		case 900: // 1 min 30 secs
+			age = OLD_AGE;
+			//ROS_INFO("Old age");
+			sheepSpeed = 0.2;
+			break;
+			
+	}
+	sheepAge++;
 }
 
 void SheepNode::spin() {
 	//do things depending on SheepState
 	ros::Rate rate(10); 
 	while (ros::ok()) {
+		//deal with state of sheep
 		switch (currentState) {
 			case EATING:
 				if (prevState == SheepState(WALKING) || prevState == SheepState(EATING)) {
@@ -200,16 +243,21 @@ void SheepNode::spin() {
 			//		set prevState = FOLLOWING
 			
 		}
+		//deal with age (and illness?)
+		this->SheepLifeCycle();
+		
 		ros::spinOnce();
 	}
 }
 
 SheepNode::SheepNode() {
 	sheepNum = 0;
+	sheepAge = 0;
 	hunger = 0;
 	terror = 0;
 	currentState = WALKING;
-	
+	age = BIRTH;
+	sheepSpeed = 0.1;	
 }
 
 void SheepNode::rosSetup(int argc, char **argv) {
@@ -222,6 +270,7 @@ void SheepNode::rosSetup(int argc, char **argv) {
 	//initialise the talkies
 	
 	sheepMovePub = nh.advertise<se306Project::SheepMoveMsg>("sheep_" + convert.str()+ "/move", 1000);
+	sheepPosePub = nh.advertise<geometry_msgs::Pose2D>("sheep_" + convert.str()+ "/pose", 1000);
 	sheepdogPosSub = nh.subscribe<std_msgs::String>("sheepdog_position",1000, &SheepNode::sheepdogDangerCallback,this);
 	grassInfoSub = nh.subscribe<se306Project::GrassInfoMsg>("grass/info",1000, &SheepNode::grassInfoCallback, this);
 	//TODO: talk to the field?

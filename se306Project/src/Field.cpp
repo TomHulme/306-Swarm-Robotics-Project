@@ -105,7 +105,7 @@ void FieldNode::rosSetup(int argc, char **argv) {
 	ros::NodeHandle n;
 
 	//Create publisher to determine if its functioning
-	ros::Publisher FieldNode_soil_msg = n.advertise < std_msgs::String
+	ros::Publisher FieldNode_soil_msg = n.advertise < se306Project::FieldMsg
 			> (name, 1000);
 
 	ros::Rate loop_rate(10);
@@ -120,13 +120,12 @@ void FieldNode::rosSetup(int argc, char **argv) {
 			count = 0;
 
 			//Publish field quality on a topic
-			std_msgs::String soilQuality;
+			se306Project::FieldMsg msg;
 
-			std::stringstream ss;
-			ss << this->getSoilType();
-			soilQuality.data = ss.str();
+			msg.sunLight = this->sunLight;
+			msg.quality = this->getSoilType();
 
-			FieldNode_soil_msg.publish(soilQuality);
+			FieldNode_soil_msg.publish(msg);
 
 			//Used to check parameters of field while running.
 			ROS_INFO("Current sunlight is %d", this->sunLight);

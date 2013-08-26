@@ -52,6 +52,7 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
   size [0.35 0.35 0.25]
   drive "diff"
   mylaser(pose [ 0.050 0.000 -0.1 0.000 ])
+  localization_origin [0 0 0 0]
 )
 """
 
@@ -59,6 +60,7 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
 (
   drive "diff"
   mylaser(pose [ 0.050 0.000 -0.1 90 ])
+  localization_origin [0 0 0 0]
 )
 """
 
@@ -66,12 +68,15 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
 (
   drive "diff"
   mytrucklaser(pose [ 0.050 0.000 0.050 90 ])
+  localization_origin [0 0 0 0]
 )
 """
+
     grass_def = """define grass position
 (
-    size [0.9 0.9 0.1]
+    size [0.75 0.75 0.1]
     mylaser(pose [ 0.050 0.000 0 0.000 ])
+    localization_origin [0 0 0 0]
 )
 """
 
@@ -116,7 +121,7 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     fo.write(myblock_def)
     #Write resolution to file
     fo.write("resolution 0.02\n")
-    #Write sim_interval to file
+    #Write sim_interval to file 
     fo.write("interval_sim 100\n")
     #Write window definition to file
     fo.write(window_def)
