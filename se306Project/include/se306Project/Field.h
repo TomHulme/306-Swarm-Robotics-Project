@@ -11,6 +11,7 @@
 
 #include "ros/ros.h"
 #include "std_msgs/String.h"
+#include "se306Project/FieldMsg.h"
 #include "nav_msgs/Odometry.h"
 #include <iostream>
 #include <time.h>
