@@ -83,6 +83,8 @@ addToCMakeFile= Popen("echo \"rosbuild_add_executable(truck src/truck.cpp)\" >> 
 addToCMakeFile.wait()
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(listener src/listener.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 addToCMakeFile.wait()
+addToCMakeFile= Popen("echo \"rosbuild_add_executable(laserScanToPointCloud src/LaserScanToPointCloud.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
+addToCMakeFile.wait()
 
 	
 # This checks if there is a running roscore process and if there is, it gets killed
