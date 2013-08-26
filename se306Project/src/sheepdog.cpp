@@ -1,9 +1,12 @@
 #include "ros/ros.h"
 #include "geometry_msgs/Twist.h"
 #include "sensor_msgs/LaserScan.h"
+#include "sensor_msgs/PointCloud.h"
+#include "geometry_msgs/Pose2D.h"
 #include <nav_msgs/Odometry.h>
 #include "std_msgs/String.h"
-#include <ext/laser_geometry.h>
+#include <tf/transform_listener.h>
+#include <laser_geometry/laser_geometry.h>
 
 
 #include <cstdlib> // Needed for rand()
@@ -16,7 +19,7 @@ double angular_z;
 //pose of the robot
 double px;
 double py;
-double pz;
+double tz;
 double theta;
 double prevpx;
 double prevpy;
@@ -39,12 +42,13 @@ class Sheepdog {
 		// the queue to be sent, only the last command will be sent)
 		ros::NodeHandle n;
 		commandPub = nh.advertise<geometry_msgs::Twist>("robot_1/cmd_vel",1000);
-		sheepdogPosPub = nh.advertise<std_msgs::String>("sheepdog_position",1000);
+		sheepdogPosPub = nh.advertise<geometry_msgs::Pose2D>("sheepdog_position",1000);
 		// Subscribe to the simulated robot's laser scan topic and tell ROS to call
 		// this->commandCallback() whenever a new message is published on that topic
 		laserSub = nh.subscribe<sensor_msgs::LaserScan>("robot_1/base_scan", 1000, &Sheepdog::commandCallback, this);
 		StageOdo_sub = nh.subscribe<nav_msgs::Odometry>("robot_1/odom",1000, &Sheepdog::StageOdom_callback,this);
-		
+        point_cloud_publisher_ = node_.advertise<sensor_msgs::PointCloud> ("/camera", 1000, false);
+        tfListener_.setExtrapolationLimit(ros::Duration(0.1));
 		
 
 	};
@@ -55,7 +59,7 @@ class Sheepdog {
 		
 		px = 5 + msg.pose.pose.position.x;
 		py = 5 + msg.pose.pose.position.y;
-		pz = pz + msg.twist.twist.angular.z;
+		tz = tz + msg.twist.twist.angular.z;
 		//printf("%f",px);
 		
 		// If the current position is the same the previous position, then the robot is stuck and needs to move around
@@ -87,7 +91,7 @@ class Sheepdog {
 		}
 		ROS_INFO("Sheepdog -- Current x position is: %f", px);
 		ROS_INFO("Sheepdog -- Current y position is: %f", py);
-		ROS_INFO("Sheepdog -- Current z position is: %f", pz);
+		ROS_INFO("Sheepdog -- Current z position is: %f", tz);
 		prevpx = px;
 		prevpy = py;
 	};
@@ -106,6 +110,9 @@ class Sheepdog {
 
 	// Process the incoming laser scan message
 	void commandCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
+		sensor_msgs::PointCloud cloud;
+		projector_.transformLaserScanToPointCloud("robot_1/base_link", *msg, cloud, tfListener_);
+		point_cloud_publisher_.publish(cloud);
 		if (fsm == FSM_MOVE_FORWARD) {
 			// Compute the average range value between MIN_SCAN_ANGLE and MAX_SCAN_ANGLE
 			//
@@ -124,6 +131,8 @@ class Sheepdog {
 					closestRange = msg->ranges[currIndex];
 				}
 			}
+			
+			
 			//if (closestRange == prevclosestRange) {
 			//	ROS_INFO_STREAM("STUCK");
 			//	move(-FORWARD_SPEED_MPS, ROTATE_SPEED_RADPS);
@@ -148,11 +157,10 @@ class Sheepdog {
 	void spin() {
 		ros::Rate rate(10); // Specify the FSM loop rate in Hz
 		while (ros::ok()) { // Keep spinning loop until user presses Ctrl+C
-			std_msgs::String msg;
-			std::stringstream ss;
-			ss << "Sheepdog -- px:" << px << " py:" << py << " theta:" << theta << " isRotate:" << isRotate;
-    			msg.data = ss.str();
-    			
+			geometry_msgs::Pose2D msg;
+			msg.x = px;
+			msg.y = py;
+			msg.theta = tz;
     			//ROS_INFO("%s", msg.data.c_str());
     			
 			if (fsm == FSM_MOVE_FORWARD) {
@@ -202,6 +210,12 @@ class Sheepdog {
 	ros::Duration rotateDuration; // Duration of the rotation
 	ros::Subscriber StageOdo_sub;
 	
+	private:
+		ros::NodeHandle node_;
+        laser_geometry::LaserProjection projector_;
+        tf::TransformListener tfListener_;
+
+        ros::Publisher point_cloud_publisher_;
 
 };
 int main(int argc, char **argv) {
