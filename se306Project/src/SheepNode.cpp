@@ -13,6 +13,10 @@ enum SheepState {
 	WALKING, RUNNING, EATING
 };
 
+enum SheepAgeStages {
+	BIRTH, ADOLESCENCE, ADULTHOOD, OLD_AGE
+};
+
 class SheepNode {
 	
 public:
@@ -23,11 +27,12 @@ public:
 	
 	int sheepNum;
 	SheepState currentState;
+	SheepAgeStages age; 
 	int currX;
 	int currY;
 	//parameters that need to be used eventually
 	int terror;
-	int age;
+	//int age;
 	
 //===movement related variables
 	float prevclosestRange;
@@ -90,7 +95,13 @@ void SheepNode::sheepWalk() {
 
 void SheepNode::spin() {
 	//do things depending on SheepState
-	ros::Rate rate(10); 
+	ros::Rate rate(10); // 1 second
+	se306Project::SheepMoveMsg msg;
+	
+	msg.age= "Birth";
+	sheepMovePub.publish(msg);
+
+	int count = 0;
 	while (ros::ok()) {
 		//bool stateChanged = false;
 		//deal with current state
@@ -103,16 +114,39 @@ void SheepNode::spin() {
 			
 		} //TODO: Running
 		//if (stateChanged) {
-			
-		//}
+				//}
 		//if state has changed, do relevant things??
+		
+		// Handles the different stages of a sheeps life and creates messages to be sent to sheep_move
+		if (count == 300) { // 30 secs
+			age = ADOLESCENCE;
+			//ROS_INFO("Adolescence");
+			msg.age = "Adolescence";
+			
+		} else if (count == 600) { // 1 min
+			age = ADULTHOOD;
+			//ROS_INFO("Adulthood");
+			msg.age = "Adulthood";
+
+		} else if (count == 900) { // 1 min 30 secs
+			age = OLD_AGE;
+			//ROS_INFO("Old age");
+			msg.age = "OLD_AGE";
+		}
+		sheepMovePub.publish(msg); // Publishes the message that contains the sheeps life stage
+		count++;
+
 		ros::spinOnce();
+	
+		//ROS_INFO("Count: %d", count);
+		rate.sleep();
 	}
 }
 	
 SheepNode::SheepNode() {//(int number) {
 	sheepNum = 0;
 	currentState = WALKING;
+	age = BIRTH;
 	
 }
 
