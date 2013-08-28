@@ -60,11 +60,11 @@ void FieldNode::setSoil() {
 		}
 		break;
 	case ARID:
-		if (rain < 20) { //2% chance
+		if (rain < 20) { //20% chance
 			soil = ARID;
 		} else if (rain < 98) { //78% chance
 			soil = NORMAL;
-		} else { //20% chance
+		} else { //2% chance
 			soil = FERTILE;
 		}
 		break;
