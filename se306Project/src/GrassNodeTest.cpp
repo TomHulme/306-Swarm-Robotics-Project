@@ -2,7 +2,6 @@
 #include "std_msgs/String.h"
 #include "nav_msgs/Odometry.h"
 #include "se306Project/FieldMsg.h"
-#include "se306Project/GrassPosMsg.h"
 #include "geometry_msgs/Twist.h"
 
 #include <sstream>
@@ -25,13 +24,12 @@ public:
 	int grassNum;
 	int robotNum;
 	int fieldNum;
-	double grassX;
-	double grassY;
-	double grassZ;
+	double grassZ;	//heading
+	double grassLife;	//life
 	//parameters that need to be used eventually
 	double growth; // %/s
 	double decay; // %/s
-	double netGrowth;
+	double netGrowth;	//angular v
 	std::string soilQuality;
 	int sunLight;
 	int nextZ;
@@ -40,16 +38,14 @@ protected:
 	ros::Subscriber StageOdo_sub;
 	ros::Publisher commandPub;
 	ros::Subscriber FieldNode_sub;
-	ros::Publisher grassPosPub;
 };
 
 GrassNode::GrassNode() {
 	grassNum = 0;
 	robotNum = 0;
 	fieldNum = 0;
-	grassX = 0;
-	grassY = 0;
 	grassZ = 0;
+	grassLife = 100;
 	growth = 0;
 	decay = 0;
 	netGrowth = 0;
@@ -66,32 +62,12 @@ GrassNode::GrassNode (int grass, int robot, int field) {
 }	
 
 void GrassNode::grassGrow(){
+
+	netGrowth = growth + decay;
+
+	grassLife
 	
-	decay = growth + 1;
-	netGrowth = growth - decay;	// %/s
 	
-	// % to angle conversion	
-	netGrowth = -netGrowth*0.1;	// angle/
-	nextZ = grassZ + netGrowth;
-
-	// Display grassZ
-	std::ostringstream convertZ;
-	convertZ << grassZ;
-	std::string grassZStr = convertZ.str();
-	ROS_INFO_STREAM("grassZ: " + grassZStr);	
-
-	if (grassZ > -0.5 && grassZ < 0) {
-		netGrowth = 0 - grassZ;
-	} else if (grassZ <= -0.5 && grassZ > -1) {
-		netGrowth = 0.999999999999999999999999999999999999999989999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 + grassZ;
-	}
-
-	// Display netGrowth
-	std::ostringstream convertG;
-	convertG << netGrowth;
-	std::string netGrowthStr = convertG.str();
-	ROS_INFO_STREAM("netGrowth: " + netGrowthStr);
-
 	geometry_msgs::Twist msg; // The default constructor will set all commands to 0
 	msg.angular.z = netGrowth;
 	commandPub.publish(msg);
@@ -149,7 +125,7 @@ void GrassNode::rosSetup(int argc, char **argv) {
 	commandPub = n.advertise<geometry_msgs::Twist>(r + "/cmd_vel",1000);
 	//commandPub = n.advertise<nav_msgs::Odometry>(r + "/odom",1000);
 	FieldNode_sub = n.subscribe<se306Project::FieldMsg>(f,1000, &GrassNode::fieldNode_callback, this);
-	grassPosPub = n.advertise<se306Project::GrassPosMsg>("grassPos", 1000);
+	//sheepMovePub = n.advertise<se306Project::SheepMoveMsg>("grass_" + convert.str()+ "/move", 1000);
 	//sheepdogPosSub = n.subscribe<std_msgs::String>("sheepdog_position",1000, &SheepNode::sheepdogDangerCallback,this);
 
 	//: talk to the grass, and the field?
@@ -158,9 +134,7 @@ void GrassNode::rosSetup(int argc, char **argv) {
 	
 }
 
-void GrassNode::stageOdom_callback(nav_msgs::Odometry msg) {
-	grassX = 0 + msg.pose.pose.position.x;
-	grassY = 0 + msg.pose.pose.position.y;	
+void GrassNode::stageOdom_callback(nav_msgs::Odometry msg) {	
 	grassZ = 0 + msg.pose.pose.orientation.z;
 }
 
@@ -172,11 +146,11 @@ void GrassNode::fieldNode_callback(se306Project::FieldMsg msg) {
 	ROS_INFO_STREAM(soilQuality); // Prints the current z value of the grass	
 
 	if (soilQuality == "Arid") {
-		growth = 0.25; // %/s
-	} else if (soilQuality == "Normal") {
 		growth = 0.5; // %/s
-	} else {
+	} else if (soilQuality == "Normal") {
 		growth = 1; // %/s
+	} else {
+		growth = 2; // %/s
 	}
 	
 	growth = ((50+(double)sunLight)/100)*growth; // %/s == 1.8*growth
@@ -186,19 +160,6 @@ void GrassNode::spin() {
 	ros::Rate rate(10); // 10 Hz
 	while (ros::ok()) {
 		this->grassGrow();
-
-		se306Project::GrassPosMsg msg;
-
-		msg.grassNum = this->grassNum;
-		msg.x = this->grassX;
-		msg.y = this->grassY;
-		
-		int fGrowth = 100-(100*this->grassZ);
-
-		msg.growth = fGrowth;
-
-		grassPosPub.publish(msg);
-
 		ros::spinOnce();
 		rate.sleep();
 	}

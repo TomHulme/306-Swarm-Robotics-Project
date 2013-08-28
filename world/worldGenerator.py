@@ -68,9 +68,10 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
   mytrucklaser(pose [ 0.050 0.000 0.050 90 ])
 )
 """
+
     grass_def = """define grass position
 (
-    size [0.9 0.9 0.1]
+    size [0.75 0.75 0.1]
     mylaser(pose [ 0.050 0.000 0 0.000 ])
 )
 """
