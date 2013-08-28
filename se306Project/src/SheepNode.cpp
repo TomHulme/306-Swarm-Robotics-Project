@@ -13,6 +13,10 @@ enum SheepState {
 	WALKING, RUNNING, EATING
 };
 
+enum SheepAgeStages {
+	BIRTH, ADOLESCENCE, ADULTHOOD, OLD_AGE
+};
+
 class SheepNode {
 	
 public:
@@ -23,6 +27,7 @@ public:
 	
 	int sheepNum;
 	SheepState currentState;
+	SheepAgeStages age; 
 	int currX;
 	int currY;
 	//parameters that need to be used eventually
@@ -93,6 +98,7 @@ void SheepNode::sheepWalk() {
 void SheepNode::spin() {
 	//do things depending on SheepState
 	ros::Rate rate(10); 
+	int count = 0;
 	while (ros::ok()) {
 		//bool stateChanged = false;
 		//deal with current state
@@ -105,16 +111,25 @@ void SheepNode::spin() {
 			
 		} //TODO: Running
 		//if (stateChanged) {
-			
+		
+		if (count == 300) {
+			age = ADOLESCENCE;
+		} else if (count == 600) {
+			age = ADULTHOOD;
+		} else if (count == 900) {
+			age = OLD_AGE;
+		}
 		//}
 		//if state has changed, do relevant things??
 		ros::spinOnce();
+		count++;
 	}
 }
 	
 SheepNode::SheepNode() {//(int number) {
 	sheepNum = 0;
 	currentState = WALKING;
+	age = BIRTH;
 	
 }
 
