@@ -59,6 +59,7 @@ public:
 	
 	protected:
 	ros::Publisher sheepMovePub;
+	ros::Publisher sheepPosePub;
 	ros::Subscriber sheepdogPosSub;
 };
 
@@ -137,6 +138,15 @@ void SheepNode::spin() {
 		sheepMovePub.publish(msg); // Publishes the message that contains the sheeps life stage
 		count++;
 
+	
+		// Sheep Position Publishing
+		geometry_msgs::Pose2D Pose2Dmsg;
+		Pose2Dmsg.x = px;
+		Pose2Dmsg.y = py;
+		
+		sheepPosePub.publish(Pose2Dmsg);
+		
+		
 		ros::spinOnce();
 	
 		//ROS_INFO("Count: %d", count);
@@ -161,6 +171,7 @@ void SheepNode::rosSetup(int argc, char **argv) {
 	//initialise the talkies
 	
 	sheepMovePub = nh.advertise<se306Project::SheepMoveMsg>("sheep_" + convert.str()+ "/move", 1000);
+	sheepPosePub = nh.advertise<geometry_msgs::Pose2D>("sheep_" + convert.str()+ "/pose", 1000);
 	sheepdogPosSub = nh.subscribe<geometry_msgs::Pose2D>("sheepdog_position",1000, &SheepNode::sheepdogDangerCallback,this);
 
 	//TODO: talk to the grass, and the field?
