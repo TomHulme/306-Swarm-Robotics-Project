@@ -16,7 +16,7 @@ enum FSM {FSM_MOVE_FORWARD, FSM_ROTATE, FSM_GOTO_GOAL};
 const static double MIN_SCAN_ANGLE_RAD = -10.0/180*M_PI;
 const static double MAX_SCAN_ANGLE_RAD = +10.0/180*M_PI;
 const static float PROXIMITY_RANGE_M = .9; // Should be smaller than sensor_msgs::LaserScan::range_max
-const static double FORWARD_SPEED_MPS = 0.2;
+
 const static double ROTATE_SPEED_RADPS = M_PI/2;
 
 class SheepMove {
@@ -35,6 +35,8 @@ class SheepMove {
 	double goalpx;
 	double goalpy;
 	bool isRotate;
+	
+	double FORWARD_SPEED_MPS;
 	
 	bool isGoal;
 	bool correctHeading;
@@ -183,7 +185,8 @@ void SheepMove::StageOdom_callback(nav_msgs::Odometry msg) {
 						correctHeading=true;
 					}
 				} else {
-					move(.2,0);
+					//ROS_INFO("FORWARD_SPEED_MPS: %f", FORWARD_SPEED_MPS);
+					move(FORWARD_SPEED_MPS,0);
 				}
 			} else {
 					//ROS_INFO("Reached goal");
@@ -207,10 +210,30 @@ void SheepMove::move(double linearVelMPS, double angularVelRadPS) {
 	msg.linear.x = linearVelMPS;
 	msg.angular.z = angularVelRadPS;
 	commandPub.publish(msg);
+
 }
 
 void SheepMove::statusCallback(se306Project::SheepMoveMsg msg) {
-	moveStatus = msg.moveCommand;
+	
+	//moveStatus = msg.moveCommand;
+	std::string testing = msg.age;
+	//ROS_INFO("Finally got here: %s", testing.c_str());
+	if (testing.compare("Birth") == 0) {
+		//ROS_INFO("Birth");
+		FORWARD_SPEED_MPS = 0.1;
+	} else if (testing.compare("Adolescence") == 0) {
+		//ROS_INFO("Adolescence");
+		FORWARD_SPEED_MPS = 0.2;
+
+	} else if (testing.compare("Adulthood") == 0) {
+		//ROS_INFO("Adulthood");
+		FORWARD_SPEED_MPS = 0.3;
+
+	} else if (testing.compare("Old age") == 0) {
+		//ROS_INFO("Old age");
+		FORWARD_SPEED_MPS = 0.2;
+
+	}
 	//TODO: set velocity from msg
 }
 
@@ -271,6 +294,7 @@ void SheepMove::spin() {
    			//ROS_INFO("%s", msg.data.c_str());
    			
 			if (fsm == FSM_MOVE_FORWARD) {
+				//ROS_INFO("FORWARD_SPEED_MPS: %f", FORWARD_SPEED_MPS);
 				//ROS_INFO_STREAM("Start forward");
 				move(FORWARD_SPEED_MPS, 0);
 				checkcount++;

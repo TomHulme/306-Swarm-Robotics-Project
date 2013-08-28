@@ -98,6 +98,11 @@ void SheepNode::sheepWalk() {
 void SheepNode::spin() {
 	//do things depending on SheepState
 	ros::Rate rate(10); 
+	se306Project::SheepMoveMsg msg;
+	
+	msg.age= "Birth";
+	sheepMovePub.publish(msg);
+
 	int count = 0;
 	while (ros::ok()) {
 		//bool stateChanged = false;
@@ -115,17 +120,25 @@ void SheepNode::spin() {
 		if (count == 300) { // 30 secs
 			age = ADOLESCENCE;
 			ROS_INFO("Adolescence");
+			msg.age = "Adolescence";
+			
 		} else if (count == 600) { // 1 min
 			age = ADULTHOOD;
 			ROS_INFO("Adulthood");
+			msg.age = "Adulthood";
+
 		} else if (count == 900) { // 1 min 30 secs
 			age = OLD_AGE;
+			msg.age = "OLD_AGE";
+			//sheepMovePub
 			ROS_INFO("Old age");
 		}
+		
 		//}
 		//if state has changed, do relevant things??
 		ros::spinOnce();
 		count++;
+		sheepMovePub.publish(msg);
 		//ROS_INFO("Count: %d", count);
 		rate.sleep();
 	}
