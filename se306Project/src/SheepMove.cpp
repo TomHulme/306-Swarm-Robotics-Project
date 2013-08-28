@@ -229,7 +229,7 @@ void SheepMove::statusCallback(se306Project::SheepMoveMsg msg) {
 		//ROS_INFO("Adulthood");
 		FORWARD_SPEED_MPS = 0.3;
 
-	} else if (testing.compare("Old age") == 0) {
+	} else if (lifeStage.compare("Old age") == 0) {
 		//ROS_INFO("Old age");
 		FORWARD_SPEED_MPS = 0.2;
 
