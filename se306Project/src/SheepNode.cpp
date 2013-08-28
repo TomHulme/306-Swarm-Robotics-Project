@@ -32,7 +32,7 @@ public:
 	int currY;
 	//parameters that need to be used eventually
 	int terror;
-	int age;
+	//int age;
 	
 //===movement related variables
 	float prevclosestRange;
@@ -112,17 +112,22 @@ void SheepNode::spin() {
 		} //TODO: Running
 		//if (stateChanged) {
 		
-		if (count == 300) {
+		if (count == 300) { // 30 secs
 			age = ADOLESCENCE;
-		} else if (count == 600) {
+			ROS_INFO("Adolescence");
+		} else if (count == 600) { // 1 min
 			age = ADULTHOOD;
-		} else if (count == 900) {
+			ROS_INFO("Adulthood");
+		} else if (count == 900) { // 1 min 30 secs
 			age = OLD_AGE;
+			ROS_INFO("Old age");
 		}
 		//}
 		//if state has changed, do relevant things??
 		ros::spinOnce();
 		count++;
+		//ROS_INFO("Count: %d", count);
+		rate.sleep();
 	}
 }
 	
