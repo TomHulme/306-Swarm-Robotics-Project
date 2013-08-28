@@ -135,6 +135,15 @@ for i in range(num_sheep):
 	print "creating sheep",i
 	runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project SheepNode __name:=sheep{0} _sheepNum:={0}"' --title='SheepNode{0}'""".format(str(i))),stdout=PIPE)
 	runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project SheepMove __name:=sheepMove{0} _sheepNum:={0} _robotNum:={1}"' --title='SheepMove {0}'""".format(str(i), str(i+3))),stdout=PIPE)
+<<<<<<< HEAD
+=======
+
+#Run Grass nodes
+###TODO: something like the following code
+#for i in range(num_grass):
+#	print "creating grass",i
+#	runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project Grass __name:=grass{0} _grassNum:={0}"'""".format(str(i))),stdout=PIPE)
+>>>>>>> 4a61d39b9502cbe49dd21fc4c0b02ba97639e34d
 
 #Run Field Node(s)
 #runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project field"'"""),stdout=PIPE)
@@ -144,11 +153,15 @@ for i in range(num_sheep):
 #	runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project Field __name:=field{0} _fieldNum:={0} _xPos:={1} _yPos:={2}"'""".format(str(i),someX, someY)),stdout=PIPE)
 #Run Field nodes
 for i in range(num_fields):
+<<<<<<< HEAD
 	print "creating field",i
 	runNode = Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project FieldNode {0} {1} {2}"' --title='Field {0}'""".format(str(i), str(field_X), str(field_Y))), stdout=PIPE)
 	for j in range(num_grass_field):
 		print "creating grass",j
 		runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project GrassNode {0} {1} {2}"' --title='Grass {0}'""".format(str((i+1)*j), str(((i+1)*j)+3+num_sheep), str(i))),stdout=PIPE)
+=======
+	runNode = Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project FieldNode {0} {1} {2}"' --title='Field {0}'""".format(str(i), str(field_X), str(field_Y))), stdout=PIPE)
+>>>>>>> 4a61d39b9502cbe49dd21fc4c0b02ba97639e34d
 
 #Run Farmer Node
 runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project farmer"' --title='Farmer'"""),stdout=PIPE)
@@ -156,3 +169,7 @@ runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project fa
 runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project sheepdog"' --title='Sheepdog'"""),stdout=PIPE)
 #Run Truck Node
 runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project truck"' --title='Truck'"""),stdout=PIPE)
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4a61d39b9502cbe49dd21fc4c0b02ba97639e34d
