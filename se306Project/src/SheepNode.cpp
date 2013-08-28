@@ -97,7 +97,7 @@ void SheepNode::sheepWalk() {
 
 void SheepNode::spin() {
 	//do things depending on SheepState
-	ros::Rate rate(10); 
+	ros::Rate rate(10); // 1 second
 	se306Project::SheepMoveMsg msg;
 	
 	msg.age= "Birth";
@@ -116,29 +116,30 @@ void SheepNode::spin() {
 			
 		} //TODO: Running
 		//if (stateChanged) {
+				//}
+		//if state has changed, do relevant things??
 		
+		// Handles the different stages of a sheeps life and creates messages to be sent to sheep_move
 		if (count == 300) { // 30 secs
 			age = ADOLESCENCE;
-			ROS_INFO("Adolescence");
+			//ROS_INFO("Adolescence");
 			msg.age = "Adolescence";
 			
 		} else if (count == 600) { // 1 min
 			age = ADULTHOOD;
-			ROS_INFO("Adulthood");
+			//ROS_INFO("Adulthood");
 			msg.age = "Adulthood";
 
 		} else if (count == 900) { // 1 min 30 secs
 			age = OLD_AGE;
+			//ROS_INFO("Old age");
 			msg.age = "OLD_AGE";
-			//sheepMovePub
-			ROS_INFO("Old age");
 		}
-		
-		//}
-		//if state has changed, do relevant things??
-		ros::spinOnce();
+		sheepMovePub.publish(msg); // Publishes the message that contains the sheeps life stage
 		count++;
-		sheepMovePub.publish(msg);
+
+		ros::spinOnce();
+	
 		//ROS_INFO("Count: %d", count);
 		rate.sleep();
 	}
