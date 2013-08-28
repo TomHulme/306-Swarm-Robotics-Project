@@ -83,8 +83,6 @@ addToCMakeFile.wait()
 #addToCMakeFile= Popen("echo \"rosbuild_add_executable(grass src/grass.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(truck src/truck.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 addToCMakeFile.wait()
-addToCMakeFile= Popen("echo \"rosbuild_add_executable(listener src/listener.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
-addToCMakeFile.wait()
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(laserScanToPointCloud src/LaserScanToPointCloud.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 addToCMakeFile.wait()
 
