@@ -1,5 +1,6 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
+#include "geometry_msgs/Pose2D.h"
 #include "nav_msgs/Odometry.h"
 #include "se306Project/SheepMoveMsg.h"
 
@@ -13,6 +14,10 @@ enum SheepState {
 	WALKING, RUNNING, EATING
 };
 
+enum SheepAgeStages {
+	BIRTH, ADOLESCENCE, ADULTHOOD, OLD_AGE
+};
+
 class SheepNode {
 	
 public:
@@ -23,11 +28,12 @@ public:
 	
 	int sheepNum;
 	SheepState currentState;
+	SheepAgeStages age; 
 	int currX;
 	int currY;
 	//parameters that need to be used eventually
 	int terror;
-	int age;
+	//int age;
 	
 //===movement related variables
 	float prevclosestRange;
@@ -47,7 +53,7 @@ public:
 	void sheepWalk();
 	
 	//TODO: Sheep Danger sense
-	void sheepDogDangerCallback(std_msgs::String);
+	void sheepdogDangerCallback(geometry_msgs::Pose2D sheepdogMsg);
 	//TODO: Eating
 	//void eatCallback();
 	
@@ -56,17 +62,15 @@ public:
 	ros::Subscriber sheepdogPosSub;
 };
 
-void SheepNode::sheepDogDangerCallback(std_msgs::String sheepdogMsg) {
-	std::string sheepdogPos (sheepdogMsg);
-	std::string::size_type sz;
+void SheepNode::sheepdogDangerCallback(geometry_msgs::Pose2D sheepdogMsg) {
 		
-	float sdx = std::stof(sheepdogPos,&sz);
-	float sdy = std::stof(sheepdogPos.substr(sz));
+	double sdx = sheepdogMsg.x;
+	double sdy = sheepdogMsg.y;
 		
 	//Calculate the difference in distance between the sheepdog(sdx)[std_msgs::String msg?] and sheep
 	//closeRange=;
-	xDistanceDiff = abs(sdx - px);
-	yDistanceDiff = abs(sdy - py);
+	double xDistanceDiff = abs(sdx - px);
+	double yDistanceDiff = abs(sdy - py);
 
 	//if sheepdog is near: level of terror is raised depending on the distance to the sheepdog. 
 	//	eg. if it is 10 units away (or whatever distance seems appropriate), then terror is low, but exists. 
@@ -92,7 +96,13 @@ void SheepNode::sheepWalk() {
 
 void SheepNode::spin() {
 	//do things depending on SheepState
-	ros::Rate rate(10); 
+	ros::Rate rate(10); // 1 second
+	se306Project::SheepMoveMsg msg;
+	
+	msg.age= "Birth";
+	sheepMovePub.publish(msg);
+
+	int count = 0;
 	while (ros::ok()) {
 		//bool stateChanged = false;
 		//deal with current state
@@ -105,16 +115,39 @@ void SheepNode::spin() {
 			
 		} //TODO: Running
 		//if (stateChanged) {
-			
-		//}
+				//}
 		//if state has changed, do relevant things??
+		
+		// Handles the different stages of a sheeps life and creates messages to be sent to sheep_move
+		if (count == 300) { // 30 secs
+			age = ADOLESCENCE;
+			//ROS_INFO("Adolescence");
+			msg.age = "Adolescence";
+			
+		} else if (count == 600) { // 1 min
+			age = ADULTHOOD;
+			//ROS_INFO("Adulthood");
+			msg.age = "Adulthood";
+
+		} else if (count == 900) { // 1 min 30 secs
+			age = OLD_AGE;
+			//ROS_INFO("Old age");
+			msg.age = "OLD_AGE";
+		}
+		sheepMovePub.publish(msg); // Publishes the message that contains the sheeps life stage
+		count++;
+
 		ros::spinOnce();
+	
+		//ROS_INFO("Count: %d", count);
+		rate.sleep();
 	}
 }
 	
 SheepNode::SheepNode() {//(int number) {
 	sheepNum = 0;
 	currentState = WALKING;
+	age = BIRTH;
 	
 }
 
@@ -128,7 +161,8 @@ void SheepNode::rosSetup(int argc, char **argv) {
 	//initialise the talkies
 	
 	sheepMovePub = nh.advertise<se306Project::SheepMoveMsg>("sheep_" + convert.str()+ "/move", 1000);
-	sheepdogPosSub = nh.subscribe<std_msgs::String pos_msg>("sheepdog_position",1000,&SheepNode::sheepDogDangerCallback,this);
+	sheepdogPosSub = nh.subscribe<geometry_msgs::Pose2D>("sheepdog_position",1000, &SheepNode::sheepdogDangerCallback,this);
+
 	//TODO: talk to the grass, and the field?
 	//TODO: talk to other sheep
 	//TODO: talk to the farmer

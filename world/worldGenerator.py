@@ -47,18 +47,20 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
 )
 """
 
-    robot_def = """define myrobot position
+    robot_sheep_def = """define sheepRobot position
 (
   size [0.35 0.35 0.25]
   drive "diff"
-  mylaser(pose [ 0.050 0.000 0 0.000 ])
+  mylaser(pose [ 0.050 0.000 -0.1 0.000 ])
+  localization_origin [0 0 0 0]
 )
 """
 
     robot_NOSIZE_def = """define farmRobot position
 (
   drive "diff"
-  mylaser(pose [ 0.050 0.000 0.050 90 ])
+  mylaser(pose [ 0.050 0.000 -0.1 90 ])
+  localization_origin [0 0 0 0]
 )
 """
 
@@ -66,12 +68,15 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
 (
   drive "diff"
   mytrucklaser(pose [ 0.050 0.000 0.050 90 ])
+  localization_origin [0 0 0 0]
 )
 """
+
     grass_def = """define grass position
 (
-    size [0.9 0.9 0.1]
+    size [0.75 0.75 0.1]
     mylaser(pose [ 0.050 0.000 0 0.000 ])
+    localization_origin [0 0 0 0]
 )
 """
 
@@ -103,7 +108,7 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     #Write truck laser definition to file
     fo.write(truck_laser_def)
     #Write robot position definition to file
-    fo.write(robot_def)
+    fo.write(robot_sheep_def)
     #Write robot_truck position definition to file
     fo.write(robot_truck_def)
     #Write robot position WITHOUT SIZE definition to file
@@ -116,7 +121,7 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     fo.write(myblock_def)
     #Write resolution to file
     fo.write("resolution 0.02\n")
-    #Write sim_interval to file
+    #Write sim_interval to file 
     fo.write("interval_sim 100\n")
     #Write window definition to file
     fo.write(window_def)
@@ -167,7 +172,7 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     for i in range(int(numSheep)):
     
         #Construct sheep definition
-        ts1 = 'sheeprobot ('
+        ts1 = 'sheepRobot ('
         ts2 = 'pose [' + str(col) + ' ' + str(row)  +  ' 0.125 '+str(randrange(-180,180))+'] '
         ts3 = 'name "sheepMove' + str(i) + '" '
         ts4 = 'color "white" bitmap "SHEEP.BMP")\n'
