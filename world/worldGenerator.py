@@ -71,9 +71,10 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
   localization_origin [0 0 0 0]
 )
 """
+
     grass_def = """define grass position
 (
-    size [0.9 0.9 0.1]
+    size [0.75 0.75 0.1]
     mylaser(pose [ 0.050 0.000 0 0.000 ])
     localization_origin [0 0 0 0]
 )
