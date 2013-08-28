@@ -57,11 +57,9 @@ public:
 };
 
 void SheepNode::sheepdogDangerCallback(std_msgs::String sheepdogMsg) {
-	std::string sheepdogPos = sheepdogMsg.data;//.c_str();
-	int split = sheepdogPos.find(" ");
 		
-	double sdx = std::strtod(sheepdogPos.substr(0, split).c_str(),NULL);
-	double sdy = std::strtod(sheepdogPos.substr(split+1).c_str(),NULL);
+	double sdx = sheepdogMsg.x;
+	double sdy = sheepdogMsg.y;
 		
 	//Calculate the difference in distance between the sheepdog(sdx)[std_msgs::String msg?] and sheep
 	//closeRange=;
@@ -128,7 +126,7 @@ void SheepNode::rosSetup(int argc, char **argv) {
 	//initialise the talkies
 	
 	sheepMovePub = nh.advertise<se306Project::SheepMoveMsg>("sheep_" + convert.str()+ "/move", 1000);
-	sheepdogPosSub = nh.subscribe<std_msgs::String>("sheepdog_position",1000, &SheepNode::sheepdogDangerCallback,this);
+	sheepdogPosSub = nh.subscribe<geometry_msgs::Pose2D>("sheepdog_position",1000, &SheepNode::sheepdogDangerCallback,this);
 
 	//TODO: talk to the grass, and the field?
 	//TODO: talk to other sheep

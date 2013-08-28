@@ -2,6 +2,7 @@
 #include "tf/transform_listener.h"
 #include "sensor_msgs/PointCloud.h"
 #include "tf/message_filter.h"
+#include "tf/transform_broadcaster.h"
 #include "message_filters/subscriber.h"
 #include "laser_geometry/laser_geometry.h"
 #include "laser_assembler/AssembleScans.h"
@@ -31,6 +32,7 @@ public:
   void scanCallback (const sensor_msgs::LaserScan::ConstPtr& scan_in)
   {
     sensor_msgs::PointCloud cloud;
+    
     try
     {
         projector_.transformLaserScanToPointCloud(
@@ -55,7 +57,6 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "my_scan_to_cloud");
   ros::NodeHandle n;
   LaserScanToPointCloud lstopc(n);
-
   ros::spin();
   
   return 0;

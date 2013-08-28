@@ -151,6 +151,7 @@ class Sheepdog {
 
 		}
 	};
+	
 	// Main FSM loop for ensuring that ROS messages are
 	// processed in a timely manner, and also for sending
 	// velocity controls to the simulated robot based on the FSM state
