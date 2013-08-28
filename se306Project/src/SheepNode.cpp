@@ -1,5 +1,6 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
+#include "geometry_msgs/Pose2D.h"
 #include "nav_msgs/Odometry.h"
 #include "se306Project/SheepMoveMsg.h"
 
@@ -52,7 +53,7 @@ public:
 	void sheepWalk();
 	
 	//TODO: Sheep Danger sense
-	void sheepdogDangerCallback(std_msgs::String);
+	void sheepdogDangerCallback(geometry_msgs::Pose2D sheepdogMsg);
 	//TODO: Eating
 	//void eatCallback();
 	
@@ -61,7 +62,7 @@ public:
 	ros::Subscriber sheepdogPosSub;
 };
 
-void SheepNode::sheepdogDangerCallback(std_msgs::String sheepdogMsg) {
+void SheepNode::sheepdogDangerCallback(geometry_msgs::Pose2D sheepdogMsg) {
 		
 	double sdx = sheepdogMsg.x;
 	double sdy = sheepdogMsg.y;
