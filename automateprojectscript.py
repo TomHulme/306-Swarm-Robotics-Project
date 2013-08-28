@@ -145,10 +145,10 @@ for i in range(num_sheep):
 #Run Field nodes
 for i in range(num_fields):
 	print "creating field",i
-	runNode = Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project FieldNode {0} {1} {2}"' --title='Field {0}'""".format(str(i), str(field_X), str(field_Y))), stdout=PIPE)
+	runNode = Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project FieldNode {0} {1} {2}"' --title='Field {0}'""".format(str(i), str(field_X), str(field_Y))), stdout=PIPE)
 	for j in range(num_grass_field):
 		print "creating grass",j
-		runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project GrassNode {0} {1} {2}"' --title='Grass {0}'""".format(str((i+1)*j), str(((i+1)*j)+3+num_sheep), str(i))),stdout=PIPE)
+		runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project GrassNode {0} {1} {2}"' --title='Grass {0}'""".format(str((i+1)*j), str(((i+1)*j)+3+num_sheep), str(i))),stdout=PIPE)
 
 #Run Farmer Node
 runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project farmer"' --title='Farmer'"""),stdout=PIPE)
