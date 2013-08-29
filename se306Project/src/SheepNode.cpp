@@ -61,6 +61,8 @@ public:
 	double prevpy;
 	bool isRotate;
 	int checkcount;
+	double sdx;
+	double sdy;
 //===
 
 	void sheepEat();
@@ -95,8 +97,56 @@ void SheepNode::currentPositionCallback(se306Project::SheepMoveMsg msg) {
 };
 
 void SheepNode::sheepdogDangerCallback(geometry_msgs::Pose2D sheepdogMsg) {
-	//TODO:Merge changes from sheep_scared
+		
+		
+		double sdxnew = sheepdogMsg.x;
+		double sdynew = sheepdogMsg.y;
+			
+		//Calculate the difference in distance between the sheepdog(sdx)[std_msgs::String msg?] and sheep
+		//closeRange=;
+		//double xDistanceDiff = abs(sdx - px);
+		//double yDistanceDiff = abs(sdy - py);
 
+
+		
+		double DistanceDiff = sqrt((abs(sdx - px)*abs(sdx - px))+(abs(sdy - py)*abs(sdy - py)));
+		double DistanceDiffnew = sqrt((abs(sdxnew - px)*abs(sdxnew - px))+(abs(sdynew - py)*abs(sdynew - py)); 
+
+		/* check the distance & find out the terror increase
+		 * add the terror increase to the terror level (global var)		 * }*/
+		if (((sdxnew - sdx) != 0.0) || (sdynew - sdy != 0.0)) && DistanceDiffnew < DistanceDiff){
+			if (DistanceDiffnew<=3){
+				terror=terror+10;
+			}else if (DistanceDiffnew<=6){
+				terror=terror+5;
+			}else if(DistanceDiffnew<=10){
+				terror=terror+2;
+			}
+		//When Sheepdog is moving away from sheep
+		}else if ((((sdxnew - sdx) != 0.0) || (sdynew - sdy != 0.0)) && DistanceDiffnew > DistanceDiff){
+			terror = terror -5;
+		}
+
+		if (terror >= WARY_LOWER_TERROR_LIMIT && terror < RUNNING_LOWER_TERROR_LIMIT) {
+			prevState = currentState;
+			currentState = WARY;
+		} else if (terror >= RUNNING_LOWER_TERROR_LIMIT){
+			prevState = currentState;
+			currentState = RUNNING;	
+		}
+
+		
+		if (terror >= WARY_LOWER_TERROR_LIMIT && terror < RUNNING_LOWER_TERROR_LIMIT){
+			prevState = currentState;
+			currentState = WARY;
+		}else if (terror >= RUNNING_LOWER_TERROR_LIMIT){
+			prevState = currentState;
+			currentState = RUNNING;	
+		}
+		
+		sdx = sdxnew;
+		sdy = sdynew;
+	
 };
 
 void SheepNode::grassInfoCallback(se306Project::GrassPosMsg grassMsg) {
@@ -165,13 +215,39 @@ void SheepNode::sheepWalk() {
 };
 
 void SheepNode::sheepRun() {
-	//TODO: Everything. Merge from sheep_scared branch
-	//check current sheepdog position
-	//send 'run' command to SheepMove with correct direction and double the current speed
-	//check current terror level. (may need to be a method.)
-	//if terror is less than a certain level, set state WARY
-	//set prevState = RUNNING
-};
+		
+		double xDistanceDiff = (px - sdx);
+		double yDistanceDiff = (py - sdy);
+
+		goalPositionX = px+xDistanceDiff;
+		goalPositionY = py+yDistanceDiff;
+
+		se306Project::SheepMoveMsg msg;
+		msg.moveCommand = "GO";
+		msg.x = goalPositionX;
+		msg.y = goalPositionY;
+		sheepMovePub.publish(msg);
+		prevState = RUNNING;
+		
+		//TODO: Everything
+		/* 
+		 *  
+		 * se306Project::SheepMoveMsg msg;
+		 * msg.moveCommand = "GO";
+		 * msg.x = goalPositionX;
+		 * msg.y = goalPositionY;
+		 * sheepMovePub.publish(msg);
+		 * prevState = RUNNING;
+		 * 
+		 * TODO
+		 * speed
+		 * 
+		 * */
+		//send 'run' command to SheepMove with correct direction
+		//check current terror level. (may need to be a method.)
+		//if terror is less than a certain level, set state WARY
+		//set prevState = RUNNING
+	};
 
 void SheepNode::SheepLifeCycle() {
 // Handles the different stages of a sheeps life and creates messages to be sent to sheep_move
