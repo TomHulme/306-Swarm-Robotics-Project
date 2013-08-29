@@ -65,6 +65,7 @@ class SheepMove {
 	//talkie things
 	ros::Publisher commandPub; // Publisher to the simulated robot's velocity command topic
 	ros::Publisher sheepPosPub;
+	ros::Publisher sheepStatusPub;
 	ros::Subscriber laserSub; // Subscriber to the simulated robot's laser scan topic
 	ros::Subscriber sheepStatusSub; //Subscriber to sheep_[sheepNum]/move topic
 	//move state things
@@ -120,7 +121,11 @@ void SheepMove::StageOdom_callback(nav_msgs::Odometry msg) {
 		
 		px = msg.pose.pose.position.x;
 		py = msg.pose.pose.position.y;
-		
+		se306Project::SheepMoveMsg posMsg;
+		posMsg.moveCommand = "UPDATE";
+		posMsg.goalX = px;
+		posMsg.goalY = py;
+		sheepStatusPub.publish(posMsg);
 	
 		// Each sheep has their own initial goal. Temporary fix for the sheep not in the first field always heading towards the wall
 		if (callback_Count == 0) {
@@ -210,6 +215,7 @@ void SheepMove::StageOdom_callback(nav_msgs::Odometry msg) {
 	}
 	//ROS_INFO("Current x position is: %f", px);
 	//ROS_INFO("Current y position is: %f", py);
+	
 	prevpx = px;
 	prevpy = py;
 	callback_Count++;
@@ -226,7 +232,7 @@ void SheepMove::move(double linearVelMPS, double angularVelRadPS) {
 }
 
 void SheepMove::statusCallback(se306Project::SheepMoveMsg msg) {
-	
+	ROS_INFO_STREAM(msg.moveCommand);
 	moveStatus = msg.moveCommand;
 	SheepSpeed = msg.speed;
 	//TODO: set directionality from msg
@@ -289,7 +295,7 @@ void SheepMove::spin() {
    			//ROS_INFO("%s", msg.data.c_str());
    			
 			if (fsm == FSM_MOVE_FORWARD) {
-				//ROS_INFO("SheepSpeed: %f", SheepSpeed);
+				ROS_INFO("SheepSpeed: %f", SheepSpeed);
 				//ROS_INFO_STREAM("Start forward");
 				move(SheepSpeed, 0);
 				checkcount++;
@@ -333,6 +339,7 @@ SheepMove::SheepMove(int number) {
 	// Initialize random time generator
 	srand(time(NULL));
 	moveStatus = "GO";
+	SheepSpeed = 0.1;
 	prevclosestRange = 0;
 	checkcount = 0;
 	prevpx = 0;
@@ -351,21 +358,9 @@ void SheepMove::rosSetup(int argc, char **argv) {
 	ros::init(argc, argv, "sheepMove", ros::init_options::AnonymousName); // Initiate new ROS node named "sheepMoveX"
 	ros::NodeHandle nh;
 	ros::NodeHandle n("~");
-	if(n.getParam("sheepNum", sheepNum))
-	{
-		ROS_INFO_STREAM("Got sheepNum");
-	}else {
-		ROS_INFO_STREAM("Dafuq, ROS?");
-	}
-	if(n.getParam("robotNum", robotNum))
-	{
-
-		ROS_INFO_STREAM("Got robotNum");
-	}else {
-		ROS_INFO_STREAM("Dafuq, ROS?");
-	}
-	
-	
+	n.getParam("sheepNum", sheepNum);
+	n.getParam("robotNum", robotNum);
+		
 	//fsm = FSM_MOVE_FORWARD;
 	fsm = FSM_GOTO_GOAL;
 	
@@ -389,6 +384,7 @@ void SheepMove::rosSetup(int argc, char **argv) {
 	// Subscribe to the simulated robot's laser scan topic and tell ROS to call
 	// this->commandCallback() whenever a new message is published on that topic
 	laserSub = nh.subscribe<sensor_msgs::LaserScan>(r + "/base_scan", 1000, &SheepMove::commandCallback, this);
+	sheepStatusPub = nh.advertise<se306Project::SheepMoveMsg>(s + "/pos",1000);
 	sheepStatusSub = nh.subscribe<se306Project::SheepMoveMsg>(s + "/move", 1000, &SheepMove::statusCallback, this);
 	StageOdo_sub = nh.subscribe<nav_msgs::Odometry>(r + "/odom",1000, &SheepMove::StageOdom_callback,this);
 	//ros::Subscriber StageOdo_sub = n.subscribe<nav_msgs::Odometry>("robot_0/odom",1000, StageOdom_callback);
