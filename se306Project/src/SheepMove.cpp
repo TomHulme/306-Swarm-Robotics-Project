@@ -1,5 +1,6 @@
 #include "ros/ros.h"
 #include "geometry_msgs/Twist.h"
+#include "geometry_msgs/Pose2D.h"
 #include "sensor_msgs/LaserScan.h"
 #include <nav_msgs/Odometry.h>
 #include "std_msgs/String.h"
@@ -37,10 +38,6 @@ class SheepMove {
 	bool isRotate;
 	
 	double SheepSpeed;
-	std::string r;
-	std::string s;
-	std::ostringstream convertS;
-	std::ostringstream convertR;
 	
 	bool isGoal;
 	bool correctHeading;
@@ -283,10 +280,9 @@ void SheepMove::commandCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
 // velocity controls to the simulated robot based on the FSM state
 void SheepMove::spin() {
 	ros::Rate rate(10); // Specify the FSM loop rate in Hz
+	geometry_msgs::Pose2D sheepPosMsg;
 	while (ros::ok()) { // Keep spinning loop until user presses Ctrl+C
 		
-		
-		geometry_msgs::Pose2D sheepPosMsg;
 		sheepPosMsg.x = px;
 		sheepPosMsg.y = py;
 		sheepPosPub.publish(sheepPosMsg);
@@ -350,7 +346,12 @@ SheepMove::SheepMove(int number) {
 
 void SheepMove::rosSetup(int argc, char **argv) {
 	std::string out;
-		
+	
+	std::string r;
+	std::string s;
+	std::ostringstream convertS;
+	std::ostringstream convertR;
+	
 	ros::init(argc, argv, "sheepMove", ros::init_options::AnonymousName); // Initiate new ROS node named "sheepMoveX"
 	ros::NodeHandle nh;
 	ros::NodeHandle n("~");

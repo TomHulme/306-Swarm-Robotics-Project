@@ -154,7 +154,7 @@ runNode= Popen(shlex.split(commandString),stdout=PIPE)
 
 
 #Run Farmer Node
-#runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project farmer"' --title='Farmer'"""),stdout=PIPE)
+runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project farmer"' --title='Farmer'"""),stdout=PIPE)
 #Run Sheepdog Node
 runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project sheepdog {0}"' --title='Sheepdog'""".format(str(num_sheep))),stdout=PIPE)
 #Run Truck Node
