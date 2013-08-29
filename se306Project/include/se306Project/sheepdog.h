@@ -26,7 +26,7 @@
 
 class sheepdogNode {
 	public:	
-	sheepdogNode(int, ros::NodeHandle&);
+	sheepdogNode(int);
 	void rosSetup(int, char**);
 	
 	void StageOdom_callback(nav_msgs::Odometry);
