@@ -29,9 +29,10 @@ public:
 	double grassY;
 	double grassZ;
 	//parameters that need to be used eventually
-	double growth; // %/s
-	double decay; // %/s
-	double netGrowth;
+	double growthRate; // %/s
+	double decayRate; // %/s
+	double overallRate; // rate of grass growth/decay %/s
+	double growth; // growth of grass 0-100%
 	std::string soilQuality;
 	int sunLight;
 	int nextZ;
@@ -50,9 +51,10 @@ GrassNode::GrassNode() {
 	grassX = 0;
 	grassY = 0;
 	grassZ = 0;
-	growth = 0;
-	decay = 0;
-	netGrowth = 0;
+	growthRate = 0;
+	decayRate = 0;
+	overallRate = 0;
+	growth = 100;
 	soilQuality = "";
 	sunLight = 0;
 	nextZ = 0;
@@ -66,34 +68,30 @@ GrassNode::GrassNode (int grass, int robot, int field) {
 }	
 
 void GrassNode::grassGrow(){
-	
-	decay = growth + 1;
-	netGrowth = growth - decay;	// %/s
-	
-	// % to angle conversion	
-	netGrowth = -netGrowth*0.1;	// angle/
-	nextZ = grassZ + netGrowth;
+	overallRate = growthRate - decayRate;
+	overallRate = -overallRate*0.1; // growing is negative
 
-	// Display grassZ
-	std::ostringstream convertZ;
-	convertZ << grassZ;
-	std::string grassZStr = convertZ.str();
-	ROS_INFO_STREAM("grassZ: " + grassZStr);	
-
+	// Calculate growth
 	if (grassZ > -0.5 && grassZ < 0) {
-		netGrowth = 0 - grassZ;
-	} else if (grassZ <= -0.5 && grassZ > -1) {
-		netGrowth = 0.999999999999999999999999999999999999999989999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 + grassZ;
+		growth = 100;
+		if (overallRate<0) {
+			overallRate = 0; // stop growing above 100%
+		}
+	} else if (grassZ <= -0.5 && grassZ >= -1) {
+		growth = 0;
+		if (overallRate>0) {
+			overallRate = 0; // stop decaying below 0%
+		}
 	}
 
 	// Display netGrowth
 	std::ostringstream convertG;
-	convertG << netGrowth;
-	std::string netGrowthStr = convertG.str();
-	ROS_INFO_STREAM("netGrowth: " + netGrowthStr);
+	convertG << growth;
+	std::string growthStr = convertG.str();
+	ROS_INFO_STREAM("growth: " + growthStr);
 
 	geometry_msgs::Twist msg; // The default constructor will set all commands to 0
-	msg.angular.z = netGrowth;
+	msg.angular.z = overallRate;
 	commandPub.publish(msg);
 }
 
@@ -172,14 +170,14 @@ void GrassNode::fieldNode_callback(se306Project::FieldMsg msg) {
 	ROS_INFO_STREAM(soilQuality); // Prints the current z value of the grass	
 
 	if (soilQuality == "Arid") {
-		growth = 0.25; // %/s
+		growthRate = 1; // %/s
 	} else if (soilQuality == "Normal") {
-		growth = 0.5; // %/s
+		growthRate = 2; // %/s
 	} else {
-		growth = 1; // %/s
+		growthRate = 4; // %/s
 	}
 	
-	growth = ((50+(double)sunLight)/100)*growth; // %/s == 1.8*growth
+	growthRate = ((50+(double)sunLight)/100)*growthRate; // %/s
 }
 
 void GrassNode::spin() {
@@ -192,10 +190,7 @@ void GrassNode::spin() {
 		msg.grassNum = this->grassNum;
 		msg.x = this->grassX;
 		msg.y = this->grassY;
-		
-		int fGrowth = 100-(100*this->grassZ);
-
-		msg.growth = fGrowth;
+		msg.growth = this->growth;
 
 		grassPosPub.publish(msg);
 
