@@ -146,7 +146,7 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
 
 			# Sheep alley
 			ts3 = 'size [1 0.1 0.35] '
-			ts4 = 'pose [' + str(currentX+j-1) + ' ' + str(currentY-int(fieldY)-1) + ' 0.075 0.000])\n'
+			ts4 = 'pose [' + str(currentX+j-1) + ' ' + str(currentY-int(fieldY)-1.5) + ' 0.075 0.000])\n'
 			fo.write(JoinString(ts1, ts2, ts3, ts4))
 			
 		if (j == 0):
@@ -175,7 +175,7 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
 
 			# Sheep alley
 			ts3 = 'size [1 0.1 0.35] '
-			ts4 = 'pose [' + str(currentX+j-1) + ' ' + str(currentY-int(fieldY)-1) + ' 0.075 0.000])\n'
+			ts4 = 'pose [' + str(currentX+j-1) + ' ' + str(currentY-int(fieldY)-1.5) + ' 0.075 0.000])\n'
 			fo.write(JoinString(ts1, ts2, ts3, ts4))
 		
 	for j in range(int(fieldY)):
@@ -190,7 +190,7 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     
     #Construct farmer definition
     ts1 = 'farmRobot ('
-    ts2 = 'pose [5 2 0.125 0] size [0.9 0.75 0.35] '
+    ts2 = 'pose [1 -0.75 0.125 0] size [0.9 0.75 0.35] '
     ts3 = 'name "farmer" '
     ts4 = 'color "dark blue" bitmap "FARMER.bmp")\n'
 

@@ -1,5 +1,6 @@
 #include "ros/ros.h"
 #include "geometry_msgs/Twist.h"
+#include "geometry_msgs/Pose2D.h"
 #include "sensor_msgs/LaserScan.h"
 #include <nav_msgs/Odometry.h>
 #include "std_msgs/String.h"
@@ -37,7 +38,7 @@ class RandomWalk {
 		// the queue to be sent, only the last command will be sent)
 		ros::NodeHandle n;
 		commandPub = nh.advertise<geometry_msgs::Twist>("robot_2/cmd_vel",1000);
-		truckPosPub = nh.advertise<std_msgs::String>("truck_position",1000);
+		truckPosPub = nh.advertise<geometry_msgs::Pose2D>("truck_position",1000);
 		// Subscribe to the simulated robot's laser scan topic and tell ROS to call
 		// this->commandCallback() whenever a new message is published on that topic
 		laserSub = nh.subscribe<sensor_msgs::LaserScan>("robot_2/base_scan", 1000, &RandomWalk::commandCallback, this);
@@ -145,13 +146,12 @@ class RandomWalk {
 	void spin() {
 		ros::Rate rate(10); // Specify the FSM loop rate in Hz
 		while (ros::ok()) { // Keep spinning loop until user presses Ctrl+C
-			std_msgs::String msg;
-			std::stringstream ss;
-			ss << "Truck -- px:" << px << " py:" << py << " theta:" << theta << " isRotate:" << isRotate;
-    			msg.data = ss.str();
-    			
-    			//ROS_INFO("%s", msg.data.c_str());
-    			
+			geometry_msgs::Pose2D msg;
+			
+    		msg.x = px;
+    		msg.y = py;
+
+    		
 			if (fsm == FSM_MOVE_FORWARD) {
 				//ROS_INFO_STREAM("Start forward");
 				move(FORWARD_SPEED_MPS, 0);

@@ -18,6 +18,8 @@ double theta;
 double prevpx;
 double prevpy;
 bool isRotate;
+double truckX = -1.0;
+double truckY = -1.0;
 int sheepNum = 0;
 int checkcount = 0;
 enum FSM {FSM_MOVE_FORWARD, FSM_ROTATE};
@@ -146,7 +148,23 @@ void sheepdogNode::commandCallback(const sensor_msgs::LaserScan::ConstPtr& msg) 
 // Process the incoming sheep position messages
 void sheepdogNode::chaseSheepCallback(geometry_msgs::Pose2D msg) {
 	ROS_INFO("I see a sheep at (%f, %f)",msg.x,msg.y);
-	
+	if(truckX != -1.0 && truckY != -1.0){
+		// This loop executes when the truck has given its coordinates.
+		// Don't want to do this unless we have them!
+		
+		// If the sheep dog is between the truck and the sheep furtherest away from the tuck
+			// Walk to the other side of that sheep
+		// Otherwise
+			// Walk towards the truck
+		
+	}
+}
+
+
+// Store truck position
+void sheepdogNode::truckCallback(geometry_msgs::Pose2D msg) {
+	truckX = msg.x;
+	truckY = msg.y;
 }
 
 // Main FSM loop for ensuring that ROS messages are
@@ -208,6 +226,7 @@ void sheepdogNode::rosSetup(int argc, char **argv) {
 		std::string current = "sheep_" + boost::lexical_cast<std::string>(i) + "/pose";
 		sheepPosSubs[i] = nh.subscribe<geometry_msgs::Pose2D>(current, 1000, &sheepdogNode::chaseSheepCallback, this);
 	}
+	truckPosSub = nh.subscribe<geometry_msgs::Pose2D>("truck_position", 1000, &sheepdogNode::truckCallback, this);
 	commandPub = nh.advertise<geometry_msgs::Twist>("robot_1/cmd_vel",1000);
 	sheepdogPosPub = nh.advertise<geometry_msgs::Pose2D>("sheepdog_position",1000);
 	// Subscribe to the simulated robot's laser scan topic and tell ROS to call

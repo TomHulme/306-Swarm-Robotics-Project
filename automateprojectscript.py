@@ -117,7 +117,7 @@ time.sleep(5)
 # Runs rosrun stage with the found .world file
 
 stagePro = Popen('rosrun stage stageros %s' %worldfile,shell=True)
-
+'''
 # These below lines would need to be changed to fit what you are wanting to run.
 # Start from 3 because nodes 0, 1 and 2 are for farmer, sheepdog and truck respectively
 #Run Sheep nodes (SheepNode, SheepMove)
@@ -151,7 +151,7 @@ for i in range(num_fields):
 		commandString += """\\--tab -e 'bash -c \"rosrun se306Project GrassNode {0} {1} {2}\"' --title='Grass {0}' """.format(str((i*num_grass_field)+j+1), str(((i*num_grass_field)+j+1)+3+total_sheep), str(i))
 
 runNode= Popen(shlex.split(commandString),stdout=PIPE)
-
+'''
 
 #Run Farmer Node
 runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project farmer"' --title='Farmer'"""),stdout=PIPE)

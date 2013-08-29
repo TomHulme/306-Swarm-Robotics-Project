@@ -12,7 +12,7 @@ farmerNode::farmerNode(int xi, int yi){
 	this->prevpx= 0;
 	
 	//Initial velocity
-	this->linear_x = 0.2;
+	this->linear_x = 0.0;
 	this->angular_z = 0.2;
 }
 
@@ -30,7 +30,7 @@ void farmerNode::StageOdom_callback(nav_msgs::Odometry msg)
 		//ROS_INFO("Prevpx: %f",prevpx);
 
 		// Note the negative linear_x		
-		this->linear_x=-0.2;
+		this->linear_x=-0.0;
 		this->angular_z=1;
 
 		//theta=10;
@@ -39,8 +39,8 @@ void farmerNode::StageOdom_callback(nav_msgs::Odometry msg)
 		//printf("Robot stuck");
 	} else {
 		// One the robot becomes unstuck, then it moves around again normally
-		this->linear_x = 0.2;
-		this->angular_z = 0.2;
+		this->linear_x = 0.0;
+		this->angular_z = 1;
 	}
 	ROS_INFO("Farmer -- Current x position is: %f", this->px);
 	ROS_INFO("Farmer -- Current y position is: %f", this->py);
