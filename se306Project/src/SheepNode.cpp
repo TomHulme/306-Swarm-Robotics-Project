@@ -28,6 +28,12 @@ public:
 	const static int WARY_LOWER_TERROR_LIMIT = 50;
 	const static int GRASS_MIN_TASTY_HEIGHT = 30;
 	const static int SHEEP_EAT_AMOUNT = 7;
+	//sheepdog terror distance
+	const static int TERROR_LEVEL_ONE = 5;
+	const static int TERROR_LEVEL_TWO = 4;
+	const static int TERROR_LEVEL_THREE = 2.5;
+	const static int TERROR_LEVEL_FOUR = 1;
+	
 	
 	//setup methods
 	SheepNode();
@@ -46,21 +52,15 @@ public:
 	int hunger;
 	int sheepAge;
 	
-//===movement related variables TODO: Cleanup
-	float prevclosestRange;
-	double linear_x;
-	double angular_z;
+//===Position related variables
 	double sheepSpeed;
 	double field_X;
 	double field_Y;
-	//pose of the robot
-	double px;
-	double py;
-	double theta;
-	double prevpx;
-	double prevpy;
-	bool isRotate;
-	int checkcount;
+	
+	double px; //xPos of the sheep
+	double py; //yPos of the sheep
+	double sdx; //xPos of the sheepdog
+	double sdy; //yPos of the sheepdog
 //===
 
 	void sheepEat();
@@ -96,7 +96,42 @@ void SheepNode::currentPositionCallback(se306Project::SheepMoveMsg msg) {
 
 void SheepNode::sheepdogDangerCallback(geometry_msgs::Pose2D sheepdogMsg) {
 	//TODO:Merge changes from sheep_scared
+	//fuck that I'll do it myself
+	//if sheepdog is closer that last time
+	//	increase terror by relevant amount
 
+	double sdxnew = sheepdogMsg.x;
+	double sdynew = sheepdogMsg.y;
+		
+	double DistanceDiff = sqrt((abs(sdx - px)*abs(sdx - px))+(abs(sdy - py)*abs(sdy - py)));
+	double DistanceDiffNew = sqrt((abs(sdxnew - px)*abs(sdxnew - px))+(abs(sdynew - py)*abs(sdynew - py)); 
+	if (DistanceDiff > DistanceDiffNew) {
+		/* check the distance & find out the terror increase
+		 * add the terror increase to the terror level (global var)	
+		*/
+		if (DistanceDiffNew <= TERROR_LEVEL_ONE && DistanceDiffNew > TERROR_LEVEL_TWO) {
+			terror = terror + 2;
+		} else if (DistanceDiffNew <= TERROR_LEVEL_TWO && DistanceDiffNew > TERROR_LEVEL_THREE) {
+			terror = terror + 5;
+		} else if (DistanceDiffNew <= TERROR_LEVEL_THREE && DistanceDiffNew > TERROR_LEVEL_FOUR) {
+			terror = terror + 15;
+		} else if (DistanceDiffNew < TERROR_LEVEL_FOUR) {
+			terror = terror + 35;
+		}
+	} else {
+		terror = terror - 4;
+	}
+	
+	if (terror >= WARY_LOWER_TERROR_LIMIT && terror < RUNNING_LOWER_TERROR_LIMIT){
+		prevState = currentState;
+		currentState = WARY;
+	}
+	if (terror >= RUNNING_LOWER_TERROR_LIMIT) {
+		prevState = currentState;
+		currentState = RUNNING;	
+	}
+	sdx = sdxnew;
+	sdy = sdynew;
 };
 
 void SheepNode::grassInfoCallback(se306Project::GrassPosMsg grassMsg) {
@@ -165,14 +200,43 @@ void SheepNode::sheepWalk() {
 };
 
 void SheepNode::sheepRun() {
-	//TODO: Everything. Merge from sheep_scared branch
-	//check current sheepdog position
-	//send 'run' command to SheepMove with correct direction and double the current speed
-	//check current terror level. (may need to be a method.)
-	//if terror is less than a certain level, set state WARY
-	//set prevState = RUNNING
+	ROS_INFO("Sheep is terrorfied and running");
+	//TODO:
+	///This code is untested, and probably won't be implemented in time for final, but this is a way of doing basic evasion of the sheepdog by running directly away from it, with a small amount of variance to cause a curve one way or another
+	/* 
+	 * double xDistanceDiff = abs(sdx - px);
+	 * double yDistanceDiff = abs(sdy - py);
+	 * //introduces a small amount of directional variation, should cause the path to tend one way or the other
+	 * double xRand = (Rand() % 2)/10.0 - 0.1; 
+	 * double yRand = (Rand() % 2)/10.0 - 0.1;
+	 * goalPositionX = px - xDistanceDiff + xRand;
+	 * goalPositionY = py - yDistanceDiff + yRand;
+	 *  
+	 * se306Project::SheepMoveMsg msg;
+	 * msg.moveCommand = "GO";
+	 * msg.goalX = goalPositionX;
+	 * msg.goalY = goalPositionY;
+	 * msg.speed = sheepSpeed*2;
+	 * sheepMovePub.publish(msg);
+	 * prevState = RUNNING;
+	 * 
+	 * */
 };
 
+void SheepNode::sheepWary() {
+	if (prevState != WARY) {
+		se306Project::SheepMoveMsg msg;
+		msg.moveCommand = "STOP";
+		sheepMovePub.publish(msg);
+	}
+	if (terror >= RUNNING_LOWER_TERROR_LIMIT) {
+		currentState = RUNNING;
+	} else if (terror < WARY_LOWER_TERROR_LIMIT) {
+		currentState = WALKING;
+	}
+	prevState = WARY;
+};
+			
 void SheepNode::SheepLifeCycle() {
 // Handles the different stages of a sheeps life and creates messages to be sent to sheep_move
 
@@ -192,7 +256,6 @@ void SheepNode::SheepLifeCycle() {
 			//ROS_INFO("Old age");
 			sheepSpeed = 0.2;
 			break;
-			
 	}
 	sheepAge++;
 };
@@ -200,41 +263,32 @@ void SheepNode::SheepLifeCycle() {
 void SheepNode::spin() {
 	//do things depending on SheepState
 	ros::Rate rate(10); // 1 second
-	se306Project::SheepMoveMsg msg;
-	msg.moveCommand = "GO";
-	msg.speed = 0.1;
-	sheepMovePub.publish(msg);
+	//se306Project::SheepMoveMsg msg;
+	//msg.moveCommand = "GO";
+	//msg.speed = 0.1;
+	//sheepMovePub.publish(msg);
 
 	int count = 0;
 	while (ros::ok()) {
 		//deal with state of sheep
 		if (currentState == EATING) {
-			//case EATING:
-				if (prevState == SheepState(WALKING) || prevState == SheepState(EATING)) {
-					this->sheepEat();
-				} else {
-					//something went wrong, set to walking?
-					currentState = WALKING;
-				}
+			if (prevState == SheepState(WALKING) || prevState == SheepState(EATING)) {
+				this->sheepEat();
+			} else {
+				//something went wrong, set to walking?
+				currentState = WALKING;
+			}
 		} else if (currentState == WALKING) {
-			//case WALKING:
-				if (prevState == SheepState(RUNNING)) {
-					//something went wrong, set state to WARY
-					currentState = WARY;
-				} else {
-					this->sheepWalk();
-				}
+			if (prevState == SheepState(RUNNING)) {
+				//something went wrong, set state to WARY
+				currentState = WARY;
+			} else {
+				this->sheepWalk();
+			}
 		} else if (currentState == RUNNING) {
-			//case RUNNING:
-				this->sheepRun();
+			this->sheepRun();
 		} else if (currentState == WARY) {
-			//case WARY:
-			if (terror >= RUNNING_LOWER_TERROR_LIMIT) {
-					currentState = RUNNING;
-				} else if (terror < WARY_LOWER_TERROR_LIMIT) {
-					currentState = WALKING;
-				}
-				prevState = WARY;
+			this->sheepWary();
 		}
 			//TODO: case FOLLOWING:
 			//	if prevState != RUNNING

@@ -324,9 +324,8 @@ void SheepMove::spin() {
 			if (fsm == FSM_GOTO_GOAL) {
 				isGoal=true;
 			}	
-		}//if not move, do anything?
 
-	
+		}//if not move, do anything? 
 		ros::spinOnce(); // Need to call this function often to allow ROS to process incoming messages
 		rate.sleep(); // Sleep for the rest of the cycle, to enforce the FSM loop rate
 	}
@@ -391,16 +390,13 @@ void SheepMove::rosSetup(int argc, char **argv) {
 	sheepStatusPub = nh.advertise<se306Project::SheepMoveMsg>(s + "/pos",1000);
 	sheepStatusSub = nh.subscribe<se306Project::SheepMoveMsg>(s + "/move", 1000, &SheepMove::statusCallback, this);
 	StageOdo_sub = nh.subscribe<nav_msgs::Odometry>(r + "/odom",1000, &SheepMove::StageOdom_callback,this);
-	//ros::Subscriber StageOdo_sub = n.subscribe<nav_msgs::Odometry>("robot_0/odom",1000, StageOdom_callback);
 	
 	SheepMove::spin(); // Execute FSM loop
 }
 
 int main(int argc, char **argv) {
-	//int number = 0;
-	//ros::param::get("sheepNum", number);
 	
-	SheepMove walker(0); // Create new random walk object
+	SheepMove walker(0); 
 	walker.rosSetup(argc, argv);
 	return 0;
 }
