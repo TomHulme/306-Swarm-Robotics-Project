@@ -6,15 +6,20 @@ import struct
 
 
 class SheepMoveMsg(genpy.Message):
-  _md5sum = "7429358f6ad567cff9a51334fc71ac6d"
+  _md5sum = "d287be81e5cad129923f1e606a05a9af"
   _type = "se306Project/SheepMoveMsg"
   _has_header = False #flag to mark the presence of a Header object
   _full_text = """string moveCommand
 int64 velX
 int64 velY
+<<<<<<< HEAD
+string age
+=======
+>>>>>>> grass_mycopy
+
 """
-  __slots__ = ['moveCommand','velX','velY']
-  _slot_types = ['string','int64','int64']
+  __slots__ = ['moveCommand','velX','velY','age']
+  _slot_types = ['string','int64','int64','string']
 
   def __init__(self, *args, **kwds):
     """
@@ -24,7 +29,7 @@ int64 velY
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       moveCommand,velX,velY
+       moveCommand,velX,velY,age
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -39,10 +44,13 @@ int64 velY
         self.velX = 0
       if self.velY is None:
         self.velY = 0
+      if self.age is None:
+        self.age = ''
     else:
       self.moveCommand = ''
       self.velX = 0
       self.velY = 0
+      self.age = ''
 
   def _get_types(self):
     """
@@ -64,6 +72,12 @@ int64 velY
       buff.write(struct.pack('<I%ss'%length, length, _x))
       _x = self
       buff.write(_struct_2q.pack(_x.velX, _x.velY))
+      _x = self.age
+      length = len(_x)
+      if python3 or type(_x) == unicode:
+        _x = _x.encode('utf-8')
+        length = len(_x)
+      buff.write(struct.pack('<I%ss'%length, length, _x))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -87,6 +101,15 @@ int64 velY
       start = end
       end += 16
       (_x.velX, _x.velY,) = _struct_2q.unpack(str[start:end])
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      start = end
+      end += length
+      if python3:
+        self.age = str[start:end].decode('utf-8')
+      else:
+        self.age = str[start:end]
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -107,6 +130,12 @@ int64 velY
       buff.write(struct.pack('<I%ss'%length, length, _x))
       _x = self
       buff.write(_struct_2q.pack(_x.velX, _x.velY))
+      _x = self.age
+      length = len(_x)
+      if python3 or type(_x) == unicode:
+        _x = _x.encode('utf-8')
+        length = len(_x)
+      buff.write(struct.pack('<I%ss'%length, length, _x))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -131,6 +160,15 @@ int64 velY
       start = end
       end += 16
       (_x.velX, _x.velY,) = _struct_2q.unpack(str[start:end])
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      start = end
+      end += length
+      if python3:
+        self.age = str[start:end].decode('utf-8')
+      else:
+        self.age = str[start:end]
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill

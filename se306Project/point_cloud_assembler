@@ -1,0 +1,8 @@
+<launch>
+  <node type="point_cloud_assembler" pkg="laser_assembler"
+        name="my_assembler">
+    <remap from="cloud" to="my_cloud_in"/>
+    <param name="max_clouds" type="int" value="400" />
+    <param name="fixed_frame" type="string" value="/robot_1/base_link" />
+  </node>
+</launch>

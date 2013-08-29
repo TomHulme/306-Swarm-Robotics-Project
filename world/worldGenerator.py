@@ -52,6 +52,7 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
   size [0.35 0.35 0.25]
   drive "diff"
   mylaser(pose [ 0.050 0.000 -0.1 0.000 ])
+  localization_origin [0 0 0 0]
 )
 """
 
@@ -59,6 +60,7 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
 (
   drive "diff"
   mylaser(pose [ 0.050 0.000 -0.1 90 ])
+  localization_origin [0 0 0 0]
 )
 """
 
@@ -66,12 +68,15 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
 (
   drive "diff"
   mytrucklaser(pose [ 0.050 0.000 0.050 90 ])
+  localization_origin [0 0 0 0]
 )
 """
+
     grass_def = """define grass position
 (
-    size [0.9 0.9 0.1]
-    mylaser(pose [ 0.050 0.000 0 0.000 ])
+    size [0.75 0.75 0.1]
+  	mylaser(pose [ 0.050 0.000 -0.1 90 ])
+    localization_origin [0 0 0 0]
 )
 """
 
@@ -116,7 +121,7 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     fo.write(myblock_def)
     #Write resolution to file
     fo.write("resolution 0.02\n")
-    #Write sim_interval to file
+    #Write sim_interval to file 
     fo.write("interval_sim 100\n")
     #Write window definition to file
     fo.write(window_def)
@@ -134,9 +139,6 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
         
         fo.write(JoinString(ts1, ts2, ts3, ts4))
         prevX = currentX + float(fieldX)/2   
-    
-    row = 1
-    col = 1
     
     #Construct farmer definition
     ts1 = 'farmRobot ('
@@ -162,23 +164,29 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     ts4 = 'color "blue" bitmap "TRUCK.bmp")\n'
         
     fo.write(JoinString(ts1, ts2, ts3, ts4))
-    
-    #Write sheep robots to file
-    for i in range(int(numSheep)):
-    
-        #Construct sheep definition
-        ts1 = 'sheepRobot ('
-        ts2 = 'pose [' + str(col) + ' ' + str(row)  +  ' 0.125 '+str(randrange(-180,180))+'] '
-        ts3 = 'name "sheepMove' + str(i) + '" '
-        ts4 = 'color "white" bitmap "SHEEP.BMP")\n'
 
-        fo.write(JoinString(ts1, ts2, ts3, ts4))
+    count = 0    
+    #Write sheep robots to file
+    for i in range((int(numFields))):
+            field_offset = i * int(fieldX)
+            row = 1
+            col = 1 + field_offset
+            for j in range(int(numSheep)):
+    
+                #Construct sheep definition
+                ts1 = 'sheepRobot ('
+                ts2 = 'pose [' + str(col) + ' ' + str(row)  +  ' 0.125 '+str(randrange(-180,180))+'] '
+                ts3 = 'name "sheepMove' + str(count) + '" '
+                ts4 = 'color "white" bitmap "SHEEP.BMP")\n'
+
+                fo.write(JoinString(ts1, ts2, ts3, ts4))
+                count += 1
         
-        col += 1
-        print(col)
-        if col == int(fieldX):
-            col = 1
-            row += 1
+                col += 1
+                print(col)
+                if col == int(fieldX):
+                    col = 1
+                    row += 1
     
     count = 0
     #Write grass robots to file
