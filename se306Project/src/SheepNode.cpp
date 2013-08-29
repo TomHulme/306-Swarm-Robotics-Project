@@ -159,8 +159,8 @@ void SheepNode::spin() {
 		
 		// Sheep Position Publishing
 		geometry_msgs::Pose2D Pose2Dmsg;
-		Pose2Dmsg.x = px;
-		Pose2Dmsg.y = py;
+		Pose2Dmsg.x = this->px;
+		Pose2Dmsg.y = this->py;
 		
 		sheepPosePub.publish(Pose2Dmsg);
 		
