@@ -34,8 +34,7 @@ public:
 	SheepNode();
 	void rosSetup(int, char**);
 	void spin();	
-	
-	//ros::NodeHandle nh;
+
 	int sheepNum;
 	SheepState currentState;
 	SheepState prevState;
@@ -47,16 +46,18 @@ public:
 	int hunger;
 	int sheepAge;
 	
-//===movement related variables TODO: Cleanup
+	//movement related variables
 	float prevclosestRange;
 	double linear_x;
 	double angular_z;
 	double sheepSpeed;
 	double field_X;
 	double field_Y;
+	
 	//pose of the robot
 	double px;
 	double py;
+	
 	double theta;
 	double prevpx;
 	double prevpy;
@@ -64,16 +65,13 @@ public:
 	int checkcount;
 	double sdx;
 	double sdy;
-//===
 
 	void sheepEat();
 	void sheepWalk();
 	void sheepRun();
 	
 	void currentPositionCallback(se306Project::SheepMoveMsg);
-	//TODO: Sheep Danger sense
 	void sheepdogDangerCallback(geometry_msgs::Pose2D);
-	//TODO: Eating
     void grassInfoCallback(se306Project::GrassPosMsg);
     bool isContainedBy(se306Project::GrassPosMsg);
 	int grassNumCurrentlyBeingEaten;
@@ -119,14 +117,7 @@ void SheepNode::sheepdogDangerCallback(geometry_msgs::Pose2D sheepdogMsg) {
 		}
 		double sdxnew = sheepdogMsg.x;
 		double sdynew = sheepdogMsg.y;
-			
-		//Calculate the difference in distance between the sheepdog(sdx)[std_msgs::String msg?] and sheep
-		//closeRange=;
-		//double xDistanceDiff = abs(sdx - px);
-		//double yDistanceDiff = abs(sdy - py);
-
-
-		
+					
 		double DistanceDiff = sqrt((abs(sdx - px)*abs(sdx - px))+(abs(sdy - py)*abs(sdy - py)));
 		double DistanceDiffnew = sqrt((abs(sdxnew - px)*abs(sdxnew - px))+(abs(sdynew - py)*abs(sdynew - py))); 
 
@@ -184,10 +175,8 @@ void SheepNode::grassInfoCallback(se306Project::GrassPosMsg grassMsg) {
 			}
 		}
 	} else {
-		//	TODO:	compare msg to current position. 
-		//	TODO: 	if grass position is closer than current goal then:
-		//	TODO:		set new goal
-		
+
+	
 	}
 };
 
@@ -224,7 +213,6 @@ void SheepNode::sheepWalk() {
 	
 	se306Project::SheepMoveMsg msg;
 	msg.moveCommand = "GO";
-	//TODO: msg goal
 	msg.speed = sheepSpeed;
 	sheepMovePub.publish(msg);
 	prevState = WALKING;
@@ -244,29 +232,12 @@ void SheepNode::sheepRun() {
 		sheepMovePub.publish(msg);
 		prevState = RUNNING;
 		
-		//TODO: Everything
-		/* 
-		 *  
-		 * se306Project::SheepMoveMsg msg;
-		 * msg.moveCommand = "GO";
-		 * msg.x = goalPositionX;
-		 * msg.y = goalPositionY;
-		 * sheepMovePub.publish(msg);
-		 * prevState = RUNNING;
-		 * 
-		 * TODO
-		 * speed
-		 * 
-		 * */
-		//send 'run' command to SheepMove with correct direction
-		//check current terror level. (may need to be a method.)
-		//if terror is less than a certain level, set state WARY
-		//set prevState = RUNNING
+		
 	};
 
 void SheepNode::SheepLifeCycle() {
-// Handles the different stages of a sheeps life and creates messages to be sent to sheep_move
-
+	
+	// Handles the different stages of a sheeps life and creates messages to be sent to sheep_move
 	switch (sheepAge) {
 		case 300: // 30 secs
 			age = ADOLESCENCE;
@@ -283,7 +254,6 @@ void SheepNode::SheepLifeCycle() {
 			//ROS_INFO("Old age");
 			sheepSpeed = 0.2;
 			break;
-			
 	}
 	sheepAge++;
 };
@@ -299,7 +269,6 @@ void SheepNode::spin() {
 	while (ros::ok()) {
 		//deal with state of sheep
 		if (currentState == EATING) {
-			//case EATING:
 				if (prevState == SheepState(WALKING) || prevState == SheepState(EATING)) {
 					this->sheepEat();
 				} else {
@@ -307,7 +276,6 @@ void SheepNode::spin() {
 					currentState = WALKING;
 				}
 		} else if (currentState == WALKING) {
-			//case WALKING:
 				if (prevState == SheepState(RUNNING)) {
 					//something went wrong, set state to WARY
 					currentState = WARY;
@@ -315,10 +283,8 @@ void SheepNode::spin() {
 					this->sheepWalk();
 				}
 		} else if (currentState == RUNNING) {
-			//case RUNNING:
 				this->sheepRun();
 		} else if (currentState == WARY) {
-			//case WARY:
 			if (terror >= RUNNING_LOWER_TERROR_LIMIT) {
 					currentState = RUNNING;
 				} else if (terror < WARY_LOWER_TERROR_LIMIT) {
@@ -326,15 +292,8 @@ void SheepNode::spin() {
 				}
 				prevState = WARY;
 		}
-			//TODO: case FOLLOWING:
-			//	if prevState != RUNNING
-			//		do follow logic
-			//		set prevState = FOLLOWING
-			
-		this->SheepLifeCycle();
 
-		//ROS_INFO("fieldx: %d", field_X);
-		//ROS_INFO("fieldy: %d", field_Y);
+		this->SheepLifeCycle();
 		
 		// Sheep Position Publishing
 		geometry_msgs::Pose2D Pose2Dmsg;
@@ -342,7 +301,6 @@ void SheepNode::spin() {
 		Pose2Dmsg.y = py;
 		
 		sheepPosePub.publish(Pose2Dmsg);
-		
 		
 		ros::spinOnce();
 	
@@ -360,7 +318,6 @@ void SheepNode::rosSetup(int argc, char **argv) {
 	n.getParam("fieldY", field_Y);
 	convert << sheepNum;
 
-	
 	//initialise the talkies
 	sheepMovePub = nh.advertise<se306Project::SheepMoveMsg>("sheep_" + convert.str()+ "/move", 1000);
 	sheepPosePub = nh.advertise<geometry_msgs::Pose2D>("sheep_" + convert.str()+ "/pose", 1000);
@@ -368,10 +325,6 @@ void SheepNode::rosSetup(int argc, char **argv) {
 	sheepPosSub = nh.subscribe<se306Project::SheepMoveMsg>("sheep_" + convert.str()+ "/pos",1000, &SheepNode::currentPositionCallback,this);
 	sheepdogPosSub = nh.subscribe<geometry_msgs::Pose2D>("sheepdog_position",1000, &SheepNode::sheepdogDangerCallback,this);
 	grassInfoSub = nh.subscribe<se306Project::GrassPosMsg>("grass/info",1000, &SheepNode::grassInfoCallback, this);
-	
-	//TODO: talk to the grass, and the field?
-	//TODO: talk to other sheep
-	//TODO: talk to the farmer
 	
 	SheepNode::spin();
 	
