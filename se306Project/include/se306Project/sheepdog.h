@@ -3,7 +3,7 @@
 // Author      : Tom Hulme
 // Date		   : 28/08/2013
 // Version     : 
-// Description : 
+// Description : sheepdog header file
 //============================================================================
 
 #ifndef SHEEPDOG_H_

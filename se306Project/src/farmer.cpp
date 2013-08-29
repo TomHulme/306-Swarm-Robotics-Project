@@ -22,21 +22,14 @@ void farmerNode::StageOdom_callback(nav_msgs::Odometry msg)
 	
 	this->px = 5 + msg.pose.pose.position.x;
 	this->py =10 + msg.pose.pose.position.y;
-	//printf("%f",px);
 	
 	// If the current position is the same the previous position, then the robot is stuck and needs to move around
 	if ((this->px == this->prevpx) && (this->py == this->prevpy)) {
-		//msg.pose.pose.position.x = 5;
-		//ROS_INFO("Prevpx: %f",prevpx);
 
 		// Note the negative linear_x		
 		this->linear_x=-0.0;
 		this->angular_z=1;
 
-		//theta=10;
-		//px = 5;
-		//py= 5;
-		//printf("Robot stuck");
 	} else {
 		// One the robot becomes unstuck, then it moves around again normally
 		this->linear_x = 0.0;
@@ -51,8 +44,7 @@ void farmerNode::StageOdom_callback(nav_msgs::Odometry msg)
 
 void farmerNode::StageLaser_callback(sensor_msgs::LaserScan msg)
 {
-	//This is the callback function to process laser scan messages
-	//you can access the range data from msg.ranges[i]. i = sample number
+	// Farmer currently has no need for his laser. But he might, so keep this.
 	
 }
 
