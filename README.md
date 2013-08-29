@@ -6,7 +6,7 @@ Welcome to ROSClub7's ROS Project Page!
 <!-- If you add quicklinks, use http://www.iconarchive.com/ to search for icons. I used 72x72. Most images on this site are either free or GNU. So we're sweet as using them. -->
 Install Instructions|ROSClub7 Wiki
 :-----------:|:----------:
-[![Install Image](http://icons.iconarchive.com/icons/saki/snowish/72/Install-icon.png)](https://github.com/TomHulme/306-Swarm-Robotics-Project/wiki/Install-Instructions)|[![Wiki Image](http://icons.iconarchive.com/icons/dakirby309/windows-8-metro/72/Web-Wikipedia-alt-1-Metro-icon.png)](https://github.com/TomHulme/306-Swarm-Robotics-Project/wiki)
+[![Install Image](http://icons.iconarchive.com/icons/saki/snowish/72/Install-icon.png)](https://github.com/TomHulme/306-Swarm-Robotics-Project/wiki/User-Manual)|[![Wiki Image](http://icons.iconarchive.com/icons/dakirby309/windows-8-metro/72/Web-Wikipedia-alt-1-Metro-icon.png)](https://github.com/TomHulme/306-Swarm-Robotics-Project/wiki)
 Instructions on how to install and run our ROS project! | Our Wiki, which contains helpful information about the project.
 
 # Project Information
