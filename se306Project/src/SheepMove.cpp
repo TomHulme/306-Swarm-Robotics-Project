@@ -88,6 +88,12 @@ void SheepMove::StageOdom_callback(nav_msgs::Odometry msg) {
 	py = msg.pose.pose.position.y;
 	//printf("%f",px);
 	
+	
+	geometry_msgs::Pose2D sheepPosMsg;
+	sheepPosMsg.x = px;
+	sheepPosMsg.y = py;
+	sheepPosPub.publish(sheepPosMsg);
+	
 	if (!isGoal) {
 		
 		// If the current position is the same the previous position, then the robot is stuck and needs to move around
@@ -285,11 +291,6 @@ void SheepMove::spin() {
 	ros::Rate rate(10); // Specify the FSM loop rate in Hz
 	while (ros::ok()) { // Keep spinning loop until user presses Ctrl+C
 		if(moveStatus.compare("GO") == 0) {
-			std_msgs::String msg;
-			std::stringstream ss;
-			ss << "sheep_" << sheepNum << " -- px:" << px << " py:" << py << " theta:" << theta << " isRotate:" << isRotate;
-   			msg.data = ss.str();
-   			
    			//ROS_INFO("%s", msg.data.c_str());
    			
 			if (fsm == FSM_MOVE_FORWARD) {
@@ -319,8 +320,6 @@ void SheepMove::spin() {
 			if (fsm == FSM_GOTO_GOAL) {
 				isGoal=true;
 			}	
-		
-			sheepPosPub.publish(msg);
 		}//if not move, do anything?
 
 	
@@ -387,7 +386,7 @@ void SheepMove::rosSetup(int argc, char **argv) {
 	s = "sheep_" + convertS.str();
 	ROS_INFO_STREAM(s);
 	commandPub = nh.advertise<geometry_msgs::Twist>(r + "/cmd_vel",1000);
-	sheepPosPub = nh.advertise<std_msgs::String>("sheep_position",1000);
+	sheepPosPub = nh.advertise<geometry_msgs::Pose2D>(s + "/pose",1000);
 	// Subscribe to the simulated robot's laser scan topic and tell ROS to call
 	// this->commandCallback() whenever a new message is published on that topic
 	laserSub = nh.subscribe<sensor_msgs::LaserScan>(r + "/base_scan", 1000, &SheepMove::commandCallback, this);
