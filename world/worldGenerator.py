@@ -142,7 +142,7 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     
     #Construct farmer definition
     ts1 = 'farmRobot ('
-    ts2 = 'pose [5 2 0.125 0] size [0.5 0.5 0.1] '
+    ts2 = 'pose [5 2 0.125 0] size [0.5 0.5 0.7] '
     ts3 = 'name "farmer" '
     ts4 = 'color "dark blue" bitmap "FARMER.bmp")\n'
 

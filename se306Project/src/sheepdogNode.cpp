@@ -15,12 +15,11 @@
 #include <cstdlib>
 
 
-ros::NodeHandle n;
 
 //Creates a single field node based on inputs given
 int main(int argc, char **argv) {
 	
 	int sheepNum = atoi(argv[1]);
-	sheepdogNode sheepdog = sheepdogNode(sheepNum, n);
+	sheepdogNode sheepdog = sheepdogNode(sheepNum);
 	sheepdog.rosSetup(argc, argv);
 }

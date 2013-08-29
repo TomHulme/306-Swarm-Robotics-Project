@@ -6,16 +6,16 @@ import struct
 
 
 class GrassPosMsg(genpy.Message):
-  _md5sum = "0eae6c672f4c571ef2af913c8b120b5f"
+  _md5sum = "5b27b8660e05bb9ea15fc9c793032297"
   _type = "se306Project/GrassPosMsg"
   _has_header = False #flag to mark the presence of a Header object
   _full_text = """int32 grassNum
 float32 x
 float32 y
-int32 growth
+int32 grassHeight
 
 """
-  __slots__ = ['grassNum','x','y','growth']
+  __slots__ = ['grassNum','x','y','grassHeight']
   _slot_types = ['int32','float32','float32','int32']
 
   def __init__(self, *args, **kwds):
@@ -26,7 +26,7 @@ int32 growth
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       grassNum,x,y,growth
+       grassNum,x,y,grassHeight
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -41,13 +41,13 @@ int32 growth
         self.x = 0.
       if self.y is None:
         self.y = 0.
-      if self.growth is None:
-        self.growth = 0
+      if self.grassHeight is None:
+        self.grassHeight = 0
     else:
       self.grassNum = 0
       self.x = 0.
       self.y = 0.
-      self.growth = 0
+      self.grassHeight = 0
 
   def _get_types(self):
     """
@@ -62,7 +62,7 @@ int32 growth
     """
     try:
       _x = self
-      buff.write(_struct_i2fi.pack(_x.grassNum, _x.x, _x.y, _x.growth))
+      buff.write(_struct_i2fi.pack(_x.grassNum, _x.x, _x.y, _x.grassHeight))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -76,7 +76,7 @@ int32 growth
       _x = self
       start = end
       end += 16
-      (_x.grassNum, _x.x, _x.y, _x.growth,) = _struct_i2fi.unpack(str[start:end])
+      (_x.grassNum, _x.x, _x.y, _x.grassHeight,) = _struct_i2fi.unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -90,7 +90,7 @@ int32 growth
     """
     try:
       _x = self
-      buff.write(_struct_i2fi.pack(_x.grassNum, _x.x, _x.y, _x.growth))
+      buff.write(_struct_i2fi.pack(_x.grassNum, _x.x, _x.y, _x.grassHeight))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -105,7 +105,7 @@ int32 growth
       _x = self
       start = end
       end += 16
-      (_x.grassNum, _x.x, _x.y, _x.growth,) = _struct_i2fi.unpack(str[start:end])
+      (_x.grassNum, _x.x, _x.y, _x.grassHeight,) = _struct_i2fi.unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
