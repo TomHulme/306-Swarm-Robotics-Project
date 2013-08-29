@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <cstdlib>
+#include <cmath>
 #include <ctime> // Needed to seed random number generator with a time value
 
 enum SheepState {
@@ -24,8 +25,8 @@ class SheepNode {
 public:
 	//currently arbitrary constants:
 	const static int HUNGRY_LEVEL = 80;
-	const static int RUNNING_LOWER_TERROR_LIMIT = 70;
-	const static int WARY_LOWER_TERROR_LIMIT = 50;
+	const static int RUNNING_LOWER_TERROR_LIMIT = 20;
+	const static int WARY_LOWER_TERROR_LIMIT = 15;
 	const static int GRASS_MIN_TASTY_HEIGHT = 30;
 	const static int SHEEP_EAT_AMOUNT = 7;
 	
@@ -87,6 +88,20 @@ public:
     ros::Subscriber grassInfoSub;
 	ros::Subscriber sheepPosSub;
 };
+	
+SheepNode::SheepNode() {
+	sheepNum = 0;
+	sheepAge = 0;
+	hunger = 0;
+	terror = 0;
+	prevState = WALKING;
+	currentState = WALKING;
+	age = BIRTH;
+	sheepSpeed = 0.1;	
+	sdx = 6;	// Setup: Based on sheepdog's initial position in world file generator.
+	sdy = -0.5;
+};
+
 void SheepNode::currentPositionCallback(se306Project::SheepMoveMsg msg) {
 	if (msg.moveCommand == "UPDATE") {
 		px = msg.goalX;
@@ -98,7 +113,10 @@ void SheepNode::currentPositionCallback(se306Project::SheepMoveMsg msg) {
 
 void SheepNode::sheepdogDangerCallback(geometry_msgs::Pose2D sheepdogMsg) {
 		
-		
+		ROS_INFO("GOT SHEEPDOG MESSAGE %d",terror);
+		if(terror < 0){
+			terror = 0;
+		}
 		double sdxnew = sheepdogMsg.x;
 		double sdynew = sheepdogMsg.y;
 			
@@ -110,11 +128,11 @@ void SheepNode::sheepdogDangerCallback(geometry_msgs::Pose2D sheepdogMsg) {
 
 		
 		double DistanceDiff = sqrt((abs(sdx - px)*abs(sdx - px))+(abs(sdy - py)*abs(sdy - py)));
-		double DistanceDiffnew = sqrt((abs(sdxnew - px)*abs(sdxnew - px))+(abs(sdynew - py)*abs(sdynew - py)); 
+		double DistanceDiffnew = sqrt((abs(sdxnew - px)*abs(sdxnew - px))+(abs(sdynew - py)*abs(sdynew - py))); 
 
 		/* check the distance & find out the terror increase
 		 * add the terror increase to the terror level (global var)		 * }*/
-		if (((sdxnew - sdx) != 0.0) || (sdynew - sdy != 0.0)) && DistanceDiffnew < DistanceDiff){
+		if ((((sdxnew - sdx) != 0.0) || (sdynew - sdy != 0.0)) && DistanceDiffnew < DistanceDiff){
 			if (DistanceDiffnew<=3){
 				terror=terror+10;
 			}else if (DistanceDiffnew<=6){
@@ -218,14 +236,11 @@ void SheepNode::sheepRun() {
 		
 		double xDistanceDiff = (px - sdx);
 		double yDistanceDiff = (py - sdy);
-
-		goalPositionX = px+xDistanceDiff;
-		goalPositionY = py+yDistanceDiff;
-
+		ROS_INFO("SHEEPRUNCALLED-------------------------------");
 		se306Project::SheepMoveMsg msg;
 		msg.moveCommand = "GO";
-		msg.x = goalPositionX;
-		msg.y = goalPositionY;
+		msg.goalX = px+xDistanceDiff;
+		msg.goalY = py+yDistanceDiff;
 		sheepMovePub.publish(msg);
 		prevState = RUNNING;
 		
@@ -281,7 +296,6 @@ void SheepNode::spin() {
 	msg.speed = 0.1;
 	sheepMovePub.publish(msg);
 
-	int count = 0;
 	while (ros::ok()) {
 		//deal with state of sheep
 		if (currentState == EATING) {
@@ -334,17 +348,6 @@ void SheepNode::spin() {
 	
 		rate.sleep();
 	}
-};
-	
-SheepNode::SheepNode() {
-	sheepNum = 0;
-	sheepAge = 0;
-	hunger = 0;
-	terror = 0;
-	prevState = WALKING;
-	currentState = WALKING;
-	age = BIRTH;
-	sheepSpeed = 0.1;	
 };
 
 void SheepNode::rosSetup(int argc, char **argv) {
