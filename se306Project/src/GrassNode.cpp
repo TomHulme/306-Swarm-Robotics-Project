@@ -190,7 +190,7 @@ void GrassNode::spin() {
 		msg.grassNum = this->grassNum;
 		msg.x = this->grassX;
 		msg.y = this->grassY;
-		msg.growth = this->grassHeight;
+		msg.grassHeight = this->grassHeight;
 
 		grassPosPub.publish(msg);
 
