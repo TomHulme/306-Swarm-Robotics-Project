@@ -6,17 +6,17 @@ import struct
 
 
 class SheepMoveMsg(genpy.Message):
-  _md5sum = "045aa4b29c32a41aa4c004c78765799c"
+  _md5sum = "d88900a980cd359b82d37d5238f03069"
   _type = "se306Project/SheepMoveMsg"
   _has_header = False #flag to mark the presence of a Header object
   _full_text = """string moveCommand
-int64 velX
-int64 velY
-int64 speed
+float64 goalX
+float64 goalY
+float64 speed
 
 """
-  __slots__ = ['moveCommand','velX','velY','speed']
-  _slot_types = ['string','int64','int64','int64']
+  __slots__ = ['moveCommand','goalX','goalY','speed']
+  _slot_types = ['string','float64','float64','float64']
 
   def __init__(self, *args, **kwds):
     """
@@ -26,7 +26,7 @@ int64 speed
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       moveCommand,velX,velY,speed
+       moveCommand,goalX,goalY,speed
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -37,17 +37,17 @@ int64 speed
       #message fields cannot be None, assign default values for those that are
       if self.moveCommand is None:
         self.moveCommand = ''
-      if self.velX is None:
-        self.velX = 0
-      if self.velY is None:
-        self.velY = 0
+      if self.goalX is None:
+        self.goalX = 0.
+      if self.goalY is None:
+        self.goalY = 0.
       if self.speed is None:
-        self.speed = 0
+        self.speed = 0.
     else:
       self.moveCommand = ''
-      self.velX = 0
-      self.velY = 0
-      self.speed = 0
+      self.goalX = 0.
+      self.goalY = 0.
+      self.speed = 0.
 
   def _get_types(self):
     """
@@ -68,7 +68,7 @@ int64 speed
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
       _x = self
-      buff.write(_struct_3q.pack(_x.velX, _x.velY, _x.speed))
+      buff.write(_struct_3d.pack(_x.goalX, _x.goalY, _x.speed))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -91,7 +91,7 @@ int64 speed
       _x = self
       start = end
       end += 24
-      (_x.velX, _x.velY, _x.speed,) = _struct_3q.unpack(str[start:end])
+      (_x.goalX, _x.goalY, _x.speed,) = _struct_3d.unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -111,7 +111,7 @@ int64 speed
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
       _x = self
-      buff.write(_struct_3q.pack(_x.velX, _x.velY, _x.speed))
+      buff.write(_struct_3d.pack(_x.goalX, _x.goalY, _x.speed))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -135,10 +135,10 @@ int64 speed
       _x = self
       start = end
       end += 24
-      (_x.velX, _x.velY, _x.speed,) = _struct_3q.unpack(str[start:end])
+      (_x.goalX, _x.goalY, _x.speed,) = _struct_3d.unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
 
 _struct_I = genpy.struct_I
-_struct_3q = struct.Struct("<3q")
+_struct_3d = struct.Struct("<3d")

@@ -6,13 +6,14 @@ import struct
 
 
 class SheepEatMsg(genpy.Message):
-  _md5sum = "58a2e47f8fd6a36d8eaa6885b2e31650"
+  _md5sum = "8da1d17d73ef786f3b2db0ab8dc5831f"
   _type = "se306Project/SheepEatMsg"
   _has_header = False #flag to mark the presence of a Header object
-  _full_text = """int64 eatAmount
+  _full_text = """int64 grassNum
+int64 eatAmount
 """
-  __slots__ = ['eatAmount']
-  _slot_types = ['int64']
+  __slots__ = ['grassNum','eatAmount']
+  _slot_types = ['int64','int64']
 
   def __init__(self, *args, **kwds):
     """
@@ -22,7 +23,7 @@ class SheepEatMsg(genpy.Message):
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       eatAmount
+       grassNum,eatAmount
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -31,9 +32,12 @@ class SheepEatMsg(genpy.Message):
     if args or kwds:
       super(SheepEatMsg, self).__init__(*args, **kwds)
       #message fields cannot be None, assign default values for those that are
+      if self.grassNum is None:
+        self.grassNum = 0
       if self.eatAmount is None:
         self.eatAmount = 0
     else:
+      self.grassNum = 0
       self.eatAmount = 0
 
   def _get_types(self):
@@ -48,7 +52,8 @@ class SheepEatMsg(genpy.Message):
     :param buff: buffer, ``StringIO``
     """
     try:
-      buff.write(_struct_q.pack(self.eatAmount))
+      _x = self
+      buff.write(_struct_2q.pack(_x.grassNum, _x.eatAmount))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -59,9 +64,10 @@ class SheepEatMsg(genpy.Message):
     """
     try:
       end = 0
+      _x = self
       start = end
-      end += 8
-      (self.eatAmount,) = _struct_q.unpack(str[start:end])
+      end += 16
+      (_x.grassNum, _x.eatAmount,) = _struct_2q.unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -74,7 +80,8 @@ class SheepEatMsg(genpy.Message):
     :param numpy: numpy python module
     """
     try:
-      buff.write(_struct_q.pack(self.eatAmount))
+      _x = self
+      buff.write(_struct_2q.pack(_x.grassNum, _x.eatAmount))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -86,12 +93,13 @@ class SheepEatMsg(genpy.Message):
     """
     try:
       end = 0
+      _x = self
       start = end
-      end += 8
-      (self.eatAmount,) = _struct_q.unpack(str[start:end])
+      end += 16
+      (_x.grassNum, _x.eatAmount,) = _struct_2q.unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
 
 _struct_I = genpy.struct_I
-_struct_q = struct.Struct("<q")
+_struct_2q = struct.Struct("<2q")

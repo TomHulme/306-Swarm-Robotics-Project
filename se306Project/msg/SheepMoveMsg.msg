@@ -1,4 +1,4 @@
 string moveCommand
-int64 velX
-int64 velY
-int64 speed
+float64 goalX
+float64 goalY
+float64 speed

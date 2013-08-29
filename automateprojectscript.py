@@ -19,10 +19,18 @@ from os.path import join
 import shlex
 
 filename= "world/myworld.world"
+
 num_sheep= 2
 num_fields = 4
 field_X= 6
 field_Y= 4
+
+##Smaller field for testing
+#num_sheep= 1
+#num_fields = 1
+#field_X= 3
+#field_Y= 3
+
 num_grass_field = (field_X-1)*(field_Y-1)
 num_grass = num_fields*num_grass_field
 
@@ -67,6 +75,7 @@ for i in range(0, num_grass):
 '''
 #Add farmer, sheepdog, listener
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(farmer src/farmerNode.cpp src/farmer.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
+
 addToCMakeFile.wait()
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(sheepdog src/sheepdogNode.cpp src/sheepdog.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 addToCMakeFile.wait()
@@ -148,7 +157,7 @@ for i in range(num_fields):
 
 	commandString += """\\--tab -e 'bash -c \"rosrun se306Project FieldNode {0} {1} {2}\"' --title='Field {0}' """.format(str(i), str(field_X), str(field_Y))
 	for j in range(num_grass_field):
-		commandString += """\\--tab -e 'bash -c \"rosrun se306Project GrassNode {0} {1} {2}\"' --title='Grass {0}' """.format(str((i*num_grass_field)+j+1), str(((i*num_grass_field)+j+1)+3+total_sheep), str(i))
+		commandString += """\\--tab -e 'bash -c \"rosrun se306Project GrassNode {0} {1} {2}\"' --title='Grass {0}' """.format(str((i*num_grass_field)+j), str(((i*num_grass_field)+j+1)+3+total_sheep), str(i))
 
 runNode= Popen(shlex.split(commandString),stdout=PIPE)
 
