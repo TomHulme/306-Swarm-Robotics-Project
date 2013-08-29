@@ -143,6 +143,12 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
 			if (j != int(fieldX)-1): # Gates gap
 				ts4 = 'pose [' + str(currentX+j-1) + ' ' + str(currentY-int(fieldY)) + ' 0.125 0.000])\n'
 				fo.write(JoinString(ts1, ts2, ts3, ts4))
+
+			# Sheep alley
+			ts3 = 'size [1 0.1 0.25] '
+			ts4 = 'pose [' + str(currentX+j-1) + ' ' + str(currentY-int(fieldY)-1) + ' 0.125 0.000])\n'
+			fo.write(JoinString(ts1, ts2, ts3, ts4))
+			
 		if (j == 0):
 			# Corners
 			ts3 = 'size [0.5 0.1 0.25] '
@@ -165,8 +171,13 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
 				ts4 = 'pose [' + str(currentX+j-1.25) + ' ' + str(currentY) + ' 0.125 0.000])\n'
 				fo.write(JoinString(ts1, ts2, ts3, ts4))
 				ts4 = 'pose [' + str(currentX+j-1.25) + ' ' + str(currentY-int(fieldY)) + ' 0.125 0.000])\n'
-				fo.write(JoinString(ts1, ts2, ts3, ts4))			
+				fo.write(JoinString(ts1, ts2, ts3, ts4))
 
+			# Sheep alley
+			ts3 = 'size [1 0.1 0.25] '
+			ts4 = 'pose [' + str(currentX+j-1) + ' ' + str(currentY-int(fieldY)-1) + ' 0.125 0.000])\n'
+			fo.write(JoinString(ts1, ts2, ts3, ts4))
+		
 	for j in range(int(fieldY)):
 		if (j != 0):
 			# Vertical edges
@@ -176,10 +187,17 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
 			ts4 = 'pose [' + str(currentX-1) + ' ' + str(currentY-j) + ' 0.125 90.000])\n'
 			fo.write(JoinString(ts1, ts2, ts3, ts4))
         prevX = currentX + float(fieldX)/2 + 2
+
+    #Construct truck definition
+    ts1 = 'truckRobot ('
+    ts2 = 'pose [' + str(currentX+1) + ' ' + str(currentY-int(fieldY)) + ' 0.125 0] size [3 3 0.1] '
+    ts3 = 'name "truck" '
+    ts4 = 'color "blue" bitmap "TRUCK.bmp")\n'
+    fo.write(JoinString(ts1, ts2, ts3, ts4))
     
     #Construct farmer definition
     ts1 = 'farmRobot ('
-    ts2 = 'pose [5 2 0.125 0] size [0.5 0.5 0.7] '
+    ts2 = 'pose [5 2 0.125 0] size [0.9 0.75 0.35] '
     ts3 = 'name "farmer" '
     ts4 = 'color "dark blue" bitmap "FARMER.bmp")\n'
 
@@ -193,14 +211,6 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     ts4 = 'color "brown" bitmap "SHEEPDOG.bmp")\n'
         
     fo.write(JoinString(ts1, ts2, ts3, ts4))
-    
-    #Construct truck definition
-    ts1 = 'truckRobot ('
-    ts2 = 'pose [2 -3 0.125 0] size [3 3 0.1] '
-    ts3 = 'name "truck" '
-    ts4 = 'color "blue" bitmap "TRUCK.bmp")\n'
-        
-    fo.write(JoinString(ts1, ts2, ts3, ts4))
 
     count = 0    
     #Write sheep robots to file
@@ -212,7 +222,7 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     
                 #Construct sheep definition
                 ts1 = 'sheepRobot ('
-                ts2 = 'pose [' + str(col) + ' ' + str(row)  +  ' 0.125 '+str(randrange(-180,180))+'] '
+                ts2 = 'pose [' + str(col) + ' ' + str(row)  +  ' 0.125 '+str(randrange(-180,180))+'] size [0.75 0.375 0.25]'
                 ts3 = 'name "sheepMove' + str(count) + '" '
                 ts4 = 'color "white" bitmap "SHEEP.BMP")\n'
 
