@@ -76,10 +76,10 @@ void sheepdogNode::StageOdom_callback(nav_msgs::Odometry msg)
 		//ROS_INFO("Robot unstuck");
 		//checkcount=0;
 	}
-	ROS_INFO("Sheepdog -- Current x position is: %f", px);
-	ROS_INFO("Sheepdog -- Current y position is: %f", py);
-	ROS_INFO("Sheepdog -- Current z position is: %f", tz);
-	ROS_INFO("Sheepdog -- Current sheepNum is: %d", sheepNum);
+	//ROS_INFO("Sheepdog -- Current x position is: %f", px);
+	//ROS_INFO("Sheepdog -- Current y position is: %f", py);
+	//ROS_INFO("Sheepdog -- Current z position is: %f", tz);
+	//ROS_INFO("Sheepdog -- Current sheepNum is: %d", sheepNum);
 	prevpx = px;
 	prevpy = py;
 }
@@ -145,10 +145,8 @@ void sheepdogNode::commandCallback(const sensor_msgs::LaserScan::ConstPtr& msg) 
 
 // Process the incoming sheep position messages
 void sheepdogNode::chaseSheepCallback(geometry_msgs::Pose2D msg) {
-	if (fsm == FSM_MOVE_FORWARD) {
-		
-
-	}
+	ROS_INFO("I see a sheep at (%d, %d)",msg.x,msg.y);
+	
 }
 
 // Main FSM loop for ensuring that ROS messages are
