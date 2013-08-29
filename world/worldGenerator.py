@@ -84,8 +84,6 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
 (
     color "brown"
 
-    boundary 1
-
     ranger_return 1
 )
 """
@@ -128,17 +126,56 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     
     #Write floorplans to file
     prevX = 0
-    for i in range(int(numFields)):
-        currentX = float(prevX) + float(fieldX)/2
-        currentY = float(fieldY)/2
+    for i in range(int(numFields)+1):
+
+        currentX = float(prevX) + float(fieldX)/2 - 2
+        currentY = float(fieldY)
         
         ts1 = 'floorplan (name "field' + str(i) +'" '
-        ts2 = 'bitmap "swarm_world.pgm" '
-        ts3 = 'size [' + str(fieldX) + ' ' + str(fieldY) + ' 0.5] '
-        ts4 = 'pose [' + str(currentX) + ' ' + str(currentY) + ' 0 90.000])\n'
-        
-        fo.write(JoinString(ts1, ts2, ts3, ts4))
-        prevX = currentX + float(fieldX)/2   
+	ts2 = 'bitmap "fence.bmp" '
+	for j in range(int(fieldX)):
+		if (j != 0  and i != int(numFields)):
+			# Horizontal Edges
+        		ts3 = 'size [1 0.1 0.25] '
+			ts4 = 'pose [' + str(currentX+j-1) + ' ' + str(currentY) + ' 0.125 0.000])\n'
+			fo.write(JoinString(ts1, ts2, ts3, ts4))
+			
+			if (j != int(fieldX)-1): # Gates gap
+				ts4 = 'pose [' + str(currentX+j-1) + ' ' + str(currentY-int(fieldY)) + ' 0.125 0.000])\n'
+				fo.write(JoinString(ts1, ts2, ts3, ts4))
+		if (j == 0):
+			# Corners
+			ts3 = 'size [0.5 0.1 0.25] '
+
+			# Vertical part of corner
+			ts4 = 'pose [' + str(currentX+j-1) + ' ' + str(currentY-0.25) + ' 0.125 90.000])\n'
+			fo.write(JoinString(ts1, ts2, ts3, ts4))
+			ts4 = 'pose [' + str(currentX+j-1) + ' ' + str(currentY-int(fieldY)+0.25) + ' 0.125 90.000])\n'
+			fo.write(JoinString(ts1, ts2, ts3, ts4))	
+
+			# Right-facing part of corner
+			if (i != int(numFields)):
+				ts4 = 'pose [' + str(currentX+j-0.75) + ' ' + str(currentY) + ' 0.125 0.000])\n'
+				fo.write(JoinString(ts1, ts2, ts3, ts4))
+				ts4 = 'pose [' + str(currentX+j-0.75) + ' ' + str(currentY-int(fieldY)) + ' 0.125 0.000])\n'
+				fo.write(JoinString(ts1, ts2, ts3, ts4))
+
+			# Left-facing part of corner
+			if (i != 0): # Every field except the first
+				ts4 = 'pose [' + str(currentX+j-1.25) + ' ' + str(currentY) + ' 0.125 0.000])\n'
+				fo.write(JoinString(ts1, ts2, ts3, ts4))
+				ts4 = 'pose [' + str(currentX+j-1.25) + ' ' + str(currentY-int(fieldY)) + ' 0.125 0.000])\n'
+				fo.write(JoinString(ts1, ts2, ts3, ts4))			
+
+	for j in range(int(fieldY)):
+		if (j != 0):
+			# Vertical edges
+		        ts3 = 'size [1 0.1 0.25] '
+			ts4 = 'pose [' + str(currentX-1) + ' ' + str(currentY-j) + ' 0.125 90.000])\n'
+			fo.write(JoinString(ts1, ts2, ts3, ts4))
+			ts4 = 'pose [' + str(currentX-1) + ' ' + str(currentY-j) + ' 0.125 90.000])\n'
+			fo.write(JoinString(ts1, ts2, ts3, ts4))
+        prevX = currentX + float(fieldX)/2 + 2
     
     #Construct farmer definition
     ts1 = 'farmRobot ('
