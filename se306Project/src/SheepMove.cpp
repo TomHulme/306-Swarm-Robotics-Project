@@ -216,20 +216,20 @@ void SheepMove::move(double linearVelMPS, double angularVelRadPS) {
 void SheepMove::statusCallback(se306Project::SheepMoveMsg msg) {
 	
 	//moveStatus = msg.moveCommand;
-	std::string testing = msg.age;
+	std::string lifeStage = msg.age;
 	//ROS_INFO("Finally got here: %s", testing.c_str());
-	if (testing.compare("Birth") == 0) {
+	if (lifeStage.compare("Birth") == 0) {
 		//ROS_INFO("Birth");
 		FORWARD_SPEED_MPS = 0.1;
-	} else if (testing.compare("Adolescence") == 0) {
+	} else if (lifeStage.compare("Adolescence") == 0) {
 		//ROS_INFO("Adolescence");
 		FORWARD_SPEED_MPS = 0.2;
 
-	} else if (testing.compare("Adulthood") == 0) {
+	} else if (lifeStage.compare("Adulthood") == 0) {
 		//ROS_INFO("Adulthood");
 		FORWARD_SPEED_MPS = 0.3;
 
-	} else if (testing.compare("Old age") == 0) {
+	} else if (lifeStage.compare("Old age") == 0) {
 		//ROS_INFO("Old age");
 		FORWARD_SPEED_MPS = 0.2;
 

@@ -24,6 +24,7 @@ double theta;
 double prevpx;
 double prevpy;
 bool isRotate;
+int sheepNum;
 
 int checkcount=0;
 
@@ -41,6 +42,13 @@ class Sheepdog {
 		// (the second argument indicates that if multiple command messages are in
 		// the queue to be sent, only the last command will be sent)
 		ros::NodeHandle n;
+		n.getParam("sheepNum", sheepNum);
+		std::ostringstream convert;
+		convert << sheepNum;
+		std::string sheepPosSubs [sheepNum];
+		for(int i = 0; i < sheepNum; i++){
+			nh.subscribe<geometry_msgs::Pose2D>("sheep_" + convert.str()+ "/pose", 1000, &Sheepdog::chaseSheepCallback, this);
+		}
 		commandPub = nh.advertise<geometry_msgs::Twist>("robot_1/cmd_vel",1000);
 		sheepdogPosPub = nh.advertise<geometry_msgs::Pose2D>("sheepdog_position",1000);
 		// Subscribe to the simulated robot's laser scan topic and tell ROS to call
@@ -92,6 +100,7 @@ class Sheepdog {
 		ROS_INFO("Sheepdog -- Current x position is: %f", px);
 		ROS_INFO("Sheepdog -- Current y position is: %f", py);
 		ROS_INFO("Sheepdog -- Current z position is: %f", tz);
+		ROS_INFO("Sheepdog -- Current sheepNum is: %d", sheepNum);
 		prevpx = px;
 		prevpy = py;
 	};
@@ -151,6 +160,17 @@ class Sheepdog {
 
 		}
 	};
+
+	
+
+
+	// Process the incoming sheep position messages
+	void chaseSheepCallback(geometry_msgs::Pose2D msg) {
+		if (fsm == FSM_MOVE_FORWARD) {
+			
+
+		}
+	};
 	
 	// Main FSM loop for ensuring that ROS messages are
 	// processed in a timely manner, and also for sending
@@ -158,10 +178,20 @@ class Sheepdog {
 	void spin() {
 		ros::Rate rate(10); // Specify the FSM loop rate in Hz
 		while (ros::ok()) { // Keep spinning loop until user presses Ctrl+C
+
 			geometry_msgs::Pose2D msg;
 			msg.x = px;
 			msg.y = py;
 			msg.theta = tz;
+
+			
+			// need to fix next four lines
+			//std_msgs::String msg;
+			//std::stringstream ss;
+			//ss << "Sheepdog -- px:" << px << " py:" << py << " theta:" << theta << " isRotate:" << isRotate;
+    			//msg.data = ss.str();
+    			
+
     			//ROS_INFO("%s", msg.data.c_str());
     			
 			if (fsm == FSM_MOVE_FORWARD) {
@@ -186,7 +216,7 @@ class Sheepdog {
 				}
 			}
 			
-		sheepdogPosPub.publish(msg);
+		sheepdogPosPub.publish(msg); // Publish the message 
 
 		ros::spinOnce(); // Need to call this function often to allow ROS to process incoming messages
 		rate.sleep(); // Sleep for the rest of the cycle, to enforce the FSM loop rate
