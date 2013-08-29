@@ -140,9 +140,6 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
         fo.write(JoinString(ts1, ts2, ts3, ts4))
         prevX = currentX + float(fieldX)/2   
     
-    row = 1
-    col = 1
-    
     #Construct farmer definition
     ts1 = 'farmRobot ('
     ts2 = 'pose [5 2 0.125 0] size [0.5 0.5 0.1] '
@@ -167,23 +164,29 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
     ts4 = 'color "blue" bitmap "TRUCK.bmp")\n'
         
     fo.write(JoinString(ts1, ts2, ts3, ts4))
-    
-    #Write sheep robots to file
-    for i in range(int(numSheep)):
-    
-        #Construct sheep definition
-        ts1 = 'sheepRobot ('
-        ts2 = 'pose [' + str(col) + ' ' + str(row)  +  ' 0.125 '+str(randrange(-180,180))+'] '
-        ts3 = 'name "sheepMove' + str(i) + '" '
-        ts4 = 'color "white" bitmap "SHEEP.BMP")\n'
 
-        fo.write(JoinString(ts1, ts2, ts3, ts4))
+    count = 0    
+    #Write sheep robots to file
+    for i in range((int(numFields))):
+            field_offset = i * int(fieldX)
+            row = 1
+            col = 1 + field_offset
+            for j in range(int(numSheep)):
+    
+                #Construct sheep definition
+                ts1 = 'sheepRobot ('
+                ts2 = 'pose [' + str(col) + ' ' + str(row)  +  ' 0.125 '+str(randrange(-180,180))+'] '
+                ts3 = 'name "sheepMove' + str(count) + '" '
+                ts4 = 'color "white" bitmap "SHEEP.BMP")\n'
+
+                fo.write(JoinString(ts1, ts2, ts3, ts4))
+                count += 1
         
-        col += 1
-        print(col)
-        if col == int(fieldX):
-            col = 1
-            row += 1
+                col += 1
+                print(col)
+                if col == int(fieldX):
+                    col = 1
+                    row += 1
     
     count = 0
     #Write grass robots to file

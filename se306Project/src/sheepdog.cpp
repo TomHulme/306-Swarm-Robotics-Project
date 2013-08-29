@@ -205,7 +205,6 @@ void sheepdogNode::spin() {
 			rotateEndTime=ros::Time::now();
 			isRotate=true;
 			//ROS_INFO_STREAM("Time: " << rotateEndTime);
-			
 			if ((rotateEndTime - rotateStartTime) > rotateDuration) {
 				fsm=FSM_MOVE_FORWARD;
 				//ROS_INFO_STREAM("End rotate");
@@ -214,7 +213,6 @@ void sheepdogNode::spin() {
 		}
 		
 		sheepdogPosPub.publish(msg);
-
 		ros::spinOnce(); // Need to call this function often to allow ROS to process incoming messages
 		rate.sleep(); // Sleep for the rest of the cycle, to enforce the FSM loop rate
 	}
