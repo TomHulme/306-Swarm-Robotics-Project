@@ -67,31 +67,26 @@ for i in range(0, num_grass):
 	addToCMakeFile= Popen("echo \"rosbuild_add_executable(Grass"+str(i)+" src/Grass"+str(i)+".cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 '''
 #Add farmer, sheepdog, listener
-<<<<<<< HEAD
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(farmer src/farmerNode.cpp src/farmer.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 addToCMakeFile.wait()
-=======
-addToCMakeFile= Popen("echo \"rosbuild_add_executable(farmer src/farmer.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
-#addToCMakeFile.wait()
->>>>>>> c415b74dc36f8a771051f9ce0914c4dfa17540e1
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(sheepdog src/sheepdogNode.cpp src/sheepdog.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
-#addToCMakeFile.wait()
+addToCMakeFile.wait()
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(truck src/truck.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
-#addToCMakeFile.wait()
+addToCMakeFile.wait()
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(laserScanToPointCloud src/LaserScanToPointCloud.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
-#addToCMakeFile.wait()
+addToCMakeFile.wait()
 
 #Add the field node into CMakeLists
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(GrassNode src/GrassNode.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
-#addToCMakeFile.wait()
+addToCMakeFile.wait()
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(FieldNode src/FieldNode.cpp src/Field.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
-#addToCMakeFile.wait()
+addToCMakeFile.wait()
 
 #Add the sheep
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(SheepNode src/SheepNode.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
-#addToCMakeFile.wait()
+addToCMakeFile.wait()
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(SheepMove src/SheepMove.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
-#addToCMakeFile.wait()
+addToCMakeFile.wait()
 
 # This checks if there is a running roscore process and if there is, it gets killed
 findRoscorePro = Popen("pgrep roscore", stdout=PIPE, shell=True)
@@ -130,13 +125,7 @@ stagePro = Popen('rosrun stage stageros %s' %worldfile,shell=True)
 commandString = "gnome-terminal "
 for i in range(total_sheep):
 	print "creating sheep",i
-<<<<<<< HEAD
 	commandString += """\\--tab -e 'bash -c \"rosrun se306Project SheepNode __name:=sheep{0} _sheepNum:={0} _fieldX:={1} _fieldY:={2} \"' --title='SheepNode {0}' """.format(str(i), str(field_X), str(field_Y))
-=======
-#	runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project SheepNode __name:=sheep{0} _sheepNum:={0}"' --title='SheepNode{0}'""".format(str(i))),stdout=PIPE)
-#	runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project SheepMove __name:=sheepMove{0} _sheepNum:={0} _robotNum:={1}"' --title='SheepMove {0}'""".format(str(i), str(i+3))),stdout=PIPE)
-	commandString += """\\--tab -e 'bash -c \"rosrun se306Project SheepNode __name:=sheep{0} _sheepNum:={0}\"' --title='SheepNode {0}' """.format(str(i))
->>>>>>> c415b74dc36f8a771051f9ce0914c4dfa17540e1
 	commandString += """\\--tab -e 'bash -c \"rosrun se306Project SheepMove __name:=sheepMove{0} _sheepNum:={0} _robotNum:={1}\"' --title='SheepMove {0}' """.format(str(i), str(i+3))
 runNode= Popen(shlex.split(commandString),stdout=PIPE)
 
