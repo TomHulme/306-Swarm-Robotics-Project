@@ -178,12 +178,12 @@ class Sheepdog {
 	void spin() {
 		ros::Rate rate(10); // Specify the FSM loop rate in Hz
 		while (ros::ok()) { // Keep spinning loop until user presses Ctrl+C
-<<<<<<< HEAD
+
 			geometry_msgs::Pose2D msg;
 			msg.x = px;
 			msg.y = py;
 			msg.theta = tz;
-=======
+
 			
 			// need to fix next four lines
 			//std_msgs::String msg;
@@ -191,7 +191,7 @@ class Sheepdog {
 			//ss << "Sheepdog -- px:" << px << " py:" << py << " theta:" << theta << " isRotate:" << isRotate;
     			//msg.data = ss.str();
     			
->>>>>>> 4a61d39b9502cbe49dd21fc4c0b02ba97639e34d
+
     			//ROS_INFO("%s", msg.data.c_str());
     			
 			if (fsm == FSM_MOVE_FORWARD) {

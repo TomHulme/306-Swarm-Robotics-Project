@@ -25,7 +25,8 @@ public:
 	SheepNode();//(int);
 	void rosSetup(int, char**);
 	void spin();	
-	
+	void runaway(float , float );
+
 	int sheepNum;
 	SheepState currentState;
 	SheepAgeStages age; 
@@ -54,6 +55,7 @@ public:
 	
 	//TODO: Sheep Danger sense
 	void sheepdogDangerCallback(geometry_msgs::Pose2D sheepdogMsg);
+	
 	//TODO: Eating
 	//void eatCallback();
 	
@@ -78,7 +80,7 @@ void SheepNode::sheepdogDangerCallback(geometry_msgs::Pose2D sheepdogMsg) {
 	//       if it is at 6 units away, terror goes up again, and sheep move away from the dog.
 	//		 if it is at 3 units away or less, sheep runs away from dog.
 	if (xDistanceDiff<=5||yDistanceDiff<=5){
-		runaway(sdx,sdy);
+		SheepNode::runaway(sdx,sdy);
 	}									
 	ROS_INFO("Robot 0 -- Current x position is: %f", px);
 	ROS_INFO("Robot 0 -- Current y position is: %f", py);
@@ -86,7 +88,7 @@ void SheepNode::sheepdogDangerCallback(geometry_msgs::Pose2D sheepdogMsg) {
 	
 };
 
-void runaway(float sdx, float sdy) {
+void SheepNode::runaway(float sdx, float sdy) {
 	ROS_INFO("x Distance between Sheepdog and Sheep: %f",sdx);
 	ROS_INFO("y Distance between Sheepdog and Sheep: %f",sdy);
 };
