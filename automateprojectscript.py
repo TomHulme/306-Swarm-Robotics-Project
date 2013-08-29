@@ -144,7 +144,7 @@ runNode= Popen(shlex.split(commandString),stdout=PIPE)
 commandString = "gnome-terminal "
 for i in range(num_fields):
 	print "creating field",i
-	#runNode = Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project FieldNode {0} {1} {2}"' --title='Field {0}'""".format(str(i), str(field_X), str(field_Y))), stdout=PIPE)
+	runNode = Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project FieldNode {0} {1} {2}"' --title='Field {0}'""".format(str(i), str(field_X), str(field_Y))), stdout=PIPE)
 
 	commandString += """\\--tab -e 'bash -c \"rosrun se306Project FieldNode {0} {1} {2}\"' --title='Field {0}' """.format(str(i), str(field_X), str(field_Y))
 	for j in range(num_grass_field):
@@ -159,4 +159,3 @@ runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project fa
 runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project sheepdog {0}"' --title='Sheepdog'""".format(str(num_sheep))),stdout=PIPE)
 #Run Truck Node
 runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project truck"' --title='Truck'"""),stdout=PIPE)
-
