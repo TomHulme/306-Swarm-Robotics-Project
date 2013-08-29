@@ -12,12 +12,63 @@ const static float PROXIMITY_RANGE_M = 5;
 const static double FORWARD_SPEED_MPS = 1;
 const static double ROTATE_SPEED_RADPS = M_PI;
 
+float prevclosestRange = 0;
+double linear_x;
+double angular_z;
 
-sheepdogNode::sheepdogNode(int number) {
+//pose of the robot
+double px;
+double py;
+double tz;
+double theta;
+double prevpx;
+double prevpy;
+bool isRotate;
+int sheepNum = 0;
+int checkcount = 0;
+enum FSM {FSM_MOVE_FORWARD, FSM_ROTATE};
+ros::Publisher commandPub; // Publisher to the simulated robot's velocity command topic
+ros::Publisher sheepdogPosPub;
+ros::Subscriber laserSub; // Subscriber to the simulated robot's laser scan topic
+enum FSM fsm; // Finite state machine for the random walk algorithm
+
+ros::Time rotateStartTime; // Start time of the rotation
+ros::Time rotateEndTime;
+ros::Duration rotateDuration; // Duration of the rotation
+ros::Subscriber StageOdo_sub;
+
+ros::NodeHandle node_;
+laser_geometry::LaserProjection projector_;
+tf::TransformListener tfListener_;
+
+ros::Publisher point_cloud_publisher_;
+
+
+sheepdogNode::sheepdogNode(int number, ros::NodeHandle& nh) {
 	sheepNum = number;
+	fsm = FSM(FSM_MOVE_FORWARD);
+	// Initialize random time generator
+	srand(time(NULL));
+	// Advertise a new publisher for the simulated robot's velocity command topic
+	// (the second argument indicates that if multiple command messages are in
+	// the queue to be sent, only the last command will be sent)
+	/*std::string sheepPosSubs [sheepNum];
+	std::ostringstream buffer;
+	for(int i = 0; i < sheepNum; i++){
+		buffer << i;
+		nh.subscribe<geometry_msgs::Pose2D>("sheep_" + buffer.str() + "/pose", 1000, &sheepdogNode::chaseSheepCallback, this);
+	}*/
+	commandPub = nh.advertise<geometry_msgs::Twist>("robot_1/cmd_vel",1000);
+	sheepdogPosPub = nh.advertise<geometry_msgs::Pose2D>("sheepdog_position",1000);
+	// Subscribe to the simulated robot's laser scan topic and tell ROS to call
+	// this->commandCallback() whenever a new message is published on that topic
+	laserSub = nh.subscribe<sensor_msgs::LaserScan>("robot_1/base_scan", 1000, &sheepdogNode::commandCallback, this);
+	StageOdo_sub = nh.subscribe<nav_msgs::Odometry>("robot_1/odom",1000, &sheepdogNode::StageOdom_callback,this);
+	point_cloud_publisher_ = node_.advertise<sensor_msgs::PointCloud> ("/camera", 1000, false);
+	tfListener_.setExtrapolationLimit(ros::Duration(0.1));
 }
 
-void StageOdom_callback(nav_msgs::Odometry msg)
+void sheepdogNode::StageOdom_callback(nav_msgs::Odometry msg)
 {
 	//This is the call back function to process odometry messages coming from Stage. 		
 
@@ -63,7 +114,7 @@ void StageOdom_callback(nav_msgs::Odometry msg)
 
 
 	// Send a velocity command
-void move(double linearVelMPS, double angularVelRadPS) {
+void sheepdogNode::move(double linearVelMPS, double angularVelRadPS) {
 	geometry_msgs::Twist msg; // The default constructor will set all commands to 0
 	msg.linear.x = linearVelMPS;
 	msg.angular.z = angularVelRadPS;
@@ -74,7 +125,7 @@ void move(double linearVelMPS, double angularVelRadPS) {
 
 
 // Process the incoming laser scan message
-void commandCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
+void sheepdogNode::commandCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
 	sensor_msgs::PointCloud cloud;
 	projector_.transformLaserScanToPointCloud("robot_1/base_link", *msg, cloud, tfListener_);
 	point_cloud_publisher_.publish(cloud);
@@ -121,7 +172,7 @@ void commandCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
 
 
 // Process the incoming sheep position messages
-void chaseSheepCallback(geometry_msgs::Pose2D msg) {
+void sheepdogNode::chaseSheepCallback(geometry_msgs::Pose2D msg) {
 	if (fsm == FSM_MOVE_FORWARD) {
 		
 
@@ -131,7 +182,7 @@ void chaseSheepCallback(geometry_msgs::Pose2D msg) {
 // Main FSM loop for ensuring that ROS messages are
 // processed in a timely manner, and also for sending
 // velocity controls to the simulated robot based on the FSM state
-void spin() {
+void sheepdogNode::spin() {
 	ros::Rate rate(10); // Specify the FSM loop rate in Hz
 	while (ros::ok()) { // Keep spinning loop until user presses Ctrl+C
 		geometry_msgs::Pose2D msg;
@@ -169,39 +220,16 @@ void spin() {
 	}
 }
 
-int rosSetup(int argc, char **argv) {
+	
+	
+
+void sheepdogNode::rosSetup(int argc, char **argv) {
 	ros::init(argc, argv, "Sheepdog"); // Initiate new ROS node named "Sheepdog"
-	
-	sheepdogNode(ros::NodeHandle& nh) :
-	fsm(FSM_MOVE_FORWARD),
-	rotateStartTime(ros::Time::now()),
-	rotateDuration(0.f) {
-	// Initialize random time generator
-	srand(time(NULL));
-	// Advertise a new publisher for the simulated robot's velocity command topic
-	// (the second argument indicates that if multiple command messages are in
-	// the queue to be sent, only the last command will be sent)
-	ros::NodeHandle n;
-	std::string sheepPosSubs [sheepNum];
-	for(int i = 0; i < sheepNum; i++){
-		nh.subscribe<geometry_msgs::Pose2D>("sheep_" + i + "/pose", 1000, &sheepdogNode::chaseSheepCallback, this);
-	}
-	commandPub = nh.advertise<geometry_msgs::Twist>("robot_1/cmd_vel",1000);
-	sheepdogPosPub = nh.advertise<geometry_msgs::Pose2D>("sheepdog_position",1000);
-	// Subscribe to the simulated robot's laser scan topic and tell ROS to call
-	// this->commandCallback() whenever a new message is published on that topic
-	laserSub = nh.subscribe<sensor_msgs::LaserScan>("robot_1/base_scan", 1000, &sheepdogNode::commandCallback, this);
-	StageOdo_sub = nh.subscribe<nav_msgs::Odometry>("robot_1/odom",1000, &sheepdogNode::StageOdom_callback,this);
-	point_cloud_publisher_ = node_.advertise<sensor_msgs::PointCloud> ("/camera", 1000, false);
-	tfListener_.setExtrapolationLimit(ros::Duration(0.1));
-	
-	
-	
+
 	ROS_INFO("This node is: Sheepdog");
 	ros::NodeHandle n;
 	prevpx = 5;
 	prevpx= 5;
-	sheepdogNode walker(n); // Create new random walk object
-	walker.spin(); // Execute FSM loop
-	return 0;
+	this->spin();
+	std::cout << "Got Here";
 }
