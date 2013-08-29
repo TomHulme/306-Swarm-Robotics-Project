@@ -38,14 +38,6 @@ cleanupCMakeFile= Popen("sed -i /rosbuild_add_executable/d se306Project/CMakeLis
 cleanupCMakeFile.wait()
 
 
-writeFieldInfo = Popen("echo \"class fieldinfo { \" >> se306Project/src/fieldinfo.cpp",shell=True)
-writeFieldInfo = Popen("echo \"public: \" >> se306Project/src/fieldinfo.cpp",shell=True)
-writeFieldInfo = Popen("echo \"const static int field_X= " + str(field_X) + "\" >> se306Project/src/fieldinfo.cpp",shell=True)
-writeFieldInfo = Popen("echo \"const static int field_Y= " + str(field_Y) + "\" >> se306Project/src/fieldinfo.cpp",shell=True)
-writeFieldInfo = Popen("echo \" }; \" >> se306Project/src/fieldinfo.cpp",shell=True)
-
-
-
 # Range goes from 3 to sheep+3 because nodes 0,1,2 are farmer,sheepdog,truck.
 #for i in range(3, (num_sheep+3)):
 '''
@@ -74,6 +66,7 @@ for i in range(0, num_grass):
 	addToCMakeFile= Popen("echo \"rosbuild_add_executable(Grass"+str(i)+" src/Grass"+str(i)+".cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 '''
 #Add farmer, sheepdog, listener
+
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(farmer src/farmer.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 addToCMakeFile.wait()
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(sheepdog src/sheepdogNode.cpp src/sheepdog.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
@@ -142,7 +135,7 @@ stagePro = Popen('rosrun stage stageros %s' %worldfile,shell=True)
 commandString = "gnome-terminal "
 for i in range(total_sheep):
 	print "creating sheep",i
-	commandString += """\\--tab -e 'bash -c \"rosrun se306Project SheepNode __name:=sheep{0} _sheepNum:={0}\"' --title='SheepNode {0}' """.format(str(i))
+	commandString += """\\--tab -e 'bash -c \"rosrun se306Project SheepNode __name:=sheep{0} _sheepNum:={0} _fieldX:={1} _fieldY:={2} \"' --title='SheepNode {0}' """.format(str(i), str(field_X), str(field_Y))
 	commandString += """\\--tab -e 'bash -c \"rosrun se306Project SheepMove __name:=sheepMove{0} _sheepNum:={0} _robotNum:={1}\"' --title='SheepMove {0}' """.format(str(i), str(i+3))
 
 runNode= Popen(shlex.split(commandString),stdout=PIPE)

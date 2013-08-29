@@ -28,6 +28,10 @@ public:
 	void runaway(float , float );
 
 	int sheepNum;
+	
+	int field_X;
+	int field_Y;
+	
 	SheepState currentState;
 	SheepAgeStages age; 
 	int currX;
@@ -82,8 +86,8 @@ void SheepNode::sheepdogDangerCallback(geometry_msgs::Pose2D sheepdogMsg) {
 	if (xDistanceDiff<=5||yDistanceDiff<=5){
 		SheepNode::runaway(sdx,sdy);
 	}									
-	ROS_INFO("Robot 0 -- Current x position is: %f", px);
-	ROS_INFO("Robot 0 -- Current y position is: %f", py);
+	//ROS_INFO("Robot 0 -- Current x position is: %f", px);
+	//ROS_INFO("Robot 0 -- Current y position is: %f", py);
 			
 	
 };
@@ -130,6 +134,7 @@ void SheepNode::spin() {
 				//}
 		//if state has changed, do relevant things??
 		
+		
 		// Handles the different stages of a sheeps life and creates messages to be sent to sheep_move
 		if (count == 300) { // 30 secs
 			age = ADOLESCENCE;
@@ -149,7 +154,9 @@ void SheepNode::spin() {
 		sheepMovePub.publish(msg); // Publishes the message that contains the sheeps life stage
 		count++;
 
-	
+		ROS_INFO("fieldx: %d", field_X);
+		ROS_INFO("fieldy: %d", field_Y);
+		
 		// Sheep Position Publishing
 		geometry_msgs::Pose2D Pose2Dmsg;
 		Pose2Dmsg.x = px;
@@ -178,8 +185,12 @@ void SheepNode::rosSetup(int argc, char **argv) {
 	ros::NodeHandle nh;
 	ros::NodeHandle n("~");
 	n.getParam("sheepNum", sheepNum);
+	n.getParam("fieldX", field_X);
+	n.getParam("fieldY", field_Y);
 	convert << sheepNum;
+	//convert << field_X;
 	//initialise the talkies
+	
 	
 	sheepMovePub = nh.advertise<se306Project::SheepMoveMsg>("sheep_" + convert.str()+ "/move", 1000);
 	sheepPosePub = nh.advertise<geometry_msgs::Pose2D>("sheep_" + convert.str()+ "/pose", 1000);
