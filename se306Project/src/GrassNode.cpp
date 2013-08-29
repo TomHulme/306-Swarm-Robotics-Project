@@ -4,6 +4,7 @@
 #include "se306Project/FieldMsg.h"
 #include "se306Project/GrassPosMsg.h"
 #include "geometry_msgs/Twist.h"
+#include "se306Project/SheepEatMsg.h"
 
 #include <sstream>
 #include <stdlib.h>
@@ -21,6 +22,7 @@ public:
 	void spin();
 	void stageOdom_callback(nav_msgs::Odometry);
 	void fieldNode_callback(se306Project::FieldMsg);
+	void sheepEatingCallback(se306Project::SheepEatMsg);
 
 	int grassNum;
 	int robotNum;
@@ -42,6 +44,7 @@ protected:
 	ros::Publisher commandPub;
 	ros::Subscriber FieldNode_sub;
 	ros::Publisher grassPosPub;
+	ros::Subscriber sheepEatGrassSub;
 };
 
 GrassNode::GrassNode() {
@@ -68,11 +71,15 @@ GrassNode::GrassNode (int grass, int robot, int field) {
 }	
 
 void GrassNode::grassGrow(){
+	ROS_INFO("growth rate: %f", growthRate);
+	ROS_INFO("eaten amount: %f", decayRate);
 	overallRate = growthRate - decayRate;
+	ROS_INFO("total growth: %f", overallRate);
 	overallRate = -overallRate*0.1; // growing is negative
-
+	ROS_INFO("absolute growth: %f", overallRate);
+	ROS_INFO("Grass Z: %f", grassZ);
 	// Calculate growth
-	if (grassZ > -0.5 && grassZ < 0) {
+	if (grassZ > -0.5 && grassZ <= 0) {
 		grassHeight = 100;
 		if (overallRate<0) {
 			overallRate = 0; // stop growing above 100%
@@ -83,12 +90,12 @@ void GrassNode::grassGrow(){
 			overallRate = 0; // stop decaying below 0%
 		}
 	}
-
+	decayRate = 0;
 	// Display netGrowth
 	std::ostringstream convertG;
 	convertG << grassHeight;
 	std::string grassHeightStr = convertG.str();
-	ROS_INFO_STREAM("growth: " + grassHeightStr);
+	ROS_INFO_STREAM("Current Height: " + grassHeightStr);
 
 	geometry_msgs::Twist msg; // The default constructor will set all commands to 0
 	msg.angular.z = overallRate;
@@ -147,8 +154,8 @@ void GrassNode::rosSetup(int argc, char **argv) {
 	commandPub = n.advertise<geometry_msgs::Twist>(r + "/cmd_vel",1000);
 	//commandPub = n.advertise<nav_msgs::Odometry>(r + "/odom",1000);
 	FieldNode_sub = n.subscribe<se306Project::FieldMsg>(f,1000, &GrassNode::fieldNode_callback, this);
-	grassPosPub = n.advertise<se306Project::GrassPosMsg>("grassPos", 1000);
-	//sheepdogPosSub = n.subscribe<std_msgs::String>("sheepdog_position",1000, &SheepNode::sheepdogDangerCallback,this);
+	grassPosPub = n.advertise<se306Project::GrassPosMsg>("grass/info", 1000);
+	sheepEatGrassSub = n.subscribe<se306Project::SheepEatMsg>("grass/eaten", 1000, &GrassNode::sheepEatingCallback,this);
 
 	//: talk to the grass, and the field?
 
@@ -170,14 +177,20 @@ void GrassNode::fieldNode_callback(se306Project::FieldMsg msg) {
 	ROS_INFO_STREAM(soilQuality); // Prints the current z value of the grass	
 
 	if (soilQuality == "Arid") {
-		growthRate = 1; // %/s
+		growthRate = 0.5; // %/s
 	} else if (soilQuality == "Normal") {
-		growthRate = 2; // %/s
+		growthRate = 1; // %/s
 	} else {
-		growthRate = 4; // %/s
+		growthRate = 2; // %/s
 	}
 	
 	growthRate = ((50+(double)sunLight)/100)*growthRate; // %/s
+}
+
+void GrassNode::sheepEatingCallback(se306Project::SheepEatMsg msg) {
+	if (msg.grassNum == grassNum) {
+		decayRate += msg.eatAmount;
+	}
 }
 
 void GrassNode::spin() {

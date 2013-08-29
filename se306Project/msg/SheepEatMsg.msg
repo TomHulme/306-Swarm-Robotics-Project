@@ -1,1 +1,2 @@
+int64 grassNum
 int64 eatAmount
