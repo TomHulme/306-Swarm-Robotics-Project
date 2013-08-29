@@ -88,12 +88,6 @@ void SheepMove::StageOdom_callback(nav_msgs::Odometry msg) {
 	py = msg.pose.pose.position.y;
 	//printf("%f",px);
 	
-	
-	geometry_msgs::Pose2D sheepPosMsg;
-	sheepPosMsg.x = px;
-	sheepPosMsg.y = py;
-	sheepPosPub.publish(sheepPosMsg);
-	
 	if (!isGoal) {
 		
 		// If the current position is the same the previous position, then the robot is stuck and needs to move around
@@ -290,6 +284,14 @@ void SheepMove::commandCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
 void SheepMove::spin() {
 	ros::Rate rate(10); // Specify the FSM loop rate in Hz
 	while (ros::ok()) { // Keep spinning loop until user presses Ctrl+C
+		
+		
+		geometry_msgs::Pose2D sheepPosMsg;
+		sheepPosMsg.x = px;
+		sheepPosMsg.y = py;
+		sheepPosPub.publish(sheepPosMsg);
+	
+	
 		if(moveStatus.compare("GO") == 0) {
    			//ROS_INFO("%s", msg.data.c_str());
    			
