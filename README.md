@@ -39,3 +39,8 @@ Our Wiki has a dedicated page just for installation!
 
 [View it here!](https://github.com/TomHulme/306-Swarm-Robotics-Project/wiki/Install-Instructions)
 
+# License
+
+This project is distributed with an Apache License.
+
+[View the full License information here](https://github.com/TomHulme/306-Swarm-Robotics-Project/blob/master/LICENSE)
