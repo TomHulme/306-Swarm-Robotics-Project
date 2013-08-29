@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <cstdlib>
+#include <math.h>
 #include <ctime> // Needed to seed random number generator with a time value
 
 enum SheepState {
@@ -48,6 +49,8 @@ public:
 	double prevpy;
 	bool isRotate;
 	int checkcount;
+	double sdx;
+	double sdy;
 //===
 
 	void sheepEat();
@@ -74,23 +77,31 @@ void SheepNode::sheepdogDangerCallback(geometry_msgs::Pose2D sheepdogMsg) {
 	//closeRange=;
 	double xDistanceDiff = abs(sdx - px);
 	double yDistanceDiff = abs(sdy - py);
+	double distanceDiff = sqrt((xDistanceDiff)^2+(yDistanceDiff)^2);
 
 	//if sheepdog is near: level of terror is raised depending on the distance to the sheepdog. 
 	//	eg. if it is 10 units away (or whatever distance seems appropriate), then terror is low, but exists. 
 	//       if it is at 6 units away, terror goes up again, and sheep move away from the dog.
 	//		 if it is at 3 units away or less, sheep runs away from dog.
-	if (xDistanceDiff<=5||yDistanceDiff<=5){
-		SheepNode::runaway(sdx,sdy);
-	}									
-	ROS_INFO("Robot 0 -- Current x position is: %f", px);
-	ROS_INFO("Robot 0 -- Current y position is: %f", py);
+	
+	if (distanceDiff<5){
+		if(currentState==WALKING){
+			prevState = WALKING;
+			currentState = RUNNING;
+		}else if (currentState ==EATING) {
+			prevState = EATING;
+			currentState = RUNNING;
+		}
+	}
+										
+	//ROS_INFO("Robot 0 -- Current x position is: %f", px);
+	//ROS_INFO("Robot 0 -- Current y position is: %f", py);
 			
 	
 };
 
-void SheepNode::runaway(float sdx, float sdy) {
-	ROS_INFO("x Distance between Sheepdog and Sheep: %f",sdx);
-	ROS_INFO("y Distance between Sheepdog and Sheep: %f",sdy);
+void SheepNode::sheepRunaway() {
+	ROS_INFO("DANGER");
 };
 
 
@@ -125,7 +136,12 @@ void SheepNode::spin() {
 		} else if(currentState == SheepState(WALKING)) {
 			this->sheepWalk();
 			
-		} //TODO: Running
+		} else if (currentState == SheepState(RUNNING)){
+			this->sheepRunaway();
+		}
+
+
+		 //TODO: Running
 		//if (stateChanged) {
 				//}
 		//if state has changed, do relevant things??
@@ -190,7 +206,6 @@ void SheepNode::rosSetup(int argc, char **argv) {
 	//TODO: talk to the farmer
 	
 	SheepNode::spin();
-	
 };
 
 int main(int argc, char **argv) {
