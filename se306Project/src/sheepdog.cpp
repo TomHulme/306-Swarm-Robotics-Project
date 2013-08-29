@@ -204,10 +204,9 @@ void sheepdogNode::rosSetup(int argc, char **argv) {
 	// (the second argument indicates that if multiple command messages are in
 	// the queue to be sent, only the last command will be sent)
 	ros::Subscriber sheepPosSubs [sheepNum];
-	std::ostringstream buffer;
 	for(int i = 0; i < sheepNum; i++){
-		buffer << i;
-		sheepPosSubs[i] = nh.subscribe<geometry_msgs::Pose2D>("sheep_" + buffer.str() + "/pose", 1000, &sheepdogNode::chaseSheepCallback, this);
+		std::string current = "sheep_" + boost::lexical_cast<std::string>(i) + "/pose";
+		sheepPosSubs[i] = nh.subscribe<geometry_msgs::Pose2D>(current, 1000, &sheepdogNode::chaseSheepCallback, this);
 	}
 	commandPub = nh.advertise<geometry_msgs::Twist>("robot_1/cmd_vel",1000);
 	sheepdogPosPub = nh.advertise<geometry_msgs::Pose2D>("sheepdog_position",1000);
