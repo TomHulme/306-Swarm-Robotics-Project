@@ -35,9 +35,6 @@ class sheepdogNode {
 	void chaseSheepCallback(geometry_msgs::Pose2D);
 	void spin();
 	
-	
-
-	
 	//--------------------
 	sheepdogNode() { } //Default constructor
 };

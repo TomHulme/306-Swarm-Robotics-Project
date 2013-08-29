@@ -229,5 +229,4 @@ void sheepdogNode::rosSetup(int argc, char **argv) {
 	prevpx = 5;
 	prevpx= 5;
 	this->spin();
-	std::cout << "Got Here";
 }

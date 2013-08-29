@@ -22,6 +22,5 @@ int main(int argc, char **argv) {
 	
 	int sheepNum = atoi(argv[1]);
 	sheepdogNode sheepdog = sheepdogNode(sheepNum, n);
-
 	sheepdog.rosSetup(argc, argv);
 }
