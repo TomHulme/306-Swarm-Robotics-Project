@@ -33,7 +33,7 @@ You can view the changes made to our project by using github's commit tracker!
 
 [View our changes here!](https://github.com/TomHulme/306-Swarm-Robotics-Project/commits/master)
 
-# Install
+# User Manual / Install Instructions
 
 Our Wiki has a dedicated page just for installation!
 
