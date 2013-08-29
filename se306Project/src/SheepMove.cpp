@@ -37,6 +37,10 @@ class SheepMove {
 	bool isRotate;
 	
 	double SheepSpeed;
+	std::string r;
+	std::string s;
+	std::ostringstream convertS;
+	std::ostringstream convertR;
 	
 	bool isGoal;
 	bool correctHeading;
@@ -344,8 +348,6 @@ SheepMove::SheepMove(int number) {
 }	
 
 void SheepMove::rosSetup(int argc, char **argv) {
-	std::ostringstream convertS;
-	std::ostringstream convertR;
 	std::string out;
 		
 	ros::init(argc, argv, "sheepMove", ros::init_options::AnonymousName); // Initiate new ROS node named "sheepMoveX"
@@ -380,9 +382,9 @@ void SheepMove::rosSetup(int argc, char **argv) {
 	
 	convertR << robotNum; //needed as all stage robots are called robot_X
 	convertS << sheepNum;
-	std::string r = "robot_" + convertR.str();
+	r = "robot_" + convertR.str();
 	ROS_INFO_STREAM(r);
-	std::string s = "sheep_" + convertS.str();
+	s = "sheep_" + convertS.str();
 	ROS_INFO_STREAM(s);
 	commandPub = nh.advertise<geometry_msgs::Twist>(r + "/cmd_vel",1000);
 	sheepPosPub = nh.advertise<std_msgs::String>("sheep_position",1000);

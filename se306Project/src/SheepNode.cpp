@@ -67,7 +67,8 @@ public:
 	void sheepRun();
 	
 	//TODO: Sheep Danger sense
-	void sheepdogDangerCallback(std_msgs::String);
+	void sheepdogDangerCallback(geometry_msgs::Pose2D);
+	void runaway(float, float);
 	//TODO: Eating
     void grassInfoCallback(se306Project::GrassInfoMsg);
     bool isContainedBy(se306Project::GrassInfoMsg);
@@ -140,7 +141,7 @@ void SheepNode::sheepdogDangerCallback(geometry_msgs::Pose2D sheepdogMsg) {
 	
 };
 
-void runaway(float sdx, float sdy) {
+void SheepNode::runaway(float sdx, float sdy) {
 	ROS_INFO("x Distance between Sheepdog and Sheep: %f",sdx);
 	ROS_INFO("y Distance between Sheepdog and Sheep: %f",sdy);
 }
@@ -272,7 +273,7 @@ void SheepNode::rosSetup(int argc, char **argv) {
 	
 	sheepMovePub = nh.advertise<se306Project::SheepMoveMsg>("sheep_" + convert.str()+ "/move", 1000);
 	sheepPosePub = nh.advertise<geometry_msgs::Pose2D>("sheep_" + convert.str()+ "/pose", 1000);
-	sheepdogPosSub = nh.subscribe<std_msgs::String>("sheepdog_position",1000, &SheepNode::sheepdogDangerCallback,this);
+	sheepdogPosSub = nh.subscribe<geometry_msgs::Pose2D>("sheepdog_position",1000, &SheepNode::sheepdogDangerCallback,this);
 	grassInfoSub = nh.subscribe<se306Project::GrassInfoMsg>("grass/info",1000, &SheepNode::grassInfoCallback, this);
 	//TODO: talk to the field?
 	//TODO: talk to other sheep
