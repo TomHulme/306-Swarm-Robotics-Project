@@ -35,9 +35,16 @@ worldGenPro.communicate()
 
 # Removes all lines in the CMakeLists.txt file that were added from previous executions of the script. Clean slate of the file.
 cleanupCMakeFile= Popen("sed -i /rosbuild_add_executable/d se306Project/CMakeLists.txt",shell=True)
-
-
 cleanupCMakeFile.wait()
+
+
+writeFieldInfo = Popen("echo \"class fieldinfo { \" >> se306Project/src/fieldinfo.cpp",shell=True)
+writeFieldInfo = Popen("echo \"public: \" >> se306Project/src/fieldinfo.cpp",shell=True)
+writeFieldInfo = Popen("echo \"const static int field_X= " + str(field_X) + "\" >> se306Project/src/fieldinfo.cpp",shell=True)
+writeFieldInfo = Popen("echo \"const static int field_Y= " + str(field_Y) + "\" >> se306Project/src/fieldinfo.cpp",shell=True)
+writeFieldInfo = Popen("echo \" }; \" >> se306Project/src/fieldinfo.cpp",shell=True)
+
+
 
 # Range goes from 3 to sheep+3 because nodes 0,1,2 are farmer,sheepdog,truck.
 #for i in range(3, (num_sheep+3)):
