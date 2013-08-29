@@ -1,4 +1,4 @@
 string moveCommand
 int64 velX
 int64 velY
-string age
+int64 speed

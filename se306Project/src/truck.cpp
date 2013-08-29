@@ -27,7 +27,7 @@ class RandomWalk {
 		// Construst a new RandomWalk object and hook up this ROS node
 		// to the simulated robot's velocity control and laser topics
 		RandomWalk(ros::NodeHandle& nh) :
-		fsm(FSM_MOVE_FORWARD),
+		fsm(FSM_WAIT),
 		rotateStartTime(ros::Time::now()),
 		rotateDuration(0.f) {
 		// Initialize random time generator
@@ -180,7 +180,7 @@ class RandomWalk {
 		rate.sleep(); // Sleep for the rest of the cycle, to enforce the FSM loop rate
 		}
 	};
-	enum FSM {FSM_MOVE_FORWARD, FSM_ROTATE};
+	enum FSM {FSM_MOVE_FORWARD, FSM_ROTATE, FSM_WAIT};
 	// Tunable parameters
 	// TODO: tune parameters as you see fit
 	const static double MIN_SCAN_ANGLE_RAD = -10.0/180*M_PI;

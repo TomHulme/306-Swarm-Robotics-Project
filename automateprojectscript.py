@@ -35,9 +35,8 @@ worldGenPro.communicate()
 
 # Removes all lines in the CMakeLists.txt file that were added from previous executions of the script. Clean slate of the file.
 cleanupCMakeFile= Popen("sed -i /rosbuild_add_executable/d se306Project/CMakeLists.txt",shell=True)
-
-
 cleanupCMakeFile.wait()
+
 
 # Range goes from 3 to sheep+3 because nodes 0,1,2 are farmer,sheepdog,truck.
 #for i in range(3, (num_sheep+3)):
@@ -67,31 +66,27 @@ for i in range(0, num_grass):
 	addToCMakeFile= Popen("echo \"rosbuild_add_executable(Grass"+str(i)+" src/Grass"+str(i)+".cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 '''
 #Add farmer, sheepdog, listener
-addToCMakeFile= Popen("echo \"rosbuild_add_executable(farmer src/farmer.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
+addToCMakeFile= Popen("echo \"rosbuild_add_executable(farmer src/farmerNode.cpp src/farmer.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 addToCMakeFile.wait()
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(sheepdog src/sheepdogNode.cpp src/sheepdog.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
-
-#Add the field node into CMakeLists
-#addToCMakeFile = Popen("echo \"rosbuild_add_executable(field src/FieldNode.cpp src/Field.cpp)\" >> se306Project/CMakeLists.txt", shell=True)
-
 addToCMakeFile.wait()
-#Add the sheep
-addToCMakeFile= Popen("echo \"rosbuild_add_executable(SheepNode src/SheepNode.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
-addToCMakeFile.wait()
-addToCMakeFile= Popen("echo \"rosbuild_add_executable(SheepMove src/SheepMove.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
-addToCMakeFile.wait()
-addToCMakeFile= Popen("echo \"rosbuild_add_executable(GrassNode src/GrassNode.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
-addToCMakeFile.wait()
-addToCMakeFile= Popen("echo \"rosbuild_add_executable(FieldNode src/FieldNode.cpp src/Field.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
-addToCMakeFile.wait()
-#addToCMakeFile= Popen("echo \"rosbuild_add_executable(grass src/grass.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(truck src/truck.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 addToCMakeFile.wait()
 addToCMakeFile= Popen("echo \"rosbuild_add_executable(laserScanToPointCloud src/LaserScanToPointCloud.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
 addToCMakeFile.wait()
 
+#Add the field node into CMakeLists
+addToCMakeFile= Popen("echo \"rosbuild_add_executable(GrassNode src/GrassNode.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
+addToCMakeFile.wait()
+addToCMakeFile= Popen("echo \"rosbuild_add_executable(FieldNode src/FieldNode.cpp src/Field.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
+addToCMakeFile.wait()
 
-	
+#Add the sheep
+addToCMakeFile= Popen("echo \"rosbuild_add_executable(SheepNode src/SheepNode.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
+addToCMakeFile.wait()
+addToCMakeFile= Popen("echo \"rosbuild_add_executable(SheepMove src/SheepMove.cpp)\" >> se306Project/CMakeLists.txt",shell=True)
+addToCMakeFile.wait()
+
 # This checks if there is a running roscore process and if there is, it gets killed
 findRoscorePro = Popen("pgrep roscore", stdout=PIPE, shell=True)
 killroscorePro = Popen("kill "+findRoscorePro.communicate()[0], shell=True)
@@ -115,14 +110,9 @@ for root, dirs, files in os.walk('./', topdown=True):
 rosmakePro= Popen('rosmake se306Project',shell=True)
 rosmakePro.communicate() # Waits until rosmake has finished
 
-# Reset original grass and sheep back to 0
-
-#modifyRPro= Popen("find . -name R0.cpp -exec sed -i \"s/robot_"+str(i)+"/robot_0/g\" {} \;",shell=True)
-#modifyRPro= Popen("find . -name Grass0.cpp -exec sed -i \"s/robot_"+str(i+(num_sheep+2))+"/robot_0/g\" {} \;",shell=True)
-
 core = Popen('roscore',shell=True) 
 
-time.sleep(3)
+time.sleep(5)
 
 # Runs rosrun stage with the found .world file
 
@@ -131,13 +121,11 @@ stagePro = Popen('rosrun stage stageros %s' %worldfile,shell=True)
 # These below lines would need to be changed to fit what you are wanting to run.
 # Start from 3 because nodes 0, 1 and 2 are for farmer, sheepdog and truck respectively
 #Run Sheep nodes (SheepNode, SheepMove)
-
 commandString = "gnome-terminal "
 for i in range(total_sheep):
 	print "creating sheep",i
-	commandString += """\\--tab -e 'bash -c \"rosrun se306Project SheepNode __name:=sheep{0} _sheepNum:={0}\"' --title='SheepNode {0}' """.format(str(i))
+	commandString += """\\--tab -e 'bash -c \"rosrun se306Project SheepNode __name:=sheep{0} _sheepNum:={0} _fieldX:={1} _fieldY:={2} \"' --title='SheepNode {0}' """.format(str(i), str(field_X), str(field_Y))
 	commandString += """\\--tab -e 'bash -c \"rosrun se306Project SheepMove __name:=sheepMove{0} _sheepNum:={0} _robotNum:={1}\"' --title='SheepMove {0}' """.format(str(i), str(i+3))
-
 runNode= Popen(shlex.split(commandString),stdout=PIPE)
 
 #Run Grass nodes
@@ -145,7 +133,6 @@ runNode= Popen(shlex.split(commandString),stdout=PIPE)
 #for i in range(num_grass):
 #	print "creating grass",i
 #	runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project Grass __name:=grass{0} _grassNum:={0}"'""".format(str(i))),stdout=PIPE)
-
 
 #Run Field Node(s)
 #runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project field"'"""),stdout=PIPE)
@@ -156,14 +143,18 @@ runNode= Popen(shlex.split(commandString),stdout=PIPE)
 #Run Field nodes
 commandString = "gnome-terminal "
 for i in range(num_fields):
+	print "creating field",i
+	#runNode = Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project FieldNode {0} {1} {2}"' --title='Field {0}'""".format(str(i), str(field_X), str(field_Y))), stdout=PIPE)
+
 	commandString += """\\--tab -e 'bash -c \"rosrun se306Project FieldNode {0} {1} {2}\"' --title='Field {0}' """.format(str(i), str(field_X), str(field_Y))
 	for j in range(num_grass_field):
 		commandString += """\\--tab -e 'bash -c \"rosrun se306Project GrassNode {0} {1} {2}\"' --title='Grass {0}' """.format(str((i*num_grass_field)+j+1), str(((i*num_grass_field)+j+1)+3+total_sheep), str(i))
 
 runNode= Popen(shlex.split(commandString),stdout=PIPE)
 
+
 #Run Farmer Node
-runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project farmer"' --title='Farmer'"""),stdout=PIPE)
+#runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project farmer"' --title='Farmer'"""),stdout=PIPE)
 #Run Sheepdog Node
 runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project sheepdog {0}"' --title='Sheepdog'""".format(str(num_sheep))),stdout=PIPE)
 #Run Truck Node

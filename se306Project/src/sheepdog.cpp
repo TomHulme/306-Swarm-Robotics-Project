@@ -145,7 +145,7 @@ void sheepdogNode::commandCallback(const sensor_msgs::LaserScan::ConstPtr& msg) 
 
 // Process the incoming sheep position messages
 void sheepdogNode::chaseSheepCallback(geometry_msgs::Pose2D msg) {
-	ROS_INFO("I see a sheep at (%d, %d)",msg.x,msg.y);
+	ROS_INFO("I see a sheep at (%f, %f)",msg.x,msg.y);
 	
 }
 
@@ -203,11 +203,11 @@ void sheepdogNode::rosSetup(int argc, char **argv) {
 	// Advertise a new publisher for the simulated robot's velocity command topic
 	// (the second argument indicates that if multiple command messages are in
 	// the queue to be sent, only the last command will be sent)
-	std::string sheepPosSubs [sheepNum];
+	ros::Subscriber sheepPosSubs [sheepNum];
 	std::ostringstream buffer;
 	for(int i = 0; i < sheepNum; i++){
 		buffer << i;
-		nh.subscribe<geometry_msgs::Pose2D>("sheep_" + buffer.str() + "/pose", 1000, &sheepdogNode::chaseSheepCallback, this);
+		sheepPosSubs[i] = nh.subscribe<geometry_msgs::Pose2D>("sheep_" + buffer.str() + "/pose", 1000, &sheepdogNode::chaseSheepCallback, this);
 	}
 	commandPub = nh.advertise<geometry_msgs::Twist>("robot_1/cmd_vel",1000);
 	sheepdogPosPub = nh.advertise<geometry_msgs::Pose2D>("sheepdog_position",1000);
