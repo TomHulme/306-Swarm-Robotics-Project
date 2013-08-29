@@ -19,7 +19,7 @@ You can follow progress, track commits, and even view documentation - all right 
 
 Every project needs a solid team behind it. Where ever possible we strived to work as a team, regularly meeting and discussing options for our project, and flicking through design decisions.
 
-[You can view a list of the contributors here!](https://github.com/TomHulme/306-Swarm-Robotics-Project/graphs/contributors)
+[View a list of the contributors here!](https://github.com/TomHulme/306-Swarm-Robotics-Project/graphs/contributors)
 
 NOTE: This view will only show the lines people have pushed to master! They may have done other work elsewhere which may not be shown here.
 
@@ -43,4 +43,4 @@ Our Wiki has a dedicated page just for installation!
 
 This project is distributed with an Apache License.
 
-[View the full License information here](https://github.com/TomHulme/306-Swarm-Robotics-Project/blob/master/LICENSE)
+[View the full License information here!](https://github.com/TomHulme/306-Swarm-Robotics-Project/blob/master/LICENSE)
