@@ -32,7 +32,7 @@ public:
 	double growthRate; // %/s
 	double decayRate; // %/s
 	double overallRate; // rate of grass growth/decay %/s
-	double growth; // growth of grass 0-100%
+	double grassHeight; // growth of grass 0-100%
 	std::string soilQuality;
 	int sunLight;
 	int nextZ;
@@ -54,7 +54,7 @@ GrassNode::GrassNode() {
 	growthRate = 0;
 	decayRate = 0;
 	overallRate = 0;
-	growth = 100;
+	grassHeight = 100;
 	soilQuality = "";
 	sunLight = 0;
 	nextZ = 0;
@@ -73,12 +73,12 @@ void GrassNode::grassGrow(){
 
 	// Calculate growth
 	if (grassZ > -0.5 && grassZ < 0) {
-		growth = 100;
+		grassHeight = 100;
 		if (overallRate<0) {
 			overallRate = 0; // stop growing above 100%
 		}
 	} else if (grassZ <= -0.5 && grassZ >= -1) {
-		growth = 0;
+		grassHeight = 0;
 		if (overallRate>0) {
 			overallRate = 0; // stop decaying below 0%
 		}
@@ -86,9 +86,9 @@ void GrassNode::grassGrow(){
 
 	// Display netGrowth
 	std::ostringstream convertG;
-	convertG << growth;
-	std::string growthStr = convertG.str();
-	ROS_INFO_STREAM("growth: " + growthStr);
+	convertG << grassHeight;
+	std::string grassHeightStr = convertG.str();
+	ROS_INFO_STREAM("growth: " + grassHeightStr);
 
 	geometry_msgs::Twist msg; // The default constructor will set all commands to 0
 	msg.angular.z = overallRate;
@@ -190,7 +190,7 @@ void GrassNode::spin() {
 		msg.grassNum = this->grassNum;
 		msg.x = this->grassX;
 		msg.y = this->grassY;
-		msg.growth = this->growth;
+		msg.growth = this->grassHeight;
 
 		grassPosPub.publish(msg);
 
