@@ -19,7 +19,7 @@ from os.path import join
 import shlex
 
 filename= "world/myworld.world"
-num_sheep= 4
+num_sheep= 2
 num_fields = 4
 field_X= 6
 field_Y= 4

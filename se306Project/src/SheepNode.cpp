@@ -35,7 +35,6 @@ public:
 	void rosSetup(int, char**);
 	void spin();	
 	
-	ros::NodeHandle nh;
 	int sheepNum;
 	SheepState currentState;
 	SheepState prevState;
@@ -91,7 +90,7 @@ void SheepNode::grassInfoCallback(se306Project::GrassInfoMsg grassMsg) {
 				currentState = EATING;
 				std::ostringstream grassNum;
 				grassNum << grassMsg.grassNum;
-				grassEatPub = nh.advertise<se306Project::SheepEatMsg>("grass" + grassNum.str() + "/eaten", 1000);
+				//grassEatPub = this->nh.advertise<se306Project::SheepEatMsg>("grass" + grassNum.str() + "/eaten", 1000);
 			}		
 		} else if (currentState == EATING) {
 			//check grass height
@@ -188,17 +187,17 @@ void SheepNode::SheepLifeCycle() {
 		case 300: // 30 secs
 			age = ADOLESCENCE;
 			//ROS_INFO("Adolescence");
-			sheepSpeed = 0.2;
+			sheepSpeed = 0.7;
 			break;
 		case 600: // 1 min
 			age = ADULTHOOD;
 			//ROS_INFO("Adulthood");
-			sheepSpeed = 0.3;
+			sheepSpeed = 0.8;
 			break;
 		case 900: // 1 min 30 secs
 			age = OLD_AGE;
 			//ROS_INFO("Old age");
-			sheepSpeed = 0.2;
+			sheepSpeed = 0.5;
 			break;
 			
 	}
@@ -259,13 +258,13 @@ SheepNode::SheepNode() {
 	terror = 0;
 	currentState = WALKING;
 	age = BIRTH;
-	sheepSpeed = 0.1;	
+	sheepSpeed = 0.5;	
 }
 
 void SheepNode::rosSetup(int argc, char **argv) {
 	std::ostringstream convert;
 	ros::init(argc, argv, "sheep", ros::init_options::AnonymousName);
-	nh = ros::NodeHandle();
+	ros::NodeHandle nh;
 	ros::NodeHandle n("~");
 	n.getParam("sheepNum", sheepNum);
 	convert << sheepNum;
