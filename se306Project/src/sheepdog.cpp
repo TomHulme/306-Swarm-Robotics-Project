@@ -99,7 +99,7 @@ void sheepdogNode::move(double linearVelMPS, double angularVelRadPS) {
 // Process the incoming laser scan message
 void sheepdogNode::commandCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
 	sensor_msgs::PointCloud cloud;
-	projector_.transformLaserScanToPointCloud("robot_1/base_link", *msg, cloud, tfListener_);
+	//projector_.transformLaserScanToPointCloud("robot_1/base_link", *msg, cloud, tfListener_);
 	point_cloud_publisher_.publish(cloud);
 	if (fsm == FSM_MOVE_FORWARD) {
 		// Compute the average range value between MIN_SCAN_ANGLE and MAX_SCAN_ANGLE
