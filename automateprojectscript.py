@@ -20,11 +20,13 @@ import shlex
 
 filename= "world/myworld.world"
 num_sheep= 2
-num_fields = 1
+num_fields = 4
 field_X= 4
 field_Y= 4
 num_grass_field = (field_X-1)*(field_Y-1)
 num_grass = num_fields*num_grass_field
+
+total_sheep = num_sheep * num_fields
 
 
 # Runs the worldGenerator file with the specified arguments, waits until it has finished before continuing on
@@ -131,7 +133,7 @@ stagePro = Popen('rosrun stage stageros %s' %worldfile,shell=True)
 # Start from 3 because nodes 0, 1 and 2 are for farmer, sheepdog and truck respectively
 
 #Run Sheep nodes (SheepNode, SheepMove)
-for i in range(num_sheep):
+for i in range(total_sheep):
 	print "creating sheep",i
 	runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project SheepNode __name:=sheep{0} _sheepNum:={0}"' --title='SheepNode{0}'""".format(str(i))),stdout=PIPE)
 	runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project SheepMove __name:=sheepMove{0} _sheepNum:={0} _robotNum:={1}"' --title='SheepMove {0}'""".format(str(i), str(i+3))),stdout=PIPE)
@@ -144,11 +146,11 @@ for i in range(num_sheep):
 #	runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project Field __name:=field{0} _fieldNum:={0} _xPos:={1} _yPos:={2}"'""".format(str(i),someX, someY)),stdout=PIPE)
 #Run Field nodes
 for i in range(num_fields):
-	print "creating field",i
-	runNode = Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project FieldNode {0} {1} {2}"' --title='Field {0}'""".format(str(i), str(field_X), str(field_Y))), stdout=PIPE)
+	#print "creating field",i
+	runNode = Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project FieldNode {0} {1} {2}"' --title='Field {0}'""".format(str(i), str(field_X), str(field_Y))), stdout=PIPE)
 	for j in range(num_grass_field):
-		print "creating grass",j
-		runNode= Popen(shlex.split("""x-terminal-emulator -e 'bash -c "rosrun se306Project GrassNode {0} {1} {2}"' --title='Grass {0}'""".format(str((i+1)*j), str(((i+1)*j)+3+num_sheep), str(i))),stdout=PIPE)
+		#print "creating grass",j
+		runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project GrassNode {0} {1} {2}"' --title='Grass {0}'""".format(str((i+1)*j), str(((i+1)*j)+3+total_sheep), str(i))),stdout=PIPE)
 
 #Run Farmer Node
 runNode= Popen(shlex.split("""gnome-terminal -e 'bash -c "rosrun se306Project farmer"' --title='Farmer'"""),stdout=PIPE)
