@@ -187,17 +187,17 @@ void SheepNode::SheepLifeCycle() {
 		case 300: // 30 secs
 			age = ADOLESCENCE;
 			//ROS_INFO("Adolescence");
-			sheepSpeed = 0.7;
+			sheepSpeed = 0.2;
 			break;
 		case 600: // 1 min
 			age = ADULTHOOD;
 			//ROS_INFO("Adulthood");
-			sheepSpeed = 0.8;
+			sheepSpeed = 0.2;
 			break;
 		case 900: // 1 min 30 secs
 			age = OLD_AGE;
 			//ROS_INFO("Old age");
-			sheepSpeed = 0.5;
+			sheepSpeed = 0.2;
 			break;
 			
 	}
@@ -258,7 +258,7 @@ SheepNode::SheepNode() {
 	terror = 0;
 	currentState = WALKING;
 	age = BIRTH;
-	sheepSpeed = 0.5;	
+	sheepSpeed = 0.1;	
 }
 
 void SheepNode::rosSetup(int argc, char **argv) {
