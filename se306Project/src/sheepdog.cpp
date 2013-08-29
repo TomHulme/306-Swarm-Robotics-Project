@@ -26,6 +26,7 @@ enum FSM {FSM_MOVE_FORWARD, FSM_ROTATE};
 ros::Publisher commandPub; // Publisher to the simulated robot's velocity command topic
 ros::Publisher sheepdogPosPub;
 ros::Subscriber laserSub; // Subscriber to the simulated robot's laser scan topic
+ros::Subscriber truckPosSub;
 enum FSM fsm; // Finite state machine for the random walk algorithm
 
 ros::Time rotateStartTime; // Start time of the rotation

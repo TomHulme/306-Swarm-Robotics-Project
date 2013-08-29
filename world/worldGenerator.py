@@ -199,7 +199,7 @@ def WriteFile(fileName, numSheep, numFields, fieldX, fieldY):
      
     #Construct sheepdog definition
     ts1 = 'farmRobot ('
-    ts2 = 'pose [5 5 0.125 0] size [1 0.5 0.1] '
+    ts2 = 'pose [6 -0.5 0.125 0] size [1 0.5 0.1] '
     ts3 = 'name "sheepdog" '
     ts4 = 'color "brown" bitmap "SHEEPDOG.bmp")\n'
         

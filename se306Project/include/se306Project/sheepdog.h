@@ -33,6 +33,7 @@ class sheepdogNode {
 	void move(double, double);
 	void commandCallback(const sensor_msgs::LaserScan::ConstPtr&);
 	void chaseSheepCallback(geometry_msgs::Pose2D);
+	void truckCallback(geometry_msgs::Pose2D);
 	void spin();
 	
 	//--------------------
