@@ -37,7 +37,7 @@ You can view the changes made to our project by using github's commit tracker!
 
 Our Wiki has a dedicated page just for installation!
 
-[View it here!](https://github.com/TomHulme/306-Swarm-Robotics-Project/wiki/Install-Instructions)
+[View it here!](https://github.com/TomHulme/306-Swarm-Robotics-Project/wiki/User-Manual)
 
 # License
 
