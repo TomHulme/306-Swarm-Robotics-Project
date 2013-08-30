@@ -24,11 +24,13 @@ class SheepNode {
 	
 public:
 	//currently arbitrary constants:
-	const static int HUNGRY_LEVEL = 80;
+	
 	const static int RUNNING_LOWER_TERROR_LIMIT = 20;
 	const static int WARY_LOWER_TERROR_LIMIT = 15;
 	const static int GRASS_MIN_TASTY_HEIGHT = 30;
 	const static int SHEEP_EAT_AMOUNT = 7;
+	
+	int HUNGRY_LEVEL;
 	
 	//setup methods
 	SheepNode();
@@ -98,6 +100,7 @@ SheepNode::SheepNode() {
 	sheepSpeed = 0.1;	
 	sdx = 6;	// Setup: Based on sheepdog's initial position in world file generator.
 	sdy = -0.5;
+	HUNGRY_LEVEL=80;
 };
 
 void SheepNode::currentPositionCallback(se306Project::SheepMoveMsg msg) {
@@ -182,8 +185,8 @@ void SheepNode::grassInfoCallback(se306Project::GrassPosMsg grassMsg) {
 
 bool SheepNode::isContainedBy(se306Project::GrassPosMsg grassMsg) {
 	//do some positioning comparisions.
-	ROS_INFO("grass%dx: %f",grassMsg.grassNum, grassMsg.x);
-	ROS_INFO("grass%dy: %f",grassMsg.grassNum, grassMsg.y);
+	//ROS_INFO("grass%dx: %f",grassMsg.grassNum, grassMsg.x);
+	//ROS_INFO("grass%dy: %f",grassMsg.grassNum, grassMsg.y);
 	if (grassMsg.x - 0.45 <= px && px <= grassMsg.x + 0.45) {
 		if (grassMsg.y - 0.45 <= py && py <= grassMsg.y + 0.45) {
 			return true;
@@ -243,15 +246,18 @@ void SheepNode::SheepLifeCycle() {
 			age = ADOLESCENCE;
 			//ROS_INFO("Adolescence");
 			sheepSpeed = 0.2;
+			HUNGRY_LEVEL = 90;
 			break;
 		case 600: // 1 min
 			age = ADULTHOOD;
 			//ROS_INFO("Adulthood");
 			sheepSpeed = 0.3;
+			HUNGRY_LEVEL = 85;
 			break;
 		case 900: // 1 min 30 secs
 			age = OLD_AGE;
 			//ROS_INFO("Old age");
+			HUNGRY_LEVEL = 70;
 			sheepSpeed = 0.2;
 			break;
 	}
