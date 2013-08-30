@@ -3,7 +3,7 @@
 // Author      : Tom Hulme
 // Date		   : 28/08/2013
 // Version     : 
-// Description : 
+// Description : Farmer Header File
 //============================================================================
 
 #ifndef FARMER_H_

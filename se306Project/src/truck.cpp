@@ -53,35 +53,16 @@ class RandomWalk {
 		
 		px = -3 + msg.pose.pose.position.x;
 		py = -3 + msg.pose.pose.position.y;
-		//printf("%f",px);
 		
 		// If the current position is the same the previous position, then the robot is stuck and needs to move around
 		if ((px == prevpx) && (py == prevpy)) {
-			//msg.pose.pose.position.x = 5;
-			//ROS_INFO("Prevpx: %f",prevpx);
-
-			// Note the negative linear_x		
-			//linear_x=-0.2;
-			//angular_z=1;
-
-			//theta=10;
-			//px = 5;
-			//py= 5;
-			//printf("Robot stuck");
 			if (!isRotate) {	
 				ROS_INFO("Truck stuck");
 				double r2 = (double)rand()/((double)RAND_MAX/(M_PI/2));
 				double m2 = (double)rand()/((double)RAND_MAX/0.5);
-				//ROS_INFO("r2" << r2);
 				move(-m2, r2);
 				
 			}	
-		} else {
-			// One the robot becomes unstuck, then it moves around again normally
-			//linear_x = 0.2;
-			//angular_z = 0.2;
-			//ROS_INFO("Robot unstuck");
-			//checkcount=0;
 		}
 		ROS_INFO("Truck -- Current x position is: %f", px);
 		ROS_INFO("Truck -- Current y position is: %f", py);
@@ -121,23 +102,13 @@ class RandomWalk {
 					closestRange = msg->ranges[currIndex];
 				}
 			}
-			//if (closestRange == prevclosestRange) {
-			//	ROS_INFO_STREAM("STUCK");
-			//	move(-FORWARD_SPEED_MPS, ROTATE_SPEED_RADPS);
-			//	//move(0, ROTATE_SPEED_RADPS);
-			//} else {
-				
-				//ROS_INFO_STREAM("Range: " << closestRange);
-				prevclosestRange = closestRange;
-				if (closestRange > 20) {
-					fsm=FSM_ROTATE;
-					rotateStartTime=ros::Time::now();
-					float r2 = (float)rand()/((float)RAND_MAX/100);
-					rotateDuration=ros::Duration(0.001);
-					//fsm= FSM_MOVE_FORWARD;
-				}
-			//}
-
+			prevclosestRange = closestRange;
+			if (closestRange > 20) {
+				fsm=FSM_ROTATE;
+				rotateStartTime=ros::Time::now();
+				float r2 = (float)rand()/((float)RAND_MAX/100);
+				rotateDuration=ros::Duration(0.001);
+			}
 		}
 	};
 	// Main FSM loop for ensuring that ROS messages are
@@ -153,7 +124,6 @@ class RandomWalk {
 
     		
 			if (fsm == FSM_MOVE_FORWARD) {
-				//ROS_INFO_STREAM("Start forward");
 				move(FORWARD_SPEED_MPS, 0);
 				checkcount++;
 				if (checkcount > 3) {
@@ -161,15 +131,12 @@ class RandomWalk {
 				}
 			}
 			if (fsm == FSM_ROTATE) {
-				//ROS_INFO_STREAM("Start rotate");
 				move(0, ROTATE_SPEED_RADPS);
 				rotateEndTime=ros::Time::now();
 				isRotate=true;
-				//ROS_INFO_STREAM("Time: " << rotateEndTime);
 				
 				if ((rotateEndTime - rotateStartTime) > rotateDuration) {
 					fsm=FSM_MOVE_FORWARD;
-					//ROS_INFO_STREAM("End rotate");
 					checkcount=0;
 				}
 			}
