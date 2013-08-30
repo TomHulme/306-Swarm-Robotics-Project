@@ -12,8 +12,7 @@
 #include <ctime> // Needed to seed random number generator with a time value
 
 enum FSM {FSM_MOVE_FORWARD, FSM_ROTATE, FSM_GOTO_GOAL};
-// Tunable parameters
-// TODO: tune parameters as you see fit
+// Tunable parameters, tune parameters as you see fit
 const static double MIN_SCAN_ANGLE_RAD = -10.0/180*M_PI;
 const static double MAX_SCAN_ANGLE_RAD = +10.0/180*M_PI;
 const static float PROXIMITY_RANGE_M = .9; // Should be smaller than sensor_msgs::LaserScan::range_max
@@ -30,6 +29,7 @@ class SheepMove {
 	//pose of the robot
 	double px;
 	double py;
+	
 	double theta;
 	double prevpx;
 	double prevpy;
@@ -70,7 +70,7 @@ class SheepMove {
 	ros::Subscriber laserSub; // Subscriber to the simulated robot's laser scan topic
 	ros::Subscriber sheepStatusSub; //Subscriber to sheep_[sheepNum]/move topic
 	//move state things
-	enum FSM fsm; // Finite state machine for the random walk algorithm
+	enum FSM fsm; // Finite state machine for the walk algorithm
 	ros::Time rotateStartTime; // Start time of the rotation
 	ros::Time rotateEndTime;
 	ros::Duration rotateDuration; // Duration of the rotation
@@ -78,43 +78,22 @@ class SheepMove {
 };
 	
 void SheepMove::StageOdom_callback(nav_msgs::Odometry msg) {
-	//This is the call back function to process odometry messages coming from Stage. 		
+	//This is the call back function to process odometry messages coming from Stage. 	
 		
 	px = msg.pose.pose.position.x;
-	//px = 5 + msg.pose.pose.position.x;
-	//py = 10 + msg.pose.pose.position.y;
 	py = msg.pose.pose.position.y;
-	//printf("%f",px);
-	
+
 	if (!isGoal) {
 		
 		// If the current position is the same the previous position, then the robot is stuck and needs to move around
 		if ((px == prevpx) && (py == prevpy)) {
-			//msg.pose.pose.position.x = 5;
-			//ROS_INFO("Prevpx: %f",prevpx);
-
-			// Note the negative linear_x		
-			//linear_x=-0.2;
-			//angular_z=1;
-
-			//theta=10;
-			//px = 5;
-			//py= 5;
-			//printf("Robot stuck");
 			if (!isRotate) {	
 				ROS_INFO("Robot stuck");
 				double r2 = (double)rand()/((double)RAND_MAX/(M_PI/2));
 				double m2 = (double)rand()/((double)RAND_MAX/0.5);
-				//ROS_INFO("r2" << r2);
 				move(-m2, r2);
 				
 			}	
-		} else {
-			// One the robot becomes unstuck, then it moves around again normally
-			//linear_x = 0.2;
-			//angular_z = 0.2;
-			//ROS_INFO("Robot unstuck");
-			//checkcount=0;
 		}
 		se306Project::SheepMoveMsg posMsg;
 		posMsg.moveCommand = "UPDATE";
@@ -123,11 +102,10 @@ void SheepMove::StageOdom_callback(nav_msgs::Odometry msg) {
 		sheepStatusPub.publish(posMsg);
 
 	} else {
-		// Goal positions, need to do something like making this a new method that gets passed in the goal positions for where the grass is 
-		
 		
 		px = msg.pose.pose.position.x;
 		py = msg.pose.pose.position.y;
+		
 		se306Project::SheepMoveMsg posMsg;
 		posMsg.moveCommand = "UPDATE";
 		posMsg.goalX = px;
@@ -143,16 +121,10 @@ void SheepMove::StageOdom_callback(nav_msgs::Odometry msg) {
 			ROS_INFO("goalpy: %f", goalpy);
 		}
 		
-		
-		// This is to currently stop them from wandering around.
-		//fsm = FSM_GOTO_GOAL;
-		
 		px= floorf(px * 10 + 0.5) / 10;
 		py= floorf(py * 10 + 0.5) / 10;
 
 		currentHeading = angles::normalize_angle_positive(asin(msg.pose.pose.orientation.z) * 2); // Between (0,2Pi)
-			
-			//if ((goalpx != round(px)) && (goalpy != round(py))) {
 				
 			if ((fabs(goalpx-px) > 0.1 ) && (fabs(goalpy-py) > 0.1 )) { // Slightly more accurate when going to goal position
 			
@@ -165,54 +137,37 @@ void SheepMove::StageOdom_callback(nav_msgs::Odometry msg) {
 					// Calculates angle based on right-hand triangle trigonometry rules
 					goalHeading = atan(dy/dx);
 					
-					//ROS_INFO("goalHeading: %f", goalHeading);
-					//ROS_INFO("currentHeading: %f", currentHeading);
+
 					
 					// Below checks are to calculate what the final goalHeading is with respect to the whole world
 					if ((goalpx > px) && (goalpy > py)) {
 						// Don't need to actually do anything to goalHeading here
 						
-						//ROS_INFO("goalpx > px & goalpy > py");
-						
 					}
 					if ((goalpx < px) && (goalpy < py)) {
 						goalHeading= (M_PI + goalHeading);
-						//ROS_INFO("goalpx < px & goalpy < py");
-
 					}
 					if ((goalpx < px) && (goalpy > py)) {
 						goalHeading= M_PI - goalHeading;
-						//ROS_INFO("goalpx < px & goalpy > py");
-
 					}
 					if ((goalpx > px) && (goalpy < py)) {
 						goalHeading= (2*M_PI) - goalHeading;
-						//ROS_INFO("goalpx > px & goalpy < py");
-
 					}
 					
 					// Rounds to 1dp, otherwise it would be near impossible for both headings to be the same
 					goalHeading= floorf(goalHeading * 10 + 0.5) / 10; // To round to 2dp, change the 10's to 100
 					currentHeading= floorf(currentHeading * 10 + 0.5) / 10;
-					//ROS_INFO("currentHeading rounded: %f", currentHeading);
-					//ROS_INFO("goalHeading rounded: %f", goalHeading);
 					
 					if (currentHeading != goalHeading) {
-						
 						move(0,1);
 					
 					} else {	
-						
-						//ROS_INFO("Correct heading");
-						
 						correctHeading=true;
 					}
 				} else {
-					//ROS_INFO("SheepSpeed: %f", SheepSpeed);
 					move(SheepSpeed,0);
 				}
 			} else {
-					//ROS_INFO("Reached goal");
 					isGoal=false;
 					fsm= FSM_MOVE_FORWARD;
 					// If the sheep is dragged to another position, the whole goal process is recalculated
@@ -220,8 +175,6 @@ void SheepMove::StageOdom_callback(nav_msgs::Odometry msg) {
 
 				}
 	}
-	//ROS_INFO("Current x position is: %f", px);
-	//ROS_INFO("Current y position is: %f", py);
 	
 	prevpx = px;
 	prevpy = py;
@@ -242,7 +195,6 @@ void SheepMove::statusCallback(se306Project::SheepMoveMsg msg) {
 	ROS_INFO_STREAM(msg.moveCommand);
 	moveStatus = msg.moveCommand;
 	SheepSpeed = msg.speed;
-	//TODO: set directionality from msg
 }
 
 
@@ -266,24 +218,14 @@ void SheepMove::commandCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
 				closestRange = msg->ranges[currIndex];
 			}
 		}
-		//if (closestRange == prevclosestRange) {
-		//	ROS_INFO_STREAM("STUCK");
-		//	move(-SheepSpeed, ROTATE_SPEED_RADPS);
-		//	//move(0, ROTATE_SPEED_RADPS);
-		//} else {
-			
-			//ROS_INFO_STREAM("Range: " << closestRange);
+
 			prevclosestRange = closestRange;
 
 			if (closestRange < PROXIMITY_RANGE_M) {
 				fsm=FSM_ROTATE;
 				rotateStartTime=ros::Time::now();
-				//TODO: wtf is r2 for?
-				float r2 = (float)rand()/((float)RAND_MAX/100);
 				rotateDuration=ros::Duration(rand() % 2);
-				//fsm= FSM_MOVE_FORWARD;
 			}
-		//}
 	}
 }
 
@@ -301,11 +243,7 @@ void SheepMove::spin() {
 	
 	
 		if(moveStatus.compare("GO") == 0) {
-   			//ROS_INFO("%s", msg.data.c_str());
-   			
 			if (fsm == FSM_MOVE_FORWARD) {
-				ROS_INFO("SheepSpeed: %f", SheepSpeed);
-				//ROS_INFO_STREAM("Start forward");
 				move(SheepSpeed, 0);
 				checkcount++;
 				if (checkcount > 3) {
@@ -314,16 +252,13 @@ void SheepMove::spin() {
 				}
 			}
 			if (fsm == FSM_ROTATE) {
-				//ROS_INFO_STREAM("Start rotate");
 				move(0, ROTATE_SPEED_RADPS);
 				rotateEndTime=ros::Time::now();
 				isRotate=true;
 				isGoal=false;
-				//ROS_INFO_STREAM("Time: " << rotateEndTime);
 			
 				if ((rotateEndTime - rotateStartTime) > rotateDuration) {
 					fsm=FSM_MOVE_FORWARD;
-					//ROS_INFO_STREAM("End rotate");
 					checkcount=0;
 				}
 			} 
@@ -341,10 +276,10 @@ void SheepMove::spin() {
 SheepMove::SheepMove(int number) {
 	// Construst a new SheepMove object and hook up this ROS node
 	// to the simulated robot's velocity control and laser topics
-	//sheepNum = number;
 	
 	// Initialize random time generator
 	srand(time(NULL));
+	
 	moveStatus = "GO";
 	SheepSpeed = 0.1;
 	prevclosestRange = 0;
@@ -378,7 +313,6 @@ void SheepMove::rosSetup(int argc, char **argv) {
 	rotateDuration = ros::Duration(0.f);
 	
 	//setup talkies
-	
 	// Advertise a new publisher for the simulated robot's velocity command topic
 	// (the second argument indicates that if multiple command messages are in
 	// the queue to be sent, only the last command will be sent)
@@ -397,16 +331,13 @@ void SheepMove::rosSetup(int argc, char **argv) {
 	sheepStatusPub = nh.advertise<se306Project::SheepMoveMsg>(s + "/pos",1000);
 	sheepStatusSub = nh.subscribe<se306Project::SheepMoveMsg>(s + "/move", 1000, &SheepMove::statusCallback, this);
 	StageOdo_sub = nh.subscribe<nav_msgs::Odometry>(r + "/odom",1000, &SheepMove::StageOdom_callback,this);
-	//ros::Subscriber StageOdo_sub = n.subscribe<nav_msgs::Odometry>("robot_0/odom",1000, StageOdom_callback);
 	
 	SheepMove::spin(); // Execute FSM loop
 }
 
 int main(int argc, char **argv) {
-	//int number = 0;
-	//ros::param::get("sheepNum", number);
 	
-	SheepMove walker(0); // Create new random walk object
+	SheepMove walker(0); // Create new walk object
 	walker.rosSetup(argc, argv);
 	return 0;
 }

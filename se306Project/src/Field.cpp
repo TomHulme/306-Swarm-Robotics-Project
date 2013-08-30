@@ -1,7 +1,7 @@
 //============================================================================
 // Name        : Field.cpp
 // Author      : John Lambert
-// Date		   : 16/08/2013
+// Date	       : 16/08/2013
 // Version     : 
 // Description : Field Class containing all methods for the Field node
 //============================================================================
@@ -33,7 +33,7 @@ FieldNode::FieldNode(int number, double x, double y) {
 //Changes the rain value
 void FieldNode::setRain() {
 	//set rain to random number out of 100 (0 - 99)
-	srand(time(NULL));
+	srand(time(NULL) + fieldNum * sunLight);
 	rain = rand() % 100;
 }
 
