@@ -22,8 +22,6 @@
 #include <cstdlib>
 #include <ctime>
 
-
-
 class sheepdogNode {
 	public:	
 	sheepdogNode(int);
@@ -36,6 +34,8 @@ class sheepdogNode {
 	void truckCallback(geometry_msgs::Pose2D);
 	void spin();
 	
+    int sheepNum;
+
 	//--------------------
 	sheepdogNode() { } //Default constructor
 };

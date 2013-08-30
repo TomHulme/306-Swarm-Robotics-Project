@@ -13,25 +13,25 @@ TEST(sheepdogTest, testConstructor10)
 TEST(sheepdogTest, testConstructor1)
 {
 	sheepdogNode sheepdog = sheepdogNode(1);
-	EXPECT_EQ(10, sheepdog.sheepNum);
+	EXPECT_EQ(1, sheepdog.sheepNum);
 }
 
 TEST(sheepdogTest, testConstructor0)
 {
 	sheepdogNode sheepdog = sheepdogNode(0);
-	EXPECT_EQ(10, sheepdog.sheepNum);
+	EXPECT_EQ(0, sheepdog.sheepNum);
 }
 
 TEST(sheepdogTest, testConstructorNegOne)
 {
 	sheepdogNode sheepdog = sheepdogNode(-1);
-	EXPECT_EQ(10, sheepdog.sheepNum);
+	EXPECT_EQ(-1, sheepdog.sheepNum);
 }
 
 TEST(sheepdogTest, testConstructor10Million)
 {
 	sheepdogNode sheepdog = sheepdogNode(10000000);
-	EXPECT_EQ(10, sheepdog.sheepNum);
+	EXPECT_EQ(10000000, sheepdog.sheepNum);
 }
 
 // Run all the tests that were declared with TEST()

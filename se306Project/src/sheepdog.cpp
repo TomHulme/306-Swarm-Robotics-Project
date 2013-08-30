@@ -33,7 +33,7 @@ double truckX = -1.0;
 double truckY = -1.0;
 
 // counters
-int sheepNum = 0;
+//sheepNum = 0;
 int checkcount = 0;
 
 // Finite State Machines
@@ -54,7 +54,7 @@ ros::Publisher point_cloud_publisher_;
 
 // Constructor, gets number of sheep from automate script
 sheepdogNode::sheepdogNode(int number) {
-	sheepNum = number;
+	this->sheepNum = number;
 }
 
 void sheepdogNode::StageOdom_callback(nav_msgs::Odometry msg)
