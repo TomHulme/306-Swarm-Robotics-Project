@@ -45,8 +45,9 @@ public:
 	SheepState currentState;
 	SheepState prevState;
 	SheepAgeStages age; 
-	int currX;
-	int currY;
+	bool goalSet;
+	double goalX;
+	double goalY;
 	
 	int terror;
 	int hunger;
@@ -62,10 +63,11 @@ public:
 	double sdx; //xPos of the sheepdog
 	double sdy; //yPos of the sheepdog
 //===
-
+	//State Methods
 	void sheepEat();
 	void sheepWalk();
 	void sheepRun();
+	void sheepWary();
 	
 	void currentPositionCallback(se306Project::SheepMoveMsg);
 	//TODO: Sheep Danger sense
@@ -95,16 +97,11 @@ void SheepNode::currentPositionCallback(se306Project::SheepMoveMsg msg) {
 };
 
 void SheepNode::sheepdogDangerCallback(geometry_msgs::Pose2D sheepdogMsg) {
-	//TODO:Merge changes from sheep_scared
-	//fuck that I'll do it myself
-	//if sheepdog is closer that last time
-	//	increase terror by relevant amount
-
 	double sdxnew = sheepdogMsg.x;
 	double sdynew = sheepdogMsg.y;
 		
 	double DistanceDiff = sqrt((abs(sdx - px)*abs(sdx - px))+(abs(sdy - py)*abs(sdy - py)));
-	double DistanceDiffNew = sqrt((abs(sdxnew - px)*abs(sdxnew - px))+(abs(sdynew - py)*abs(sdynew - py)); 
+	double DistanceDiffNew = sqrt((abs(sdxnew - px)*abs(sdxnew - px))+(abs(sdynew - py)*abs(sdynew - py))); 
 	if (DistanceDiff > DistanceDiffNew) {
 		/* check the distance & find out the terror increase
 		 * add the terror increase to the terror level (global var)	
@@ -118,8 +115,14 @@ void SheepNode::sheepdogDangerCallback(geometry_msgs::Pose2D sheepdogMsg) {
 		} else if (DistanceDiffNew < TERROR_LEVEL_FOUR) {
 			terror = terror + 35;
 		}
+		if (terror > 100)
+			terror = 100;
+		ROS_INFO("Sheepdog is closer. Terror at %d", terror);
 	} else {
 		terror = terror - 4;
+		if (terror < 0)
+			terror = 0;
+		ROS_INFO("Sheepdog is not closer. Terror at %d", terror);
 	}
 	
 	if (terror >= WARY_LOWER_TERROR_LIMIT && terror < RUNNING_LOWER_TERROR_LIMIT){
@@ -151,17 +154,29 @@ void SheepNode::grassInfoCallback(se306Project::GrassPosMsg grassMsg) {
 			}
 		}
 	} else {
-		//	TODO:	compare msg to current position. 
-		//	TODO: 	if grass position is closer than current goal then:
-		//	TODO:		set new goal
-		
+		if(goalSet) {
+			double DistanceDiff = sqrt((abs(goalX - px)*abs(goalX - px))+(abs(goalY - py)*abs(goalY - py)));
+			double DistanceDiffNew = sqrt((abs(grassMsg.x - px)*abs(grassMsg.x - px))+(abs(grassMsg.y - py)*abs(grassMsg.y - py))); 
+			if (DistanceDiff > DistanceDiffNew && (grassMsg.grassHeight >= GRASS_MIN_TASTY_HEIGHT || (hunger >= HUNGRY_LEVEL && grassMsg.grassHeight > 0))) {
+				//new grass is closer
+				ROS_INFO("Setting new goal: %d (%f,%f)", grassMsg.grassNum, grassMsg.x, grassMsg.y);
+				goalSet = true;
+				goalX = grassMsg.x;
+				goalY = grassMsg.y;
+			}
+		} else {
+			if (grassMsg.grassHeight >= GRASS_MIN_TASTY_HEIGHT || (hunger >= HUNGRY_LEVEL && grassMsg.grassHeight > 0)) {
+				ROS_INFO("Setting new goal: %d (%f,%f)", grassMsg.grassNum, grassMsg.x, grassMsg.y);
+				goalSet = true;
+				goalX = grassMsg.x;
+				goalY = grassMsg.y;
+			}
+		}
 	}
 };
 
 bool SheepNode::isContainedBy(se306Project::GrassPosMsg grassMsg) {
 	//do some positioning comparisions.
-	ROS_INFO("grass%dx: %f",grassMsg.grassNum, grassMsg.x);
-	ROS_INFO("grass%dy: %f",grassMsg.grassNum, grassMsg.y);
 	if (grassMsg.x - 0.45 <= px && px <= grassMsg.x + 0.45) {
 		if (grassMsg.y - 0.45 <= py && py <= grassMsg.y + 0.45) {
 			return true;
@@ -176,6 +191,7 @@ void SheepNode::sheepEat(){
 		se306Project::SheepMoveMsg msg;
 		msg.moveCommand = "STOP";
 		sheepMovePub.publish(msg);
+		goalSet = false;
 	}
 	prevState = EATING;
 	se306Project::SheepEatMsg msg;
@@ -191,7 +207,10 @@ void SheepNode::sheepWalk() {
 	
 	se306Project::SheepMoveMsg msg;
 	msg.moveCommand = "GO";
-	//TODO: msg goal
+	if(goalSet) { //allow SheepMove to do it's thing if there is no goal set
+		msg.goalX = goalX;
+		msg.goalY = goalY;
+	}
 	msg.speed = sheepSpeed;
 	sheepMovePub.publish(msg);
 	prevState = WALKING;
@@ -202,25 +221,27 @@ void SheepNode::sheepWalk() {
 void SheepNode::sheepRun() {
 	ROS_INFO("Sheep is terrorfied and running");
 	//TODO:
-	///This code is untested, and probably won't be implemented in time for final, but this is a way of doing basic evasion of the sheepdog by running directly away from it, with a small amount of variance to cause a curve one way or another
-	/* 
-	 * double xDistanceDiff = abs(sdx - px);
-	 * double yDistanceDiff = abs(sdy - py);
-	 * //introduces a small amount of directional variation, should cause the path to tend one way or the other
-	 * double xRand = (Rand() % 2)/10.0 - 0.1; 
-	 * double yRand = (Rand() % 2)/10.0 - 0.1;
-	 * goalPositionX = px - xDistanceDiff + xRand;
-	 * goalPositionY = py - yDistanceDiff + yRand;
-	 *  
-	 * se306Project::SheepMoveMsg msg;
-	 * msg.moveCommand = "GO";
-	 * msg.goalX = goalPositionX;
-	 * msg.goalY = goalPositionY;
-	 * msg.speed = sheepSpeed*2;
-	 * sheepMovePub.publish(msg);
-	 * prevState = RUNNING;
-	 * 
-	 * */
+	///This code is untested, and probably won't be implemented in time for final, but this is a way 
+	///of doing basic evasion of the sheepdog by running directly away from it, with a small amount of 
+	///variance to cause a curve one way or another
+	 
+	double xDistanceDiff = abs(sdx - px);
+	double yDistanceDiff = abs(sdy - py);
+	//introduces a small amount of directional variation, should cause the path to tend one way or the other
+	double xRand = (rand() % 2)/10.0 - 0.1; 
+	double yRand = (rand() % 2)/10.0 - 0.1;
+	goalX = px - xDistanceDiff + xRand;
+	goalY = py - yDistanceDiff + yRand;
+	//need to alter goalX + goalY to keep goal in field
+	goalSet = true;
+	
+	se306Project::SheepMoveMsg msg;
+	msg.moveCommand = "GO";
+	msg.goalX = goalX;
+	msg.goalY = goalY;
+	msg.speed = sheepSpeed*2;
+	sheepMovePub.publish(msg);
+	prevState = RUNNING;
 };
 
 void SheepNode::sheepWary() {
@@ -228,6 +249,7 @@ void SheepNode::sheepWary() {
 		se306Project::SheepMoveMsg msg;
 		msg.moveCommand = "STOP";
 		sheepMovePub.publish(msg);
+		goalSet = false;
 	}
 	if (terror >= RUNNING_LOWER_TERROR_LIMIT) {
 		currentState = RUNNING;
@@ -263,12 +285,7 @@ void SheepNode::SheepLifeCycle() {
 void SheepNode::spin() {
 	//do things depending on SheepState
 	ros::Rate rate(10); // 1 second
-	//se306Project::SheepMoveMsg msg;
-	//msg.moveCommand = "GO";
-	//msg.speed = 0.1;
-	//sheepMovePub.publish(msg);
 
-	int count = 0;
 	while (ros::ok()) {
 		//deal with state of sheep
 		if (currentState == EATING) {
@@ -307,10 +324,8 @@ void SheepNode::spin() {
 		
 		sheepPosePub.publish(Pose2Dmsg);
 		
-		
 		ros::spinOnce();
-	
-		rate.sleep();
+		//rate.sleep();
 	}
 };
 	
@@ -322,7 +337,8 @@ SheepNode::SheepNode() {
 	prevState = WALKING;
 	currentState = WALKING;
 	age = BIRTH;
-	sheepSpeed = 0.1;	
+	sheepSpeed = 0.1;
+	goalSet = false;
 };
 
 void SheepNode::rosSetup(int argc, char **argv) {

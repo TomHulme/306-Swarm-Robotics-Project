@@ -208,7 +208,7 @@ void GrassNode::spin() {
 		grassPosPub.publish(msg);
 
 		ros::spinOnce();
-		rate.sleep();
+		//rate.sleep();
 	}
 }
 

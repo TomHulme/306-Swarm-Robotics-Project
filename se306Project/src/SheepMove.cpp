@@ -130,13 +130,11 @@ void SheepMove::StageOdom_callback(nav_msgs::Odometry msg) {
 	
 		// Each sheep has their own initial goal. Temporary fix for the sheep not in the first field always heading towards the wall
 		if (callback_Count == 0) {
-			
 			goalpx=1+px;
 			goalpy=1+py;
-			ROS_INFO("goalpx: %f", goalpx);
-			ROS_INFO("goalpy: %f", goalpy);
 		}
-		
+		ROS_INFO("goalpx: %f", goalpx);
+		ROS_INFO("goalpy: %f", goalpy);
 		
 		// This is to currently stop them from wandering around.
 		//fsm = FSM_GOTO_GOAL;
@@ -206,7 +204,7 @@ void SheepMove::StageOdom_callback(nav_msgs::Odometry msg) {
 					move(SheepSpeed,0);
 				}
 			} else {
-					//ROS_INFO("Reached goal");
+					ROS_INFO("Reached goal");
 					isGoal=false;
 					fsm= FSM_MOVE_FORWARD;
 					// If the sheep is dragged to another position, the whole goal process is recalculated
@@ -235,6 +233,8 @@ void SheepMove::move(double linearVelMPS, double angularVelRadPS) {
 void SheepMove::statusCallback(se306Project::SheepMoveMsg msg) {
 	ROS_INFO_STREAM(msg.moveCommand);
 	moveStatus = msg.moveCommand;
+	goalpx = msg.goalX;
+	goalpy = msg.goalY;
 	SheepSpeed = msg.speed;
 	//TODO: set directionality from msg
 }

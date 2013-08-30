@@ -20,16 +20,16 @@ import shlex
 
 filename= "world/myworld.world"
 
-num_sheep= 2
-num_fields = 4
-field_X= 6
-field_Y= 4
+#num_sheep= 2
+#num_fields = 4
+#field_X= 6
+#field_Y= 4
 
 ##Smaller field for testing
-#num_sheep= 1
-#num_fields = 1
-#field_X= 3
-#field_Y= 3
+num_sheep= 1
+num_fields = 1
+field_X= 3
+field_Y= 3
 
 num_grass_field = (field_X-1)*(field_Y-1)
 num_grass = num_fields*num_grass_field
