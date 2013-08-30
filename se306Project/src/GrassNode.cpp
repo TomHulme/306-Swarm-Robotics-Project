@@ -89,6 +89,8 @@ void GrassNode::grassGrow(){
 		if (overallRate>0) {
 			overallRate = 0; // stop decaying below 0%
 		}
+	} else {
+		grassHeight = 100-(grassZ*100);	
 	}
 	decayRate = 0;
 	// Display netGrowth

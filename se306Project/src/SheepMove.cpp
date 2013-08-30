@@ -116,6 +116,12 @@ void SheepMove::StageOdom_callback(nav_msgs::Odometry msg) {
 			//ROS_INFO("Robot unstuck");
 			//checkcount=0;
 		}
+		se306Project::SheepMoveMsg posMsg;
+		posMsg.moveCommand = "UPDATE";
+		posMsg.goalX = px;
+		posMsg.goalY = py;
+		sheepStatusPub.publish(posMsg);
+
 	} else {
 		// Goal positions, need to do something like making this a new method that gets passed in the goal positions for where the grass is 
 		
