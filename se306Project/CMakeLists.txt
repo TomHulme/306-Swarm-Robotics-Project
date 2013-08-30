@@ -29,6 +29,7 @@ rosbuild_genmsg()
 #target_link_libraries(example ${PROJECT_NAME})
 
 rosbuild_add_gtest(test/fieldTest test/FieldTest.cpp src/Field.cpp)
+rosbuild_add_gtest(test/sheepdogTest test/sheepdogTest.cpp src/sheepdog.cpp)
 
 
 
